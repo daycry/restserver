@@ -1,5 +1,16 @@
 {
     "name": "daycry/restserver",
+    "description": "Rest Server for Codeigniter 4",
+    "homepage": "https://github.com/daycry/restserver",
+    "authors":
+    [
+        {
+            "name": "daycry",
+            "homepage": "https://github.com/daycry",
+            "role": "Developer"
+        }
+    ],
+    "license": "MIT",
     "require": {
       "php": ">=7.2",
         "daycry/encryption": "^1.0"
