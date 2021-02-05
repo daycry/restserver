@@ -31,6 +31,8 @@ Run command:
 This command will copy a config file to your app namespace
 Then you can adjust it to your needs. By default file will be present in `app/Config/RestServer.php`.
 
+More information about install doctrine: https://github.com/daycry/doctrine
+
 
 ## Usage Loading Library
 
