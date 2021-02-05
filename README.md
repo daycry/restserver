@@ -1,4 +1,4 @@
-# Doctrine
+# Rest Server
 
 Rest Server with Doctrine for Codeigniter 4
 
