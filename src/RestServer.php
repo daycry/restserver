@@ -145,7 +145,12 @@ class RestServer extends ResourceController
 		parent::initController( $request, $response, $logger );
 
         helper( 'security' );
-        $this->doctrine = \Config\Services::doctrine();
+	    
+        if( class_exists( 'Daycry\\Doctrine\\Doctrine' ) )
+        {
+            $this->doctrine = \Config\Services::doctrine();
+        }
+	    
         $this->validator =  \Config\Services::validation();
         $this->encryption =  new \Daycry\Encryption\Encryption();
         
