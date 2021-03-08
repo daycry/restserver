@@ -76,6 +76,8 @@ class RestServer extends ResourceController
      */
     protected $_query_args = [];
 
+    protected $request = null;
+
     /**
      * List all supported methods, the first will be the default format.
      *
@@ -151,6 +153,8 @@ class RestServer extends ResourceController
             $this->doctrine = \Config\Services::doctrine();
         }
 	    
+        $this->request = $request;
+
         $this->validator =  \Config\Services::validation();
         $this->encryption =  new \Daycry\Encryption\Encryption();
         
@@ -193,7 +197,7 @@ class RestServer extends ResourceController
         $this->headers = $this->request->getHeaders();
         $this->lang = $this->request->getLocale();
 
-        if( $this->inputFormat == 'json' )
+        if( $this->inputFormat == 'application/json' )
         {
             $this->content = $this->request->getJSON();
         }else{
@@ -519,11 +523,11 @@ class RestServer extends ResourceController
             $content_type = ( strpos( $content_type, ';' ) !== false ? current( explode( ';', $content_type ) ) : $content_type );
 
             // Check all formats against the CONTENT-TYPE header
-            foreach( $this->_supported_formats as $type => $mime )
+            foreach( $this->_supported_formats as $type )
             {
                 // $type = format e.g. csv
                 // $mime = mime type e.g. application/csv
-                if( $content_type === $mime )
+                if( $content_type === $type )
                 {
                     return $type;
                 }
