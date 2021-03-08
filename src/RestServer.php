@@ -518,15 +518,9 @@ class RestServer extends ResourceController
 
         if( empty( $content_type ) === false )
         {
-            // If a semi-colon exists in the string, then explode by ; and get the value of where
-            // the current array pointer resides. This will generally be the first element of the array
-            $content_type = ( strpos( $content_type, ';' ) !== false ? current( explode( ';', $content_type ) ) : $content_type );
-
-            // Check all formats against the CONTENT-TYPE header
             foreach( $this->_supported_formats as $type )
             {
-                // $type = format e.g. csv
-                // $mime = mime type e.g. application/csv
+                // $type = mime type e.g. application/json
                 if( $content_type === $type )
                 {
                     return $type;
