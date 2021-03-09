@@ -45,10 +45,8 @@ class Center extends \Daycry\RestServer\RestServer
     {
         try
 		{
-            if( $this->checkRequest() !== true )
-			{
-				return $this->checkRequest();
-			}
+            $validation = $this->checkRequest( null );
+            if( $validation !== true ){ return $validation; }
 
             return $this->respond( $this->content );
 
@@ -62,10 +60,8 @@ class Center extends \Daycry\RestServer\RestServer
     {
         try
 		{
-            if( $this->checkRequest() !== true )
-			{
-				return $this->checkRequest();
-			}
+            $validation = $this->checkRequest( null );
+            if( $validation !== true ){ return $validation; }
 
             return $this->respond( $this->encryption->encrypt('data') );
 
@@ -77,5 +73,5 @@ class Center extends \Daycry\RestServer\RestServer
 }
 
 ```
-
+TYou can pass validation rules in `checkRequest` function.
 
