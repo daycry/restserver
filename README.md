@@ -73,5 +73,5 @@ class Center extends \Daycry\RestServer\RestServer
 }
 
 ```
-TYou can pass validation rules in `checkRequest` function.
+You can pass validation rules in `checkRequest` function as a string.
 
