@@ -76,18 +76,12 @@ class RestServer extends ResourceController
      */
     protected $_query_args = [];
 
-    protected $request = null;
-
     /**
      * List all supported methods, the first will be the default format.
      *
      * @var array
      */
-    protected $_supported_formats = [
-        'application/json',
-        'text/html',
-        'application/xml'
-    ];
+    protected $_supported_formats = null;
 
     /**
      * is SSL request
@@ -133,6 +127,8 @@ class RestServer extends ResourceController
 
     private $_isValidRequest = true;
 
+    protected $request = null;
+
     /**
      * Extend this function to apply additional checking early on in the process.
      *
@@ -153,6 +149,9 @@ class RestServer extends ResourceController
             $this->doctrine = \Config\Services::doctrine();
         }
 	    
+        $formatConfig = config( 'Format' );
+        $this->_supported_formats = $formatConfig->supportedResponseFormats;
+
         $this->request = $request;
 
         $this->validator =  \Config\Services::validation();
@@ -161,7 +160,7 @@ class RestServer extends ResourceController
         $this->restConfig = config( 'RestServer' );
 
         // If no Header Accept get default format
-        $this->format = $this->request->negotiate( 'media', $this->_supported_formats );
+        $this->format = $request->negotiate( 'media', $this->_supported_formats );
         $this->setResponseFormat( $this->format );
 
         // Initialise the response, request and rest objects
@@ -175,7 +174,7 @@ class RestServer extends ResourceController
         }
 
         // Determine whether the connection is HTTPS
-        $this->ssl = $this->request->isSecure();
+        $this->ssl = $request->isSecure();
 
         // Check for CORS access request
         $checkCors = $this->restConfig->checkCors;
@@ -190,19 +189,6 @@ class RestServer extends ResourceController
         // Set up the GET variables
         //var_dump( $this->request->detectPath() );
         $this->_get_args = array_merge( $this->_get_args, $this->_detectSegment() );
-
-        // Try to find a format for the request (means we have a request body)
-        $this->inputFormat = $this->_detectInputFormat();
-        $this->method  = $this->request->getMethod();
-        $this->headers = $this->request->getHeaders();
-        $this->lang = $this->request->getLocale();
-
-        if( $this->inputFormat == 'application/json' )
-        {
-            $this->content = $this->request->getJSON();
-        }else{
-            $this->content = $this->request->getRawInput();
-        }
         
         // Extend this function to apply additional checking early on in the process
         $this->early_checks();
@@ -240,6 +226,19 @@ class RestServer extends ResourceController
             {
                 $this->_checkWhitelistAuth();
             }
+        }
+
+        // Try to find a format for the request (means we have a request body)
+        $this->inputFormat = $this->_detectInputFormat();
+        $this->method  = $request->getMethod();
+        $this->headers = $request->getHeaders();
+        $this->lang = $request->getLocale();
+
+        if( $this->inputFormat == 'application/json' )
+        {
+            $this->content = $request->getJSON();
+        }else{
+            $this->content = $request->getRawInput();
         }
     }
 
@@ -285,7 +284,7 @@ class RestServer extends ResourceController
         {
             $this->_ipAllow = $this->_checkWhitelistAuth();
         }
-        if( !$this->_ipAllow ){ return false; }
+        if( !$this->_ipAllow ){ $this->_isValidRequest = false; return false; }
 
         // Returns NULL if the SERVER variables PHP_AUTH_USER and HTTP_AUTHENTICATION don't exist
         $username = $this->request->getServer( 'PHP_AUTH_USER' );
@@ -384,6 +383,7 @@ class RestServer extends ResourceController
     {
         if( empty( $username ) )
         {
+            $this->_isValidRequest = false;
             return false;
         }
 
@@ -399,6 +399,7 @@ class RestServer extends ResourceController
 
         if( $password === false )
         {
+            $this->_isValidRequest = false;
             return false;
         }
 
@@ -418,11 +419,13 @@ class RestServer extends ResourceController
 
         if( array_key_exists( $username, $valid_logins ) === false )
         {
+            $this->_isValidRequest = false;
             return false;
         }
 
         if( $valid_logins[ $username ] !== $password )
         {
+            $this->_isValidRequest = false;
             return false;
         }
 
@@ -523,6 +526,8 @@ class RestServer extends ResourceController
                 // $type = mime type e.g. application/json
                 if( $content_type === $type )
                 {
+                    $ft = explode( '/', $content_type );
+                    $this->setFormat( end( $ft ) );
                     return $type;
                 }
             }
@@ -684,7 +689,7 @@ class RestServer extends ResourceController
      *
      * @throws Exception
      */
-    protected function checkRequest()
+    protected function checkRequest( $validation = null )
     {
         $parser = \Config\Services::parser();
 
@@ -707,6 +712,14 @@ class RestServer extends ResourceController
         if( !$this->_isValidRequest )
         {
             return $this->failUnauthorized( lang( 'Rest.textUnauthorized' ) );
+        }
+
+        if( $validation != null )
+        {
+            if( !$this->validator->run( (array)$this->content, $validation ) )
+            {
+                return $this->fail( $this->validator->getErrors()  );
+            }
         }
 
         return true;
