@@ -1,4 +1,4 @@
-<?php namespace Api\Exceptions;
+<?php namespace Daycry\RestServer\Exceptions;
 
 class TokenException extends \RuntimeException implements TokenInterface
 {
