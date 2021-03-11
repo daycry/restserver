@@ -160,8 +160,9 @@ class RestServer extends ResourceController
         $this->restConfig = config( 'RestServer' );
 
         // If no Header Accept get default format
-        $this->format = $request->negotiate( 'media', $this->_supported_formats );
-        $this->setResponseFormat( $this->format );
+        $ft = $request->negotiate( 'media', $this->_supported_formats );
+        $this->setResponseFormat( $ft );
+        $formatter = $this->format();
 
         // Initialise the response, request and rest objects
         $this->rest = new \stdClass();
