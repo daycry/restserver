@@ -15,9 +15,25 @@
       "php": ">=7.2",
         "daycry/encryption": "^1.0"
     },
-    "autoload": {
+    "require-dev":
+    {
+        "phpunit/phpunit" : "8.5.*",
+        "codeigniter4/framework": "^4.0.2"
+    },
+    "autoload":
+    {
         "psr-4": {
             "Daycry\\RestServer\\": "src/"
         }
+    },
+    "autoload-dev":
+    {
+        "psr-4":
+        {
+            "Daycry\\RestServer\\": "tests/RestServer/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
     }
 }
