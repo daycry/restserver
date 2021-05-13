@@ -216,7 +216,10 @@ class RestServer extends ResourceController
                     $this->_prepareBasicAuth();
                     break;
                 case 'digest':
-                    $this->_prepare_digest_auth();
+                    $this->_prepareDigestAuth();
+                    break;
+                case 'jwt':
+                    $this->_prepareJWTAuth();
                     break;
                 /*case 'session':
                     $this->_check_php_session();
@@ -320,7 +323,7 @@ class RestServer extends ResourceController
      * @access protected
      * @return void
      */
-    protected function _prepare_digest_auth()
+    protected function _prepareDigestAuth()
     {
         // If whitelist is enabled it has the first chance to kick them out
         if( $this->restConfig->restIpWhitelistEnabled )
@@ -334,7 +337,7 @@ class RestServer extends ResourceController
         $digest_string = $this->request->getServer( 'PHP_AUTH_DIGEST' );
         if( $digest_string === null )
         {
-            $digest_string = $this->request->getServer('HTTP_AUTHORIZATION');
+            $digest_string = $this->request->getServer( 'HTTP_AUTHORIZATION' );
         }
 
         $unique_id = uniqid();
@@ -373,6 +376,41 @@ class RestServer extends ResourceController
     }
 
     /**
+     * Prepares for JWT authentication
+     *
+     * @access protected
+     * @return void
+     */
+    protected function _prepareJWTAuth()
+    {
+        // If whitelist is enabled it has the first chance to kick them out
+        if( $this->restConfig->restIpWhitelistEnabled )
+        {
+            $this->_ipAllow = $this->_checkWhitelistAuth();
+        }
+        if( !$this->_ipAllow ){ $this->_isValidRequest = false; return false; }
+
+        // Returns HTTP_AUTHENTICATION don't exist
+        $http_auth = $this->request->getServer( 'HTTP_AUTHENTICATION' ) ?: $this->request->getServer( 'HTTP_AUTHORIZATION' );
+
+        if ($http_auth !== NULL)
+        {
+            // If the authentication header is set as bearer, then extract the token from
+            if( strpos( strtolower( $http_auth ), 'bearer' ) === 0 ) 
+            {
+                $username = substr( $http_auth, 7 );
+            }
+        }
+
+        $username = $this->_checkLogin( $username, true );
+        if( $username === false )
+        {
+            $this->_forceLogin();
+        }
+    }
+
+
+    /**
      * Check if the user is logged in
      *
      * @access protected
@@ -398,6 +436,14 @@ class RestServer extends ResourceController
             return md5( $username . ':' . $this->restConfig->restRealm . ':' . ( isset( $valid_logins[ $username ] ) ? $valid_logins[ $username ] : '' ) );
         }
 
+        if( !$this->restConfig->authSource && $rest_auth === 'jwt' )
+        {
+            $jwtLibrary = new \Daycry\RestServer\Libraries\JWT();
+            $claims = $jwtLibrary->decode( $username );
+            if( !$claims ){ return false; }
+            return $claims;
+        }
+
         if( $password === false )
         {
             $this->_isValidRequest = false;
@@ -411,12 +457,12 @@ class RestServer extends ResourceController
             return $this->_perform_ldap_auth($username, $password);
         }*/
 
-        /*if ($auth_source === 'library')
+        if( $auth_source === 'library' )
         {
             log_message('debug', "Performing Library authentication for $username");
 
-            return $this->_perform_library_auth($username, $password);
-        }*/
+            return $this->_performLibraryAuth( $username, $password );
+        }
 
         if( array_key_exists( $username, $valid_logins ) === false )
         {
@@ -462,6 +508,37 @@ class RestServer extends ResourceController
         if( $this->restConfig->strictApiAndAuth === true )
         {
             $this->_isValidRequest = false;
+        }
+    }
+
+    protected function _performLibraryAuth( $username = '', $password = null )
+    {
+        if( empty( $username ) )
+        {
+            log_message( 'critical', 'Library Auth: Failure, empty username' );
+            return false;
+        }
+
+        $authLibraryClass = $this->restConfig->authLibraryClass;
+        $authLibraryFunction = $this->restConfig->authLibraryFunction;
+
+        if( empty( $authLibraryClass ) )
+        {
+            log_message( 'critical', 'Library Auth: Failure, empty authLibraryClass' );
+            return false;
+        }
+
+        $authLibraryClass = new $authLibraryClass();
+
+        if( empty( $authLibraryFunction ) )
+        {
+            log_message( 'critical', 'Library Auth: Failure, empty authLibraryFunction' );
+            return false;
+        }
+
+        if( is_callable( [ $authLibraryClass, $authLibraryFunction ] ) )
+        {
+            return $authLibraryClass->{$authLibraryFunction}( $username, $password );
         }
     }
 

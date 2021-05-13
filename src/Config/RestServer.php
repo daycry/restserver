@@ -1,4 +1,5 @@
-<?php namespace Daycry\RestServer\Config;
+<?php
+namespace Daycry\RestServer\Config;
 
 use CodeIgniter\Config\BaseConfig;
 
