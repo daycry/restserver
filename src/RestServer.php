@@ -774,8 +774,12 @@ class RestServer extends ResourceController
      */
     protected function _authOverrideCheck()
     {
-        $path = $this->request->detectPath();
-        
+        $router = service('router');
+        $controller = $router->controllerName() ;
+        $method = $router->methodName();
+
+        //$this->method --> get / post 
+
         // Assign the class/method auth type override array from the config
         $auth_override_class_method = $this->restConfig->authOverrideClassMethod;
 
