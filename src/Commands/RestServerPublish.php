@@ -51,6 +51,12 @@ class RestServerPublish extends BaseCommand
         $content = str_replace( 'namespace Daycry\RestServer\Config', 'namespace Config', $content );
         $content = str_replace( 'extends BaseConfig', 'extends \Daycry\RestServer\Config\RestServer', $content );
         $this->writeFile( 'Config/RestServer.php', $content );
+
+        $path = $this->sourcePath . '/Config/JWT.php';
+        $content = file_get_contents( $path );
+        $content = str_replace( 'namespace Daycry\RestServer\Config', 'namespace Config', $content );
+        $content = str_replace( 'extends BaseConfig', 'extends \Daycry\RestServer\Config\JWT', $content );
+        $this->writeFile( 'Config/JWT.php', $content );
     }
     //--------------------------------------------------------------------
     /**
