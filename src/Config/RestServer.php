@@ -47,6 +47,7 @@ class RestServer extends BaseConfig
     | FALSE     No login required
     | 'basic'   Unsecure login
     | 'digest'  More secure login
+    | 'jwt'  JWT Token
     | 'session' Check for a PHP session variable. See 'auth_source' to set the
     |           authorization key
     |
