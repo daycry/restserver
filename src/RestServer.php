@@ -5,6 +5,10 @@ use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
+use Daycry\RestServer\Exceptions\UnauthorizedException;
+use Daycry\RestServer\Exceptions\ValidationException;
+use Daycry\RestServer\Exceptions\ForbiddenException;
+
 class RestServer extends ResourceController
 {
     /**
@@ -1002,30 +1006,34 @@ class RestServer extends ResourceController
 
         if( $this->restConfig->forceHttps && $this->ssl === false )
         {
-            return $this->failForbidden( lang( 'Rest.textRestUnsupported' ) );
+            throw ForbiddenException::forUnsupportedProtocol();
+            //return $this->failForbidden( lang( 'Rest.textRestUnsupported' ) );
         }
 
         // They provided a key, but it wasn't valid, so get them out of here
-        if( $this->restConfig->restEnableKeys && $this->_allow === false )
+        if( ( $this->restConfig->restEnableKeys && $this->_allow === false ) || $this->_ipAllow === false || $this->_isValidRequest === false )
         {
-            return $this->failUnauthorized( $parser->setData( array( 'key' => $this->rest->key) )->renderString( lang( 'Rest.textRestInvalidApiKey' ) ) );
+            throw UnauthorizedException::forUnauthorized();
+            //return $this->failUnauthorized( $parser->setData( array( 'key' => $this->rest->key) )->renderString( lang( 'Rest.textRestInvalidApiKey' ) ) );
         }
 
-        if( $this->_ipAllow === false )
+        /*if( $this->_ipAllow === false || $this->_isValidRequest === false )
         {
-            return $this->failUnauthorized( lang( 'Rest.ipDenied' ) );
-        }
+            throw AutenticationException::forUnauthorized();
+            //return $this->failUnauthorized( lang( 'Rest.ipDenied' ) );
+        }*/
 
-        if( !$this->_isValidRequest )
+        /*if( !$this->_isValidRequest )
         {
             return $this->failUnauthorized( lang( 'Rest.textUnauthorized' ) );
-        }
+        }*/
 
         if( $validation != null )
         {
             if( !$this->validator->run( (array)$this->content, $validation ) )
             {
-                return $this->fail( $this->validator->getErrors()  );
+                throw ValidationException::validationError();
+                //return $this->fail( $this->validator->getErrors()  );
             }
         }
 

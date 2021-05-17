@@ -3,4 +3,4 @@
 /**
  * @package Daycry\RestServer\Exceptions
  */
-interface ValidationInterface {}
+interface ForbiddenInterface {}
