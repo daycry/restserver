@@ -1,9 +1,8 @@
-<?php
-namespace Daycry\RestServer\Config;
+<?php namespace Config;
 
 use CodeIgniter\Config\BaseConfig;
 
-class RestServer extends BaseConfig
+class RestServer extends \Daycry\RestServer\Config\RestServer
 {
     /*
     |--------------------------------------------------------------------------
@@ -13,7 +12,7 @@ class RestServer extends BaseConfig
     | Set to force the use of HTTPS for REST API calls
     |
     */
-    public $forceHttps = false;
+    public $forceHttps = true;
 
     /*
     |--------------------------------------------------------------------------
@@ -52,7 +51,7 @@ class RestServer extends BaseConfig
     |           authorization key
     |
     */
-    public $restAuth = '';
+    public $restAuth = 'basic';
 
     /*
     |--------------------------------------------------------------------------
@@ -98,8 +97,8 @@ class RestServer extends BaseConfig
     | e.g: md5('admin:REST API:1234') = '1e957ebc35631ab22d5bd6526bd14ea2'
     |
     */
-    public $authLibraryClass = '';
-    public $authLibraryFunction = '';
+    public $authLibraryClass = \Daycry\RestServer\Libraries\JWT::class;
+    public $authLibraryFunction = 'decode';
 
     /*
     |--------------------------------------------------------------------------
@@ -112,23 +111,30 @@ class RestServer extends BaseConfig
     |
     | e.g:
     |
-    |           $config['auth_override_class_method']['deals']['view'] = 'none';
-    |           $config['auth_override_class_method']['deals']['insert'] = 'digest';
-    |           $config['auth_override_class_method']['accounts']['user'] = 'basic';
-    |           $config['auth_override_class_method']['dashboard']['*'] = 'none|digest|basic';
+    |           public $authOverrideClassMethod = array
+                (
+                    '\Ldap\Controllers\Search' => array
+                    ( 
+                        'index' => 'none'
+                    )
+                );
     |
     | Here 'deals', 'accounts' and 'dashboard' are controller names, 'view', 'insert' and 'user' are methods within. An asterisk may also be used to specify an authentication method for an entire classes methods. Ex: $config['auth_override_class_method']['dashboard']['*'] = 'basic'; (NOTE: leave off the '_get' or '_post' from the end of the method name)
     | Acceptable values are; 'none', 'digest' and 'basic'.
     |
     */
-    // $config['auth_override_class_method']['deals']['view'] = 'none';
-    // $config['auth_override_class_method']['deals']['insert'] = 'digest';
-    // $config['auth_override_class_method']['accounts']['user'] = 'basic';
-    // $config['auth_override_class_method']['dashboard']['*'] = 'basic';
 
+    public $authOverrideClassMethod = array
+    (
+        '\Ldap\Controllers\Search' => array
+        ( 
+            'index' => 'basic'
+        )
+    );
+    //public $authOverrideClassMethod[ '\Ldap\Controllers\Search' ][ 'index' ] = 'none';
 
     // ---Uncomment list line for the wildard unit test
-    // $config['auth_override_class_method']['wildcard_test_cases']['*'] = 'basic';
+    // $this->authOverrideClassMethod['wildcard_test_cases']['*'] = 'basic';
 
     /*
     |--------------------------------------------------------------------------
@@ -137,13 +143,17 @@ class RestServer extends BaseConfig
     |
     | example:
     |
-    |            $config['auth_override_class_method_http']['deals']['view']['get'] = 'none';
-    |            $config['auth_override_class_method_http']['deals']['insert']['post'] = 'none';
-    |            $config['auth_override_class_method_http']['deals']['*']['options'] = 'none';
+    |           public $authOverrideClassMethodHttp = array
+                (
+                    '\Ldap\Controllers\Search' => array
+                    ( 
+                        'index' 
+                    )
+                );
     */
 
     // ---Uncomment list line for the wildard unit test
-    // $config['auth_override_class_method_http']['wildcard_test_cases']['*']['options'] = 'basic';
+    // $this->authOverrideClassMethodHttp['wildcard_test_cases']['*']['options'] = 'basic';
 
     /*
     |--------------------------------------------------------------------------
@@ -354,7 +364,7 @@ class RestServer extends BaseConfig
     | will access it through a browser
     |
     */
-    public $checkCors = false;
+    public $checkCors = true;
 
     /*
     |--------------------------------------------------------------------------
@@ -370,7 +380,7 @@ class RestServer extends BaseConfig
         'Content-Type',
         'Accept',
         'Access-Control-Request-Method',
-        'X-API-KEY',
+        '2FA-API-KEY',
         'Authorization'
     ];
 
@@ -400,7 +410,7 @@ class RestServer extends BaseConfig
     | source domain
     |
     */
-    public $allowAnyCorsDomain = FALSE;
+    public $allowAnyCorsDomain = false;
 
     /*
     |--------------------------------------------------------------------------
