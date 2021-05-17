@@ -301,7 +301,7 @@ class RestServer extends ResourceController
         {
             $this->_ipAllow = $this->_checkWhitelistAuth();
         }
-        if( !$this->_ipAllow ){ $this->_isValidRequest = false; return false; }
+        if( !$this->_ipAllow ){ return false; }
 
         // Returns NULL if the SERVER variables PHP_AUTH_USER and HTTP_AUTHENTICATION don't exist
         $username = $this->request->getServer( 'PHP_AUTH_USER' );
@@ -401,7 +401,7 @@ class RestServer extends ResourceController
         {
             $this->_ipAllow = $this->_checkWhitelistAuth();
         }
-        if( !$this->_ipAllow ){ $this->_isValidRequest = false; return false; }
+        if( !$this->_ipAllow ){ return false; }
 
         // Returns HTTP_AUTHENTICATION don't exist
         $http_auth = $this->request->getServer( 'HTTP_AUTHENTICATION' ) ?: $this->request->getServer( 'HTTP_AUTHORIZATION' );
