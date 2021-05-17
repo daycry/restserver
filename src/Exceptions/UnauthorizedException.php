@@ -15,7 +15,7 @@ class UnauthorizedException extends \RuntimeException implements UnauthorizedInt
     public static function forInvalidApiKey( $apiKey )
     {
         $parser = \Config\Services::parser();
-        return new self( $parser->setData( array( 'key' => $apiKey ) )->renderString( lang( 'Rest.textRestInvalidApiKey' );
+        return new self( $parser->setData( array( 'key' => $apiKey ) )->renderString( lang( 'Rest.textRestInvalidApiKey' ) ) );
     }
 
     public static function forInvalidCredentials()
