@@ -2,7 +2,7 @@
 
 use CodeIgniter\Config\BaseConfig;
 
-class RestServer extends \Daycry\RestServer\Config\RestServer
+class RestServer extends BaseConfig
 {
     /*
     |--------------------------------------------------------------------------
