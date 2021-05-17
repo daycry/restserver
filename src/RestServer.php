@@ -1011,22 +1011,23 @@ class RestServer extends ResourceController
         }
 
         // They provided a key, but it wasn't valid, so get them out of here
-        if( ( $this->restConfig->restEnableKeys && $this->_allow === false ) || $this->_ipAllow === false || $this->_isValidRequest === false )
+        if( $this->restConfig->restEnableKeys && $this->_allow === false  )
         {
-            throw UnauthorizedException::forUnauthorized();
-            //return $this->failUnauthorized( $parser->setData( array( 'key' => $this->rest->key) )->renderString( lang( 'Rest.textRestInvalidApiKey' ) ) );
+            throw UnauthorizedException::forInvalidApiKey( $this->rest->key );
+            //return $this->failUnauthorized( $parser->setData( array( 'key' => $this->rest->key ) )->renderString( lang( 'Rest.textRestInvalidApiKey' ) ) );
         }
 
-        /*if( $this->_ipAllow === false || $this->_isValidRequest === false )
+        if( $this->_ipAllow === false )
         {
-            throw AutenticationException::forUnauthorized();
+            throw UnauthorizedException::forIpDenied();
             //return $this->failUnauthorized( lang( 'Rest.ipDenied' ) );
-        }*/
+        }
 
-        /*if( !$this->_isValidRequest )
+        if( !$this->_isValidRequest )
         {
-            return $this->failUnauthorized( lang( 'Rest.textUnauthorized' ) );
-        }*/
+            throw UnauthorizedException::forInvalidCredentials();
+            //return $this->failUnauthorized( lang( 'Rest.textUnauthorized' ) );
+        }
 
         if( $validation != null )
         {

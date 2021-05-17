@@ -12,6 +12,12 @@ class UnauthorizedException extends \RuntimeException implements UnauthorizedInt
         return new self( lang( 'Rest.tokenUnauthorized' ) );
     }
 
+    public static function forInvalidApiKey( $apiKey )
+    {
+        $parser = \Config\Services::parser();
+        return new self( $parser->setData( array( 'key' => $apiKey ) )->renderString( lang( 'Rest.textRestInvalidApiKey' );
+    }
+
     public static function forInvalidCredentials()
     {
         return new self( lang( 'Rest.textRestInvalidCredentials' ) );
@@ -20,5 +26,10 @@ class UnauthorizedException extends \RuntimeException implements UnauthorizedInt
     public static function forUnauthorized()
     {
         return new self( lang( 'Rest.textUnauthorized' ) );
+    }
+
+    public static function forIpDenied()
+    {
+        return new self( lang( 'Rest.ipDenied' ) );
     }
 }
