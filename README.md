@@ -46,7 +46,7 @@ class Center extends \Daycry\RestServer\RestServer
         try
 		{
             $validation = $this->checkRequest( null );
-            if( $validation !== true ){ return $validation; }
+            //if( $validation !== true ){ return $validation; }
 
             return $this->respond( $this->content );
 
@@ -73,5 +73,17 @@ class Center extends \Daycry\RestServer\RestServer
 }
 
 ```
-You can pass validation rules in `checkRequest` function as a string.
+You can pass validation group rules in `checkRequest` function as a string.
+
+In `app/Config/Validation.php`
+```php
+	public $requiredLogin = [
+		'username'		=> 'required',
+		'password'		=> 'required',
+		//'fields'		=> 'required'
+	];
+```
+```
+$validation = $this->checkRequest( 'requiredLogin' );
+```
 
