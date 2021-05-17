@@ -124,13 +124,6 @@ class RestServer extends BaseConfig
     |
     */
 
-    public $authOverrideClassMethod = array
-    (
-        '\Ldap\Controllers\Search' => array
-        ( 
-            'index' => 'basic'
-        )
-    );
     //public $authOverrideClassMethod[ '\Ldap\Controllers\Search' ][ 'index' ] = 'none';
 
     // ---Uncomment list line for the wildard unit test
