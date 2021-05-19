@@ -51,7 +51,7 @@ class RestServer extends BaseConfig
     |           authorization key
     |
     */
-    public $restAuth = 'basic';
+    public $restAuth = '';
 
     /*
     |--------------------------------------------------------------------------
@@ -64,7 +64,7 @@ class RestServer extends BaseConfig
     | 'ldap'    Use LDAP authentication
     | 'library' Use a authentication library
     |
-    | Note: If 'rest_auth' is set to 'session' then change 'auth_source' to the name of the session variable
+    | Note: If 'restAuth' is set to 'session' then change 'authSource' to the name of the session variable
     |
     */
     public $authSource = '';
@@ -140,10 +140,7 @@ class RestServer extends BaseConfig
                 (
                     '\Ldap\Controllers\Search' => array
                     ( 
-                        'index' => array
-                        (
-                            'options = 'basic
-                        )
+                        'index' 
                     )
                 );
     */
@@ -159,7 +156,7 @@ class RestServer extends BaseConfig
     | Array of usernames and passwords for login, if ldap is configured this is ignored
     |
     */
-    public $restValidLogins = ['admin' => '1234'];
+    public $restValidLogins = [ 'admin' => '1234' ];
 
     /*
     |--------------------------------------------------------------------------
@@ -237,7 +234,7 @@ class RestServer extends BaseConfig
     | The table name in your database that stores API keys
     |
     */
-    public $restKeysTable = 'ws_keys';
+    public $restKeysTable = 'keys';
 
     /*
     |--------------------------------------------------------------------------
@@ -264,32 +261,6 @@ class RestServer extends BaseConfig
     */
     public $restEnableKeys = true;
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | REST Enable Keys
-    |--------------------------------------------------------------------------
-    |
-    | When set to TRUE, the REST API will look for a column name called 'key'.
-    | If no key is provided, the request will result in an error. To override the
-    | column name see 'rest_key_column'
-    |
-    | Default table schema:
-    |   CREATE TABLE `keys` (
-    |       `id` INT(11) NOT NULL AUTO_INCREMENT,
-    |       `user_id` INT(11) NOT NULL,
-    |       `key` VARCHAR(40) NOT NULL,
-    |       `level` INT(2) NOT NULL,
-    |       `ignore_limits` TINYINT(1) NOT NULL DEFAULT '0',
-    |       `is_private_key` TINYINT(1)  NOT NULL DEFAULT '0',
-    |       `ip_addresses` TEXT NULL DEFAULT NULL,
-    |       `date_created` INT(11) NOT NULL,
-    |       PRIMARY KEY (`id`)
-    |   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-    |
-    */
-    public $restEnableOperations = true;
-
     /*
     |--------------------------------------------------------------------------
     | REST Table Key Column Name
@@ -299,7 +270,7 @@ class RestServer extends BaseConfig
     | column name to match e.g. my_key
     |
     */
-    public $restKeyColumn = 'app_key';
+    public $restKeyColumn = 'key';
 
     /*
     |--------------------------------------------------------------------------
@@ -327,6 +298,41 @@ class RestServer extends BaseConfig
     */
     public $restKeyName = '2FA-API-KEY';
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | REST Operations
+    |--------------------------------------------------------------------------
+    |
+    | When set to TRUE, the REST API will look for a column name called 'key'.
+    | If no key is provided, the request will result in an error. To override the
+    | column name see 'rest_key_column'
+    |
+    | Default table schema:
+    |   CREATE TABLE `operations` (
+            `id` INT(11) NOT NULL AUTO_INCREMENT,
+            `controller` VARCHAR(100) NOT NULL COLLATE 'utf8_general_ci',
+            `method` VARCHAR(100) NOT NULL COLLATE 'utf8_general_ci',
+            `http` VARCHAR(10) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+            `auth` VARCHAR(10) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+            `log` TINYINT(1) NULL DEFAULT NULL,
+            `limit` TINYINT(1) NULL DEFAULT NULL,
+            `level` TINYINT(1) NULL DEFAULT NULL,
+            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            `deleted_at` DATETIME NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE,
+            UNIQUE INDEX `controller` (`controller`, `method`, `http`) USING BTREE,
+            INDEX `deleted_at` (`deleted_at`) USING BTREE
+        )
+        COLLATE='utf8_general_ci'
+        ENGINE=InnoDB
+        AUTO_INCREMENT=1
+;
+    |
+    */
+    public $restEnableOperations = true;
+
     /*
     |--------------------------------------------------------------------------
     | REST Enable Logging
@@ -338,21 +344,27 @@ class RestServer extends BaseConfig
     |
     | Default table schema:
     |   CREATE TABLE `logs` (
-    |       `id` INT(11) NOT NULL AUTO_INCREMENT,
-    |       `uri` VARCHAR(255) NOT NULL,
-    |       `method` VARCHAR(6) NOT NULL,
-    |       `params` TEXT DEFAULT NULL,
-    |       `api_key` VARCHAR(40) NOT NULL,
-    |       `ip_address` VARCHAR(45) NOT NULL,
-    |       `time` INT(11) NOT NULL,
-    |       `rtime` FLOAT DEFAULT NULL,
-    |       `authorized` VARCHAR(1) NOT NULL,
-    |       `response_code` smallint(3) DEFAULT '0',
-    |       PRIMARY KEY (`id`)
-    |   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+            `id` INT(11) NOT NULL AUTO_INCREMENT,
+            `uri` VARCHAR(255) NOT NULL COLLATE 'utf8_general_ci',
+            `method` VARCHAR(6) NOT NULL COLLATE 'utf8_general_ci',
+            `params` TEXT NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+            `api_key` VARCHAR(40) NOT NULL COLLATE 'utf8_general_ci',
+            `ip_address` VARCHAR(45) NOT NULL COLLATE 'utf8_general_ci',
+            `duration` FLOAT NULL DEFAULT NULL,
+            `authorized` VARCHAR(1) NOT NULL COLLATE 'utf8_general_ci',
+            `response_code` SMALLINT(3) NULL DEFAULT '0',
+            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            `deleted_at` DATETIME NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE,
+            INDEX `deleted_at` (`deleted_at`) USING BTREE
+        )
+        COLLATE='utf8_general_ci'
+        ENGINE=InnoDB
+        AUTO_INCREMENT=1
     |
     */
-    public $restEnableLogging = false;
+    public $restEnableLogging = true;
 
     /*
     |--------------------------------------------------------------------------
@@ -374,7 +386,7 @@ class RestServer extends BaseConfig
     | Set to FALSE to log as serialized PHP
     |
     */
-    public $restLogsJsonParams = false;
+    public $restLogsJsonParams = true;
 
     /*
     |--------------------------------------------------------------------------

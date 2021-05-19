@@ -991,6 +991,9 @@ class RestServer extends ResourceController
             case 'session':
                 $this->_checkPHPSession();
             break;
+            case 'whitelist':
+                $this->_checkWhitelistAuth();
+            break;
         }
 
         return true;
@@ -1018,22 +1021,16 @@ class RestServer extends ResourceController
         // They provided a key, but it wasn't valid, so get them out of here
         if( $this->restConfig->restEnableKeys && $this->_allow === false  )
         {
-            //$code = UnauthorizedException::forInvalidApiKey()->getCode();
-            //$this->_logResponseCode( $code );
             throw UnauthorizedException::forInvalidApiKey( $this->key );
         }
 
         if( $this->_ipAllow === false )
         {
-            //$code = UnauthorizedException::forIpDenied()->getCode();
-            //$this->_logResponseCode( $code );
             throw UnauthorizedException::forIpDenied();
         }
 
         if( !$this->_isValidRequest )
         {
-            //$code = UnauthorizedException::forInvalidCredentials()->getCode();
-            //$this->_logResponseCode( $code );
             throw UnauthorizedException::forInvalidCredentials();
         }
 
@@ -1041,8 +1038,6 @@ class RestServer extends ResourceController
         {
             if( !$this->validator->run( (array)$this->content, $validation ) )
             {
-                //$code = ValidationException::validationError()->getCode();
-                //$this->_logResponseCode( $code );
                 throw ValidationException::validationError();
             }
         }
@@ -1076,57 +1071,6 @@ class RestServer extends ResourceController
         $this->_logId = $logModel->getInsertID();
 
         return $this->_logId;
-    }
-
-    /**
-     * Updates the log table with the total access time.
-     *
-     * @author Chris Kacerguis
-     *
-     * @return bool TRUE log table updated; otherwise, FALSE
-     */
-    protected function _logAccessTime()
-    {
-        if( $this->_logId )
-        {
-            return false;
-        }
-
-        $this->benchmark->stop( 'petition' );
-
-        $logModel = new \Daycry\RestServer\Models\LogModel();
-        $logModel->where( 'id', $this->_logId )->set( 
-            [ 
-                'duration' => $this->benchmark->getElapsedTime( 'petition' )
-            ]
-        )->update();
-    }
-
-    /**
-     * Updates the log table with HTTP response code.
-     *
-     * @author Justin Chen
-     *
-     * @param $http_code int HTTP status code
-     *
-     * @return bool TRUE log table updated; otherwise, FALSE
-     */
-    protected function _logResponseCode( $http_code )
-    {
-        if( $this->_logId )
-        {
-            return false;
-        }
-
-        $payload['response_code'] = $this->response->getStatusCode();
-
-        return $this->rest->db->update(
-            $this->config->item('rest_logs_table'),
-            $payload,
-            [
-                'id' => $this->_insert_id,
-            ]
-        );
     }
 
     /**

@@ -28,6 +28,11 @@ class KeyModel extends Model
     protected $validationMessages = [];
     protected $skipValidation     = false;
 
+    public function setTableName( $tableName )
+    {
+        $this->table = $tableName;
+    }
+
     public function setKeyName( $keyName )
     {
         $this->allowedFields = [ 'user_id', $keyName, 'level', 'ignore_limits', 'is_private_key' ];
