@@ -335,6 +335,17 @@ class RestServer extends BaseConfig
 
     /*
     |--------------------------------------------------------------------------
+    | REST API Operations Table Name
+    |--------------------------------------------------------------------------
+    |
+    | If not using the default table schema in 'restEnableOperations', specify the
+    | table name to match e.g. my_operations
+    |
+    */
+    public $configRestOperationsTable = 'operations';
+
+    /*
+    |--------------------------------------------------------------------------
     | REST Enable Logging
     |--------------------------------------------------------------------------
     |
@@ -371,11 +382,11 @@ class RestServer extends BaseConfig
     | REST API Logs Table Name
     |--------------------------------------------------------------------------
     |
-    | If not using the default table schema in 'rest_enable_logging', specify the
+    | If not using the default table schema in 'restEnableLogging', specify the
     | table name to match e.g. my_logs
     |
     */
-    public $configrestLogsTable = 'logs';
+    public $configRestLogsTable = 'logs';
 
     /*
     |--------------------------------------------------------------------------

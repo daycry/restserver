@@ -815,6 +815,7 @@ class RestServer extends ResourceController
         if( ( $this->key = isset( $this->_args[ $api_key_variable ] ) ? $this->_args[ $api_key_variable ] : $this->request->getServer( $key_name ) ) )
         {
             $keyModel = new \Daycry\RestServer\Models\KeyModel();
+            $keyModel->setTableName( $this->restConfig->restKeysTable );
             $keyModel->setKeyName( $this->restConfig->restKeyColumn );
 
             if( !( $row = $keyModel->where( $this->restConfig->restKeyColumn, $this->key )->first() ) )
@@ -942,6 +943,7 @@ class RestServer extends ResourceController
     {
         //set Operation
         $operationModel = new \Daycry\RestServer\Models\OperationModel();
+        $operationModel->setTableName( $this->restConfig->configRestOperationsTable );
         $this->operation = $operationModel->where( 'controller', $this->router->controllerName() )->where( 'method', $this->router->methodName() )->where( 'http', $this->method )->first();
 
         if( !$this->operation )
@@ -1056,6 +1058,7 @@ class RestServer extends ResourceController
     {
         // Insert the request into the log table
         $logModel = new \Daycry\RestServer\Models\LogModel();
+        $logModel->setTableName( $this->restConfig->configRestLogsTable );
 
         $data = [
             'uri'        => $this->request->uri,

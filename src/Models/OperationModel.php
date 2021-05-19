@@ -27,4 +27,9 @@ class OperationModel extends Model
     protected $validationRules    = [];
     protected $validationMessages = [];
     protected $skipValidation     = false;
+
+    public function setTableName( $tableName )
+    {
+        $this->table = $tableName;
+    }
 }
