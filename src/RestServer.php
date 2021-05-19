@@ -39,11 +39,18 @@ class RestServer extends ResourceController
     protected $lang = null;
 
     /**
-     * Rest server.
+     * Operation request
      *
      * @var object
      */
-    protected $rest = null;
+    protected $operation = null;
+
+    /**
+     * key
+     *
+     * @var object
+     */
+    protected $key = null;
 
     /**
      * Input Format
@@ -60,18 +67,25 @@ class RestServer extends ResourceController
     protected $_get_args = [];
 
     /**
-     * The arguments for the body.
+     * The arguments for the POST request method.
      *
-     * @var object
+     * @var array
      */
-    protected $content;
+    protected $_post_args = [];
 
     /**
      * The arguments for the HEAD request method.
      *
      * @var array
      */
-    protected $headers = [];
+    protected $_head_args = [];
+
+    /**
+     * The arguments for the OPTIONS request method.
+     *
+     * @var array
+     */
+    protected $_options_args = [];
 
     /**
      * The arguments for the query parameters.
@@ -79,6 +93,20 @@ class RestServer extends ResourceController
      * @var array
      */
     protected $_query_args = [];
+
+    /**
+     * The arguments from GET, POST, PUT, DELETE, PATCH, HEAD and OPTIONS request methods combined.
+     *
+     * @var array
+     */
+    protected $_args = [];
+
+    /**
+     * The arguments for the body.
+     *
+     * @var object
+     */
+    protected $content;
 
     /**
      * List all supported methods, the first will be the default format.
@@ -113,6 +141,29 @@ class RestServer extends ResourceController
      */
     protected $_allow = true;
 
+    /**
+     * The insert_id of the log entry (if we have one).
+     *
+     * @var string
+     */
+    protected $_logId = '';
+
+    /**
+     * The authorization log
+     *
+     * @var string
+     */
+    protected $_isLogAuthorized = false;
+
+    /**
+     * Timer
+     */
+    protected $benchmark = null;
+
+    /**
+     * Router
+     */
+    protected $router = null;
     /**
      * If the request is allowed based on the IP provided.
      *
@@ -153,6 +204,14 @@ class RestServer extends ResourceController
 
         helper( 'security' );
 	    
+        $this->restConfig = config( 'RestServer' );
+
+        $this->request = $request;
+        $this->validator =  \Config\Services::validation();
+        $this->encryption =  new \Daycry\Encryption\Encryption();
+        $this->router = service('router');
+        $this->method  = \trim( $request->getMethod() );
+
         if( class_exists( 'Daycry\\Doctrine\\Doctrine' ) )
         {
             $this->doctrine = \Config\Services::doctrine();
@@ -161,23 +220,31 @@ class RestServer extends ResourceController
         $formatConfig = config( 'Format' );
         $this->_supported_formats = $formatConfig->supportedResponseFormats;
 
-        $this->request = $request;
+        //set Operation
+        $this->operation = $this->_getOperation();
 
-        $this->validator =  \Config\Services::validation();
-        $this->encryption =  new \Daycry\Encryption\Encryption();
-        
-        $this->restConfig = config( 'RestServer' );
+        // Log the loading time to the log table
+        if( 
+            ( is_null( $this->operation ) && $this->restConfig->restEnableLogging === true ) ||
+            ( $this->restConfig->restEnableLogging === true && ( !is_null( $this->operation ) && is_null( $this->operation->log ) ) ) ||
+            ( !is_null( $this->operation ) && $this->operation->log ) 
+        )
+        {
+            $this->_isLogAuthorized = true;
+            $this->benchmark = \Config\Services::timer();
+            $this->benchmark->start( 'petition' );
+        }
 
         // If no Header Accept get default format
         $ft = $request->negotiate( 'media', $this->_supported_formats );
         $this->setResponseFormat( $ft );
-        $formatter = $this->format();
+        $formatter = $this->format(); //set format output
 
-        // Initialise the response, request and rest objects
-        $this->rest = new \stdClass();
+        // Try to find a format for the request (means we have a request body)
+        $this->inputFormat = $this->_detectInputFormat();
 
         // Check to see if the current IP address is blacklisted
-        if( $this->restConfig->restIpBlacklistEnabled === TRUE )
+        if( $this->restConfig->restIpBlacklistEnabled === true )
         {
             $this->_checkBlacklistAuth();
             if( !$this->_ipAllow ){ return; }
@@ -200,18 +267,27 @@ class RestServer extends ResourceController
         //var_dump( $this->request->detectPath() );
         $this->_get_args = array_merge( $this->_get_args, $this->_detectSegment() );
         
+        if( method_exists( $this, '_parse_' . $this->method ) )
+        {
+            $this->{ '_parse_' . $this->method }();
+            // Fix parse method return arguments null
+            if( $this->{ '_' . $this->method . '_args' } === null )
+            {
+                $this->{ '_' . $this->method . '_args' } = [];
+            }
+        }
+
+        //get header vars
+        $this->_head_args = $this->_getHeaders();
+
         // Extend this function to apply additional checking early on in the process
         $this->early_checks();
 
-        // Load DB if its enabled
-        if( $this->restConfig->restDatabaseGroup && ( $this->restConfig->restEnableKeys || $this->restConfig->restEnableLogging ) )
-        {
-            $this->rest->db = \Config\Database::connect( $this->restConfig->restDatabaseGroup );
-        }
-
         // Check if there is a specific auth type for the current class/method
-        // _auth_override_check could exit so we need $this->rest->db initialized before
-        $this->authOverride = $this->_authOverrideCheck();
+        if( $this->restConfig->restEnableOperations === true )
+        {
+            $this->authOverride = $this->_authOverrideCheck();
+        }
 
         // Checking for keys? GET TO WorK!
         if( $this->restConfig->restEnableKeys && $this->authOverride !== true )
@@ -227,16 +303,16 @@ class RestServer extends ResourceController
             {
                 case 'basic':
                     $this->_prepareBasicAuth();
-                    break;
+                break;
                 case 'digest':
                     $this->_prepareDigestAuth();
-                    break;
+                break;
                 case 'jwt':
                     $this->_prepareJWTAuth();
-                    break;
-                /*case 'session':
-                    $this->_check_php_session();
-                    break;*/
+                break;
+                case 'session':
+                    $this->_checkPHPSession();
+                break;
             }
 
             if( $this->restConfig->restIpWhitelistEnabled === true )
@@ -245,18 +321,39 @@ class RestServer extends ResourceController
             }
         }
 
-        // Try to find a format for the request (means we have a request body)
-        $this->inputFormat = $this->_detectInputFormat();
-        $this->method  = $request->getMethod();
-        $this->headers = $request->getHeaders();
         $this->lang = $request->getLocale();
 
         if( $this->inputFormat == 'application/json' )
         {
             $this->content = $request->getJSON();
         }else{
-            $this->content = $request->getRawInput();
+            $this->content = (object)$request->getRawInput();
         }
+
+        $this->_args = array_merge(
+            $this->_query_args,
+            $this->_get_args,
+            $this->_options_args,
+            $this->_head_args,
+            $this->_post_args,
+            (array)$this->content
+        );
+    }
+
+    /**
+     * Get Headers in array
+     */
+    protected function _getHeaders()
+    {
+        $headers = array_map(
+            function( $header )
+            { 
+                return $header->getValueLine(); 
+            }, 
+            $this->request->getHeaders()
+        );
+
+        return $headers;
     }
 
     /**
@@ -383,6 +480,30 @@ class RestServer extends ResourceController
 
         // Check if the string don't compare (case-insensitive)
         if( strcasecmp( $response, $valid_response ) !== 0 )
+        {
+            $this->_isValidRequest = false;
+        }
+    }
+
+    /**
+     * Check to see if the user is logged in with a PHP session key.
+     *
+     * @return void
+     */
+    protected function _checkPHPSession()
+    {
+        // If whitelist is enabled it has the first chance to kick them out
+        if( $this->restConfig->restIpWhitelistEnabled )
+        {
+            $this->_ipAllow = $this->_checkWhitelistAuth();
+        }
+        if( !$this->_ipAllow ){ return false; }
+
+        // Load library session of CodeIgniter
+        $session = \Config\Services::session();
+
+        // If false, then the user isn't logged in
+        if( !$session->get( $this->restConfig->authSource ) )
         {
             $this->_isValidRequest = false;
         }
@@ -687,24 +808,26 @@ class RestServer extends ResourceController
         // Work out the name of the SERVER entry based on config
         $key_name = 'HTTP_' . strtoupper( str_replace( '-', '_', $api_key_variable ) );
 
-        $this->rest->key = null;
-        $this->rest->level = null;
-        $this->rest->user_id = null;
-        $this->rest->ignore_limits = false;
+        //var_dump( $this->_args );
+        //exit;
 
         // Find the key from server or arguments
-        if( ( $this->rest->key = isset( $this->_args[ $api_key_variable ] ) ? $this->_args[ $api_key_variable ] : $this->request->getServer( $key_name ) ) )
+        if( ( $this->key = isset( $this->_args[ $api_key_variable ] ) ? $this->_args[ $api_key_variable ] : $this->request->getServer( $key_name ) ) )
         {
-            if( !( $row = ( $this->rest->db->table( $this->restConfig->restKeysTable )->getWhere( [ $this->restConfig->restKeyColumn => $this->rest->key ] )->getRow() ) ) )
+            $keyModel = new \Daycry\RestServer\Models\KeyModel();
+            $keyModel->setKeyName( $this->restConfig->restKeyColumn );
+
+            if( !( $row = $keyModel->where( $this->restConfig->restKeyColumn, $this->key )->first() ) )
             {
                 return false;
             }
 
-            $this->rest->key = $row->{ $this->restConfig->restKeyColumn };
+            /*if( !( $row = ( $this->rest->db->table( $this->restConfig->restKeysTable )->getWhere( [ $this->restConfig->restKeyColumn => $this->rest->key ] )->getRow() ) ) )
+            {
+                return false;
+            }*/
 
-            isset($row->user_id) && $this->rest->user_id = $row->user_id;
-            isset($row->level) && $this->rest->level = $row->level;
-            isset($row->ignore_limits) && $this->rest->ignore_limits = $row->ignore_limits;
+            $this->key = $row->{ $this->restConfig->restKeyColumn };
 
             $this->_apiuser = $row;
 
@@ -714,29 +837,27 @@ class RestServer extends ResourceController
              */
             if( empty( $row->is_private_key ) === false )
             {
+                $found_address = false;
                 // Check for a list of valid ip addresses
                 if( isset( $row->ip_addresses ) )
                 {
                     $ip_address = $this->request->getIPAddress();
-                    $found_address = false;
-
-                    if( strpos( $row->ip_addresses, '/' ) !== false )
+                    
+                    // multiple ip addresses must be separated using a comma, explode and loop
+                    $list_ip_addresses = explode( ',', $row->ip_addresses );
+                    
+                    foreach( $list_ip_addresses as $list_ip )
                     {
-                        //check IP is in the range
-                        $found_address = \Daycry\RestServer\Libraries\CheckIp::ipv4_in_range( $ip_address, $row->ip_addresses );
-
-                    }else{
-                        // multiple ip addresses must be separated using a comma, explode and loop
-                        $list_ip_addresses = explode( ',', $row->ip_addresses );
-                        
-                        foreach( $list_ip_addresses as $list_ip )
+                        if( strpos( $list_ip, '/' ) !== false )
                         {
-                            if ( $ip_address === trim( $list_ip ) )
-                            {
-                                // there is a match, set the the value to TRUE and break out of the loop
-                                $found_address = true;
-                                break;
-                            }
+                            //check IP is in the range
+                            $found_address = \Daycry\RestServer\Libraries\CheckIp::ipv4_in_range( trim( $list_ip ), $row->ip_addresses );
+                        }
+                        else if( $ip_address === trim( $list_ip ) )
+                        {
+                            // there is a match, set the the value to TRUE and break out of the loop
+                            $found_address = true;
+                            break;
                         }
                     }
 
@@ -772,13 +893,73 @@ class RestServer extends ResourceController
      */
     protected function _parse_get()
     {
-        if( $this->format )
+        //$this->_get_args = array_merge( $this->_get_args, $this->_query_args );
+        $this->_get_args = array_merge( $this->_get_args, $this->_query_args );
+    }
+
+    /**
+     * Parse the GET request arguments.
+     *
+     * @return void
+     */
+    protected function _parse_post()
+    {
+        $this->_post_args = $this->request->getPost();
+    }
+
+    /**
+     * Parse the HEAD request arguments.
+     *
+     * @return void
+     */
+    protected function _parse_head()
+    {
+        // Parse the HEAD variables
+        parse_str( parse_url( $this->request->getServer('REQUEST_URI'), PHP_URL_QUERY ), $head );
+
+        // Merge both the URI segments and HEAD params
+        $this->_head_args = array_merge( $this->_head_args, $head );
+    }
+
+    /**
+     * Parse the OPTIONS request arguments.
+     *
+     * @return void
+     */
+    protected function _parse_options()
+    {
+        // Parse the OPTIONS variables
+        parse_str( parse_url( $this->request->getServer('REQUEST_URI'), PHP_URL_QUERY ), $options );
+
+        // Merge both the URI segments and OPTIONS params
+        $this->_options_args = array_merge( $this->_options_args, $options );
+    }
+
+    /**
+     * Get operation of request
+     */
+    protected function _getOperation()
+    {
+        //set Operation
+        $operationModel = new \Daycry\RestServer\Models\OperationModel();
+        $this->operation = $operationModel->where( 'controller', $this->router->controllerName() )->where( 'method', $this->router->methodName() )->where( 'http', $this->method )->first();
+
+        if( !$this->operation )
         {
-            $this->body = $this->request->getRawInput();
+            $this->operation = $operationModel->where( 'controller', $this->router->controllerName() )->where( 'method', '*' )->where( 'http', $this->method )->first();
+
+            if( !$this->operation )
+            {
+                $this->operation = $operationModel->where( 'controller', $this->router->controllerName() )->where( 'method', $this->router->methodName() )->first();
+
+                if( !$this->operation )
+                {
+                    $this->operation = $operationModel->where( 'controller', $this->router->controllerName() )->where( 'method', '*' )->first();
+                }
+            }
         }
 
-        // Merge both the URI segments and query parameters
-        $this->_get_args = array_merge( $this->_get_args, $this->_query_args );
+        return $this->operation;
     }
 
     /**
@@ -788,206 +969,31 @@ class RestServer extends ResourceController
      */
     protected function _authOverrideCheck()
     {
-        $router = service('router');
-        $controllerName = $router->controllerName() ;
-        $methodName = $router->methodName();
-        //$this->method --> get / post 
+        $controllerName = $this->router->controllerName() ;
+        $methodName = $this->router->methodName();
 
-        // Assign the class/method auth type override array from the config
-        $auth_override_class_method = ( isset( $this->restConfig->authOverrideClassMethod ) ) ? $this->restConfig->authOverrideClassMethod : null;
+        if( !$this->operation ){ return false; }
+        if( !$this->operation->auth ){ return false; }
 
-        // Check to see if the override array is even populated
-        if( !is_null( $auth_override_class_method ) )
+        switch( $this->operation->auth )
         {
-            // Check for wildcard flag for rules for classes
-            if( isset( $auth_override_class_method[ $controllerName ][ '*' ] ) && !empty( $auth_override_class_method[ $controllerName ][ '*' ] ) ) // Check for class overrides
-            {
-                // No auth override found, prepare nothing but send back a TRUE override flag
-                if( $auth_override_class_method[ $controllerName ][ '*' ] === 'none') {
-                    return true;
-                }
-
-                // Basic auth override found, prepare basic
-                if( $auth_override_class_method[ $controllerName ][ '*' ] === 'basic' )
-                {
-                    $this->_prepareBasicAuth();
-                    return true;
-                }
-
-                // Digest auth override found, prepare digest
-                if( $auth_override_class_method[ $controllerName ][ '*' ] === 'digest' )
-                {
-                    $this->_prepareDigestAuth();
-                    return true;
-                }
-
-                // Session auth override found, check session
-                /*if( $auth_override_class_method[ $controller ]['*'] === 'session' )
-                {
-                    $this->_check_php_session();
-                    return true;
-                }*/
-
-                // JWT auth override found, prepare JWT
-                if( $auth_override_class_method[ $controllerName ][ '*' ] === 'jwt' )
-                {
-                    $this->_prepareJWTAuth();
-                    return true;
-                }
-
-                // Whitelist auth override found, check client's ip against config whitelist
-                if( $auth_override_class_method[ $controllerName ][ '*' ] === 'whitelist' )
-                {
-                    $this->_checkWhitelistAuth();
-                    return true;
-                }
-            }
-
-            // Check to see if there's an override value set for the current class/method being called
-            if( isset( $auth_override_class_method[ $controllerName ][ $methodName ] ) && !empty( $auth_override_class_method[ $controllerName ][ $methodName ] ) )
-            {
-                // None auth override found, prepare nothing but send back a TRUE override flag
-                if( $auth_override_class_method[ $controllerName ][ $methodName ] === 'none' )
-                {
-                    return true;
-                }
-
-                // Basic auth override found, prepare basic
-                if( $auth_override_class_method[ $controllerName ][ $methodName ] === 'basic' )
-                {
-                    $this->_prepareBasicAuth();
-                    return true;
-                }
-
-                // Digest auth override found, prepare digest
-                if( $auth_override_class_method[ $controllerName ][ $methodName ] === 'digest')
-                {
-                    $this->_prepareDigestAuth();
-                    return true;
-                }
-
-                // Session auth override found, check session
-                /*if( $auth_override_class_method[ $controllerName ][ $methodName ] === 'session' )
-                {
-                    $this->_check_php_session();
-                    return true;
-                }*/
-
-                if( $auth_override_class_method[ $controllerName ][ $methodName ] === 'jwt')
-                {
-                    $this->_prepareJWTAuth();
-                    return true;
-                }
-
-                // Whitelist auth override found, check client's ip against config whitelist
-                if( $auth_override_class_method[ $controllerName ][ $methodName ] === 'whitelist' )
-                {
-                    $this->_checkWhitelistAuth();
-                    return true;
-                }
-            }
+            case 'none':
+            break;
+            case 'basic':
+                $this->_prepareBasicAuth();
+            break;
+            case 'digest':
+                $this->_prepareDigestAuth();
+            break;
+            case 'jwt':
+                $this->_prepareJWTAuth();
+            break;
+            case 'session':
+                $this->_checkPHPSession();
+            break;
         }
 
-        $auth_override_class_method_http = ( isset( $this->restConfig->authOverrideClassMethodHttp ) ) ? $this->restConfig->authOverrideClassMethodHttp : null;
-        // Assign the class/method/HTTP-method auth type override array from the config
-        //$auth_override_class_method_http = $this->config->item('auth_override_class_method_http');
-
-        // Check to see if the override array is even populated
-        if( !is_null( $auth_override_class_method_http ) )
-        {
-            // check for wildcard flag for rules for classes
-            if( isset( $auth_override_class_method[ $controllerName ][ '*' ][ $this->method ] ) && !empty( $auth_override_class_method_http[ $controllerName ][ '*' ][ $this->method ] ) )
-            {
-                // None auth override found, prepare nothing but send back a TRUE override flag
-                if( $auth_override_class_method_http[ $controllerName ][ '*' ][ $this->method ] === 'none')
-                {
-                    return true;
-                }
-
-                // Basic auth override found, prepare basic
-                if( $auth_override_class_method_http[ $controllerName ][ '*' ][ $this->method ] === 'basic' )
-                {
-                    $this->_prepareBasicAuth();
-                    return true;
-                }
-
-                // Digest auth override found, prepare digest
-                if( $auth_override_class_method_http[ $controllerName ][ '*' ][ $this->method ] === 'digest') {
-                    $this->_prepareDigestAuth();
-
-                    return true;
-                }
-
-                // Digest auth override found, prepare digest
-                if( $auth_override_class_method_http[ $controllerName ][ '*' ][ $this->method ] === 'jwt') {
-                    $this->_prepareJWTAuth();
-
-                    return true;
-                }
-
-                // Session auth override found, check session
-                /*if( $auth_override_class_method_http[ $controllerName ][ '*' ][ $this->method ] === 'session') {
-                    $this->_check_php_session();
-
-                    return true;
-                }*/
-
-                // Whitelist auth override found, check client's ip against config whitelist
-                if( $auth_override_class_method_http[ $controllerName ][ '*' ][ $this->method ] === 'whitelist')
-                {
-                    $this->_checkWhitelistAuth();
-                    return true;
-                }
-            }
-
-            // Check to see if there's an override value set for the current class/method/HTTP-method being called
-            if( isset( $auth_override_class_method[ $controllerName ][ $methodName ][ $this->method ] ) && !empty( $auth_override_class_method_http[ $controllerName ][ $methodName ][ $this->method ] ) )
-            {
-                // None auth override found, prepare nothing but send back a TRUE override flag
-                if( $auth_override_class_method_http[ $controllerName ][ $methodName ][ $this->method ] === 'none' )
-                {
-                    return true;
-                }
-
-                // Basic auth override found, prepare basic
-                if( $auth_override_class_method_http[ $controllerName ][ $methodName ][ $this->method ] === 'basic' )
-                {
-                    $this->_prepareBasicAuth();
-                    return true;
-                }
-
-                // Digest auth override found, prepare digest
-                if( $auth_override_class_method_http[ $controllerName ][ $methodName ][ $this->method ] === 'digest' )
-                {
-                    $this->_prepareDigestAuth();
-                    return true;
-                }
-
-                // JWT auth override found, prepare jwt
-                if( $auth_override_class_method_http[ $controllerName ][ $methodName ][ $this->method ] === 'jwt' )
-                {
-                    $this->_prepareJWTAuth();
-                    return true;
-                }
-
-                // Session auth override found, check session
-                /*if ($auth_override_class_method_http[$this->router->class][$this->router->method][$this->request->method] === 'session') {
-                    $this->_check_php_session();
-
-                    return true;
-                }*/
-
-                // Whitelist auth override found, check client's ip against config whitelist
-                if( $auth_override_class_method_http[ $controllerName ][ $methodName ][ $this->method ] === 'whitelist' )
-                {
-                    $this->_checkWhitelistAuth();
-
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return true;
     }
 
     /**
@@ -1007,37 +1013,136 @@ class RestServer extends ResourceController
         if( $this->restConfig->forceHttps && $this->ssl === false )
         {
             throw ForbiddenException::forUnsupportedProtocol();
-            //return $this->failForbidden( lang( 'Rest.textRestUnsupported' ) );
         }
 
         // They provided a key, but it wasn't valid, so get them out of here
         if( $this->restConfig->restEnableKeys && $this->_allow === false  )
         {
-            throw UnauthorizedException::forInvalidApiKey( $this->rest->key );
-            //return $this->failUnauthorized( $parser->setData( array( 'key' => $this->rest->key ) )->renderString( lang( 'Rest.textRestInvalidApiKey' ) ) );
+            //$code = UnauthorizedException::forInvalidApiKey()->getCode();
+            //$this->_logResponseCode( $code );
+            throw UnauthorizedException::forInvalidApiKey( $this->key );
         }
 
         if( $this->_ipAllow === false )
         {
+            //$code = UnauthorizedException::forIpDenied()->getCode();
+            //$this->_logResponseCode( $code );
             throw UnauthorizedException::forIpDenied();
-            //return $this->failUnauthorized( lang( 'Rest.ipDenied' ) );
         }
 
         if( !$this->_isValidRequest )
         {
+            //$code = UnauthorizedException::forInvalidCredentials()->getCode();
+            //$this->_logResponseCode( $code );
             throw UnauthorizedException::forInvalidCredentials();
-            //return $this->failUnauthorized( lang( 'Rest.textUnauthorized' ) );
         }
 
         if( $validation != null )
         {
             if( !$this->validator->run( (array)$this->content, $validation ) )
             {
+                //$code = ValidationException::validationError()->getCode();
+                //$this->_logResponseCode( $code );
                 throw ValidationException::validationError();
-                //return $this->fail( $this->validator->getErrors()  );
             }
         }
 
         return true;
+    }
+
+    /**
+     * Add the request to the log table.
+     *
+     * @param bool $authorized TRUE the user is authorized; otherwise, FALSE
+     *
+     * @return bool TRUE the data was inserted; otherwise, FALSE
+     */
+    protected function _logRequest( $authorized = false )
+    {
+        // Insert the request into the log table
+        $logModel = new \Daycry\RestServer\Models\LogModel();
+
+        $data = [
+            'uri'        => $this->request->uri,
+            'method'     => $this->method,
+            'params'     => $this->_args ? ($this->restConfig->restLogsJsonParams === true ? json_encode( $this->_args ) : serialize( $this->_args ) ) : null,
+            'api_key'    => isset( $this->key ) ? $this->key : '',
+            'ip_address' => $this->request->getIPAddress(),
+            'duration'   => $this->benchmark->getElapsedTime( 'petition' ),
+            'response_code' => $this->response->getStatusCode(),
+            'authorized' => $authorized,
+        ];
+        $logModel->save( $data );
+        $this->_logId = $logModel->getInsertID();
+
+        return $this->_logId;
+    }
+
+    /**
+     * Updates the log table with the total access time.
+     *
+     * @author Chris Kacerguis
+     *
+     * @return bool TRUE log table updated; otherwise, FALSE
+     */
+    protected function _logAccessTime()
+    {
+        if( $this->_logId )
+        {
+            return false;
+        }
+
+        $this->benchmark->stop( 'petition' );
+
+        $logModel = new \Daycry\RestServer\Models\LogModel();
+        $logModel->where( 'id', $this->_logId )->set( 
+            [ 
+                'duration' => $this->benchmark->getElapsedTime( 'petition' )
+            ]
+        )->update();
+    }
+
+    /**
+     * Updates the log table with HTTP response code.
+     *
+     * @author Justin Chen
+     *
+     * @param $http_code int HTTP status code
+     *
+     * @return bool TRUE log table updated; otherwise, FALSE
+     */
+    protected function _logResponseCode( $http_code )
+    {
+        if( $this->_logId )
+        {
+            return false;
+        }
+
+        $payload['response_code'] = $this->response->getStatusCode();
+
+        return $this->rest->db->update(
+            $this->config->item('rest_logs_table'),
+            $payload,
+            [
+                'id' => $this->_insert_id,
+            ]
+        );
+    }
+
+    /**
+     * De-constructor.
+     * 
+     * @return void
+     */
+    public function __destruct()
+    {
+        //var_dump( $this->benchmark );
+        //exit;
+        // Log the loading time to the log table
+        if( $this->_isLogAuthorized === true )
+        {
+            $this->benchmark->stop( 'petition' );
+            $this->_logRequest( $this->_isValidRequest );
+        }
     }
 }

@@ -2,6 +2,8 @@
 
 class UnauthorizedException extends \RuntimeException implements UnauthorizedInterface
 {
+    //protected $code = 401;
+
     public static function forTokenExpired()
     {
         return new self( lang( 'Rest.tokenExpired' ) );
