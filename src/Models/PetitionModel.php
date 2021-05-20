@@ -3,11 +3,11 @@ namespace Daycry\RestServer\Models;
 
 use CodeIgniter\Model;
 
-class OperationModel extends Model
+class PetitionModel extends Model
 {
     protected $DBGroup = 'api';
 
-    protected $table      = 'operations';
+    protected $table      = 'petitions';
 
     protected $primaryKey = 'id';
 

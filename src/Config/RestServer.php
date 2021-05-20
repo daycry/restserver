@@ -24,17 +24,7 @@ class RestServer extends BaseConfig
     | e.g: My Secret REST API
     |
     */
-    public $restRealm = '2FA SERVICE';
-
-    /*
-    |--------------------------------------------------------------------------
-    | REST Handle Exceptions
-    |--------------------------------------------------------------------------
-    |
-    | Handle exceptions caused by the controller
-    |
-    */
-    public $restHandleExceptions = true;
+    public $restRealm = 'WEB SERVICE';
 
     /*
     |--------------------------------------------------------------------------
@@ -51,7 +41,15 @@ class RestServer extends BaseConfig
     |           authorization key
     |
     */
-    public $restAuth = '';
+    public $restAuth = false;
+
+    public $restAuthClassMap = 
+    [
+        'basic' => \Daycry\RestServer\Libraries\Auth\BasicAuth::class,
+        'digest' => \Daycry\RestServer\Libraries\Auth\DigestAuth::class,
+        'jwt' => \Daycry\RestServer\Libraries\Auth\JWTAuth::class,
+        'session' => \Daycry\RestServer\Libraries\Auth\SessionAuth::class
+    ];
 
     /*
     |--------------------------------------------------------------------------
@@ -68,18 +66,6 @@ class RestServer extends BaseConfig
     |
     */
     public $authSource = '';
-
-    /*
-    |--------------------------------------------------------------------------
-    | Allow Authentication and API Keys
-    |--------------------------------------------------------------------------
-    |
-    | Where you wish to have Basic, Digest or Session login, but also want to use API Keys (for limiting
-    | requests etc), set to TRUE;
-    |
-    */
-    public $allowAuthAndKeys = true;
-    public $strictApiAndAuth = true; // force the use of both api and auth before a valid api request is made
 
     /*
     |--------------------------------------------------------------------------
@@ -102,52 +88,16 @@ class RestServer extends BaseConfig
 
     /*
     |--------------------------------------------------------------------------
-    | Override auth types for specific class/method
+    | Allow Authentication and API Keys
     |--------------------------------------------------------------------------
     |
-    | Set specific authentication types for methods within a class (controller)
-    |
-    | Set as many config entries as needed.  Any methods not set will use the default 'rest_auth' config value.
-    |
-    | e.g:
-    |
-    |           public $authOverrideClassMethod = array
-                (
-                    '\Ldap\Controllers\Search' => array
-                    ( 
-                        'index' => 'none'
-                    )
-                );
-    |
-    | Here 'deals', 'accounts' and 'dashboard' are controller names, 'view', 'insert' and 'user' are methods within. An asterisk may also be used to specify an authentication method for an entire classes methods. Ex: $config['auth_override_class_method']['dashboard']['*'] = 'basic'; (NOTE: leave off the '_get' or '_post' from the end of the method name)
-    | Acceptable values are; 'none', 'digest' and 'basic'.
+    | Where you wish to have Basic, Digest or Session login, but also want to use API Keys (for limiting
+    | requests etc), set to TRUE;
     |
     */
-
-    //public $authOverrideClassMethod[ '\Ldap\Controllers\Search' ][ 'index' ] = 'none';
-
-    // ---Uncomment list line for the wildard unit test
-    // $this->authOverrideClassMethod['wildcard_test_cases']['*'] = 'basic';
-
-    /*
-    |--------------------------------------------------------------------------
-    | Override auth types for specfic 'class/method/HTTP method'
-    |--------------------------------------------------------------------------
-    |
-    | example:
-    |
-    |           public $authOverrideClassMethodHttp = array
-                (
-                    '\Ldap\Controllers\Search' => array
-                    ( 
-                        'index' 
-                    )
-                );
-    */
-
-    // ---Uncomment list line for the wildard unit test
-    // $this->authOverrideClassMethodHttp['wildcard_test_cases']['*']['options'] = 'basic';
-
+    public $allowAuthAndKeys = true;
+    public $strictApiAndAuth = true; // force the use of both api and auth before a valid api request is made
+    
     /*
     |--------------------------------------------------------------------------
     | REST Login Usernames
@@ -173,7 +123,7 @@ class RestServer extends BaseConfig
     |    restrict certain methods to IPs in your whitelist
     |
     */
-    public $restIpWhitelistEnabled = false;
+    public $restIpWhitelistEnabled = true;
 
     /*
     |--------------------------------------------------------------------------
@@ -188,7 +138,7 @@ class RestServer extends BaseConfig
     | 127.0.0.1 and 0.0.0.0 are allowed by default
     |
     */
-    public $restIpWhitelist = '';
+    public $restIpWhitelist = '10.33.24.15';
 
     /*
     |--------------------------------------------------------------------------
@@ -296,12 +246,12 @@ class RestServer extends BaseConfig
     | 2012/06/12. See RFC 6648 specification for more details
     |
     */
-    public $restKeyName = '2FA-API-KEY';
+    public $restKeyName = 'X-API-KEY';
 
 
     /*
     |--------------------------------------------------------------------------
-    | REST Operations
+    | REST Petitions
     |--------------------------------------------------------------------------
     |
     | When set to TRUE, the REST API will look for a column name called 'key'.
@@ -331,7 +281,7 @@ class RestServer extends BaseConfig
 ;
     |
     */
-    public $restEnableOperations = true;
+    public $restEnableOverridePetition = true;
 
     /*
     |--------------------------------------------------------------------------
@@ -342,7 +292,7 @@ class RestServer extends BaseConfig
     | table name to match e.g. my_operations
     |
     */
-    public $configRestOperationsTable = 'operations';
+    public $configRestPetitionsTable = 'petitions';
 
     /*
     |--------------------------------------------------------------------------
@@ -469,4 +419,25 @@ class RestServer extends BaseConfig
     |
     */
     public $allowedCorsOrigins = [];
+
+    /*
+    |--------------------------------------------------------------------------
+    | CORS Forced Headers
+    |--------------------------------------------------------------------------
+    |
+    | If using CORS checks, always include the headers and values specified here
+    | in the OPTIONS client preflight.
+    | Example:
+    | $config['forced_cors_headers'] = [
+    |   'Access-Control-Allow-Credentials' => 'true'
+    | ];
+    |
+    | Added because of how Sencha Ext JS framework requires the header
+    | Access-Control-Allow-Credentials to be set to true to allow the use of
+    | credentials in the REST Proxy.
+    | See documentation here:
+    | http://docs.sencha.com/extjs/6.5.2/classic/Ext.data.proxy.Rest.html#cfg-withCredentials
+    |
+    */
+    public $forcedCorsHeaders = [];
 }
