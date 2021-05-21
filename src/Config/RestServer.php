@@ -259,11 +259,11 @@ class RestServer extends BaseConfig
     | column name see 'rest_key_column'
     |
     | Default table schema:
-    |   CREATE TABLE `operations` (
+    |   CREATE TABLE `petitions` (
             `id` INT(11) NOT NULL AUTO_INCREMENT,
             `controller` VARCHAR(100) NOT NULL COLLATE 'utf8_general_ci',
-            `method` VARCHAR(100) NOT NULL COLLATE 'utf8_general_ci',
-            `http` VARCHAR(10) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+            `method` VARCHAR(100) NOT NULL DEFAULT '*' COLLATE 'utf8_general_ci',
+            `http` VARCHAR(10) NOT NULL DEFAULT '*' COLLATE 'utf8_general_ci',
             `auth` VARCHAR(10) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
             `log` TINYINT(1) NULL DEFAULT NULL,
             `limit` TINYINT(1) NULL DEFAULT NULL,
@@ -278,6 +278,7 @@ class RestServer extends BaseConfig
         COLLATE='utf8_general_ci'
         ENGINE=InnoDB
         AUTO_INCREMENT=1
+        ;
 ;
     |
     */

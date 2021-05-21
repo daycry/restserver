@@ -77,6 +77,13 @@ class RestServer extends ResourceController
     protected $args = [];
 
     /**
+     * The authorization log
+     *
+     * @var string
+     */
+    protected $_isLogAuthorized = false;
+
+    /**
      * Timer
      */
     private $_benchmark = null;
@@ -141,10 +148,6 @@ class RestServer extends ResourceController
 	{
         parent::initController( $request, $response, $logger );
 
-        //$jwtLibrary = new \Daycry\RestServer\Libraries\JWT();
-        //$claims = $jwtLibrary->encode( ['holaaa' => 'adioss'] );
-        //var_dump( $claims );exit;
-
         helper( 'security' );
 
         $this->validator =  \Config\Services::validation();
@@ -170,6 +173,7 @@ class RestServer extends ResourceController
             if( !$this->_ipAllow )
             {
                 return false;
+                //throw UnauthorizedException::forIpDenied();
             }
         }
 
@@ -179,6 +183,7 @@ class RestServer extends ResourceController
             if( !$this->_ipAllow )
             {
                 return false;
+                //throw UnauthorizedException::forIpDenied();
             }
         }
         
@@ -279,19 +284,18 @@ class RestServer extends ResourceController
         //set Operation
         $petitionModel = new \Daycry\RestServer\Models\PetitionModel();
         $petitionModel->setTableName( $this->_restConfig->configRestPetitionsTable );
+        
         $petition = $petitionModel->where( 'controller', $this->router->controllerName() )->where( 'method', $this->router->methodName() )->where( 'http', $this->request->getMethod() )->first();
 
         if( !$petition )
         {
-            $petition = $petitionModel->where( 'controller', $this->router->controllerName() )->where( 'method', '*' )->where( 'http', $this->request->getMethod() )->first();
-
+            $petition = $petitionModel->where( 'controller', $this->router->controllerName() )->where( 'method', $this->router->methodName() )->where( 'http', '*' )->first();
             if( !$petition )
             {
-                $petition = $petitionModel->where( 'controller', $this->router->controllerName() )->where( 'method', $this->router->methodName() )->first();
-
+                $petition = $petitionModel->where( 'controller', $this->router->controllerName() )->where( 'method', '*' )->where( 'http', $this->request->getMethod() )->first();
                 if( !$petition )
                 {
-                    $petition = $petitionModel->where( 'controller', $this->router->controllerName() )->where( 'method', '*' )->first();
+                    $petition = $petitionModel->where( 'controller', $this->router->controllerName() )->where( 'method', '*' )->where( 'http', '*' )->first();
                 }
             }
         }
@@ -444,7 +448,7 @@ class RestServer extends ResourceController
     {
         $whitelist = explode( ',', $this->_restConfig->restIpWhitelist );
 
-        //array_push( $whitelist, '127.0.0.1', '0.0.0.0' );
+        array_push( $whitelist, '127.0.0.1', '0.0.0.0' );
 
         foreach( $whitelist as &$ip )
         {
@@ -474,11 +478,8 @@ class RestServer extends ResourceController
         // Work out the name of the SERVER entry based on config
         $key_name = 'HTTP_' . strtoupper( str_replace( '-', '_', $api_key_variable ) );
 
-        //var_dump( $this->_args );
-        //exit;
-
         // Find the key from server or arguments
-        if( ( $this->key = isset( $this->_args[ $api_key_variable ] ) ? $this->_args[ $api_key_variable ] : $this->request->getServer( $key_name ) ) )
+        if( ( $this->key = isset( $this->_args[ $api_key_variable ] ) ? $this->args[ $api_key_variable ] : $this->request->getServer( $key_name ) ) )
         {
             $keyModel = new \Daycry\RestServer\Models\KeyModel();
             $keyModel->setTableName( $this->_restConfig->restKeysTable );
@@ -606,10 +607,6 @@ class RestServer extends ResourceController
     {
         $parser = \Config\Services::parser();
 
-        var_dump( $this->_restConfig->forceHttps );
-        var_dump( $this->_ssl );
-        exit;
-
         if( $this->_restConfig->forceHttps && $this->_ssl === false )
         {
             throw ForbiddenException::forUnsupportedProtocol();
@@ -640,5 +637,50 @@ class RestServer extends ResourceController
         }
 
         return true;
+    }
+
+    /**
+     * Add the request to the log table.
+     *
+     * @param bool $authorized TRUE the user is authorized; otherwise, FALSE
+     *
+     * @return bool TRUE the data was inserted; otherwise, FALSE
+     */
+    protected function _logRequest( $authorized = false )
+    {
+        // Insert the request into the log table
+        $logModel = new \Daycry\RestServer\Models\LogModel();
+        $logModel->setTableName( $this->_restConfig->configRestLogsTable );
+
+        $data = [
+            'uri'        => $this->request->uri,
+            'method'     => $this->request->getMethod(),
+            'params'     => $this->args ? ($this->_restConfig->restLogsJsonParams === true ? json_encode( $this->args ) : serialize( $this->args ) ) : null,
+            'api_key'    => isset( $this->key ) ? $this->key : '',
+            'ip_address' => $this->request->getIPAddress(),
+            'duration'   => $this->_benchmark->getElapsedTime( 'petition' ),
+            'response_code' => $this->response->getStatusCode(),
+            'authorized' => $authorized,
+        ];
+        $logModel->save( $data );
+        $this->_logId = $logModel->getInsertID();
+
+        return $this->_logId;
+    }
+
+    /**
+     * De-constructor.
+     * 
+     * @return void
+     */
+    public function __destruct()
+    {
+        // Log the loading time to the log table
+        if( $this->_isLogAuthorized === true )
+        {
+            $this->_benchmark->stop( 'petition' );
+            $authorized = ( $this->user ) ? true : false;
+            $this->_logRequest( $authorized );
+        }
     }
 }
