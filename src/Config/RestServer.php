@@ -427,6 +427,39 @@ class RestServer extends BaseConfig
 
     /*
     |--------------------------------------------------------------------------
+    | REST Method Access Control
+    |--------------------------------------------------------------------------
+    | When set to TRUE, the REST API will check the access table to see if
+    | the API key can access that controller. 'rest_enable_keys' must be enabled
+    | to use this
+    |
+    | Default table schema:
+    |   CREATE TABLE `access` (
+    |       `id` INT(11) unsigned NOT NULL AUTO_INCREMENT,
+    |       `key` VARCHAR(40) NOT NULL DEFAULT '',
+    |       `all_access` TINYINT(1) NOT NULL DEFAULT '0',
+    |       `controller` VARCHAR(50) NOT NULL DEFAULT '',
+    |       `date_created` DATETIME DEFAULT NULL,
+    |       `date_modified` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    |       PRIMARY KEY (`id`)
+    |    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    |
+    */
+    public $restEnableAccess = true;
+
+    /*
+    |--------------------------------------------------------------------------
+    | REST API Access Table Name
+    |--------------------------------------------------------------------------
+    |
+    | If not using the default table schema in 'rest_enable_access', specify the
+    | table name to match e.g. my_access
+    |
+    */
+    public $restAccessTable = 'access';
+
+    /*
+    |--------------------------------------------------------------------------
     | CORS Check
     |--------------------------------------------------------------------------
     |

@@ -23,6 +23,11 @@ class UnauthorizedException extends FrameworkException implements UnauthorizedIn
         return new self( $parser->setData( array( 'key' => $apiKey ) )->renderString( lang( 'Rest.textRestInvalidApiKey' ) ) );
     }
 
+    public static function forApiKeyUnauthorized()
+    {
+        return new self( lang( 'Rest.textRestApiKeyUnauthorized' ) );
+    }
+
     public static function forInvalidCredentials()
     {
         return new self( lang( 'Rest.textRestInvalidCredentials' ) );

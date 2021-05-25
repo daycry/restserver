@@ -11,7 +11,8 @@ return [
     'textUnauthorized' => 'Unauthorized',
     'textRestApiKeyTimeLimit' => 'This API key has reached the time limit for this method',
     'textRestApiKeyPermissions' => 'This API key does not have enough permissions',
-    'textRestIpAddressTimeLimit' => 'This IP Address has reached the time limit for this method'
+    'textRestIpAddressTimeLimit' => 'This IP Address has reached the time limit for this method',
+    'textRestApiKeyUnauthorized' => 'This API key does not have access to the requested controller'
 ];
 
 /*

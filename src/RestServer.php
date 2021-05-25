@@ -49,6 +49,11 @@ class RestServer extends ResourceController
     protected $apiUser = null;
 
     /**
+     * Key value
+     */
+    protected $key = null;
+
+    /**
      * Information about the current API user.
      *
      * @var object
@@ -551,13 +556,13 @@ class RestServer extends ResourceController
         if( $this->_petition )
         {
             // They are special, or it might not even have a limit
-            if( empty( $this->_petition->ignore_limits ) === false )
+            if( isset( $this->apiUser ) && isset( $this->apiUser->ignore_limits ) && empty( $this->apiUser->ignore_limits ) === false )
             {
                 // Everything is fine
                 return true;
             }
 
-            $api_key = isset( $this->key ) ? $this->key : '';
+            $api_key = isset( $this->key ) ? $this->key : null;
 
             switch( $this->_restConfig->restLimitsMethod )
             {
@@ -640,6 +645,33 @@ class RestServer extends ResourceController
     }
 
     /**
+     * Check to see if the API key has access to the controller and methods.
+     *
+     * @return bool TRUE the API key has access; otherwise, FALSE
+     */
+    protected function _checkAccess()
+    {
+        // If we don't want to check access, just return TRUE
+        if( $this->_restConfig->restEnableAccess === false )
+        {
+            return true;
+        }
+
+        $accessModel = new \Daycry\RestServer\Models\LimitModel();
+        $accessModel->setTableName( $this->_restConfig->restAccessTable );
+
+        //check if the key has all_access
+        $result = $accessModel->where( 'api_key', $this->key )->where( 'controller', $this->router->controllerName() )->first();
+
+        if( !empty( $result ) && !empty( $result->all_access ) )
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Checks allowed domains, and adds appropriate headers for HTTP access control (CORS)
      *
      * @access protected
@@ -718,6 +750,22 @@ class RestServer extends ResourceController
             throw UnauthorizedException::forInvalidApiKey( $this->key );
         }
 
+        if( $this->_ipAllow === false )
+        {
+            throw UnauthorizedException::forIpDenied();
+        }
+
+        if( $this->user === false )
+        {
+            throw UnauthorizedException::forInvalidCredentials();
+        }
+
+        // Check to see if this key has access to the requested controller
+        if( $this->_restConfig->restEnableKeys && empty( $this->key ) === false && $this->_checkAccess() === false )
+        {    
+            throw UnauthorizedException::forApiKeyUnauthorized();
+        }
+
         // Doing key related stuff? Can only do it if they have a key right?
         if( $this->_restConfig->restEnableKeys && empty( $this->key ) === false )
         {
@@ -743,16 +791,6 @@ class RestServer extends ResourceController
         elseif( $this->_restConfig->restLimitsMethod == 'IP_ADDRESS' && $this->_restConfig->restEnableLimits && $this->_checkLimit() === false )
         {
             throw UnauthorizedException::forIpAddressTimeLimit();
-        }
-
-        if( $this->_ipAllow === false )
-        {
-            throw UnauthorizedException::forIpDenied();
-        }
-
-        if( $this->user === false )
-        {
-            throw UnauthorizedException::forInvalidCredentials();
         }
 
         if( $validation != null )
