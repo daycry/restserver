@@ -37,4 +37,19 @@ class UnauthorizedException extends FrameworkException implements UnauthorizedIn
     {
         return new self( lang( 'Rest.ipDenied' ) );
     }
+
+    public static function forApiKeyLimit()
+    {
+        return new self( lang( 'Rest.textRestApiKeyTimeLimit' ) );
+    }
+
+    public static function forApiKeyPermissions()
+    {
+        return new self( lang( 'Rest.textRestApiKeyPermissions' ) );
+    }
+
+    public static function forIpAddressTimeLimit()
+    {
+        return new self( lang( 'Rest.textRestIpAddressTimeLimit' ) );
+    }
 }

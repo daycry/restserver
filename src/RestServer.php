@@ -540,6 +540,106 @@ class RestServer extends ResourceController
     }
 
     /**
+     * Check if the requests to a controller method exceed a limit.
+     *
+     * @param string $controller_method The method being called
+     *
+     * @return bool TRUE the call limit is below the threshold; otherwise, FALSE
+     */
+    private function _checkLimit()
+    {
+        if( $this->_petition )
+        {
+            // They are special, or it might not even have a limit
+            if( empty( $this->_petition->ignore_limits ) === false )
+            {
+                // Everything is fine
+                return true;
+            }
+
+            $api_key = isset( $this->key ) ? $this->key : '';
+
+            switch( $this->_restConfig->restLimitsMethod )
+            {
+                case 'IP_ADDRESS':
+                    $api_key = $this->request->getIPAddress();
+                    $limited_uri = 'ip-address:' . $api_key;
+                    break;
+
+                case 'API_KEY':
+                    $limited_uri = 'api-key:' . $api_key;
+                    break;
+
+                case 'METHOD_NAME':
+                    $limited_uri = 'method-name:' . $this->_petition->controller . '::' . $this->_petition->method;
+                    break;
+
+                case 'ROUTED_URL':
+                default:
+                    $limited_uri = $this->request->getPath();
+                    $limited_uri = 'uri:'.$limited_uri.':'.$this->request->getMethod(); // It's good to differentiate GET from PUT
+                    break;
+            }
+
+            if( $this->_petition->limit === false )
+            {
+                // Everything is fine
+                return true;
+            }
+
+            // How many times can you get to this method in a defined time_limit (default: 1 hour)?
+            $limit = $this->_petition->limit;
+
+            $time_limit = ( isset( $this->_petition->time ) ? $this->_petition->time : 3600 ); // 3600 = 60 * 60
+
+
+            $limitModel = new \Daycry\RestServer\Models\LimitModel();
+            $limitModel->setTableName( $this->_restConfig->restLimitsTable );
+
+            // Get data about a keys' usage and limit to one row
+            $result = $limitModel->where( 'uri', $limited_uri )->where( 'api_key', $api_key )->first();
+
+            // No calls have been made for this key
+            if( $result === null )
+            {
+                $data = [
+                    'uri'          => $limited_uri,
+                    'api_key'      => $api_key,
+                    'count'        => 1,
+                    'hour_started' => time(),
+                ];
+
+                $limitModel->save( $data );
+            }
+
+            // Been a time limit (or by default an hour) since they called
+            elseif( $result->hour_started < ( time() - $time_limit ) )
+            {
+                $result->hour_started = time();
+                $result->count = 1;
+
+                // Reset the started period and count
+                $limitModel->save( $result );
+            }
+
+            // They have called within the hour, so lets update
+            else {
+                // The limit has been exceeded
+                if( $result->count >= $limit )
+                {
+                    return false;
+                }
+
+                // Increase the count by one
+                $result->count = $result->count + 1;
+                $limitModel->save( $result );
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Checks allowed domains, and adds appropriate headers for HTTP access control (CORS)
      *
      * @access protected
@@ -616,6 +716,33 @@ class RestServer extends ResourceController
         if( $this->_restConfig->restEnableKeys && $this->_allow === false  )
         {
             throw UnauthorizedException::forInvalidApiKey( $this->key );
+        }
+
+        // Doing key related stuff? Can only do it if they have a key right?
+        if( $this->_restConfig->restEnableKeys && empty( $this->key ) === false )
+        {
+            // Check the limit
+            if( $this->_restConfig->restEnableLimits && $this->_checkLimit() === false )
+            {
+                throw UnauthorizedException::forApiKeyLimit();
+            }
+
+            // If no level is set use 0, they probably aren't using permissions
+            $level = ( $this->_petition && !empty( $this->_petition->level ) ) ? $this->_petition->level : 0;
+            
+            // If no level is set, or it is lower than/equal to the key's level
+            $authorized = $level <= $this->apiUser->level;
+
+            if( $authorized === false )
+            {
+                // They don't have good enough perms
+                throw UnauthorizedException::forApiKeyPermissions();
+            }
+        }
+        //check request limit by ip without login
+        elseif( $this->_restConfig->restLimitsMethod == 'IP_ADDRESS' && $this->_restConfig->restEnableLimits && $this->_checkLimit() === false )
+        {
+            throw UnauthorizedException::forIpAddressTimeLimit();
         }
 
         if( $this->_ipAllow === false )

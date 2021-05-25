@@ -83,23 +83,32 @@ class RestServer extends BaseConfig
     | e.g: md5('admin:REST API:1234') = '1e957ebc35631ab22d5bd6526bd14ea2'
     |
     */
-
-    /*
+	
+	/*
     |--------------------------------------------------------------------------
-    | Custom Auth class
+    | Custom Auth Library
     |--------------------------------------------------------------------------
+    |
+		use Daycry\RestServer\Libraries\Auth\AuthInterface;
 
-        class AuthClass implements \Daycry\RestServer\Libraries\Auth\AuthInterface
-        {
-            public function __construct() {}
+		class AuthClass implements AuthInterface
+		{
+			public function __construct()
+			{
+			}
 
-            public function validate( $username, $password = true )
-            {
-                // todo
-            }
+
+			public function validate( $username, $password = true )
+			{
+				//todo
+				
+				return $data; //user data
+			}
+		}
     */
-    public $authLibraryClass = \Daycry\RestServer\Libraries\JWT::class;
-    public $authLibraryFunction = 'decode';
+	
+    public $authLibraryClass = \Daycry\RestServer\Libraries\AuthClass::class;
+    public $authLibraryFunction = 'validate';
 
     /*
     |--------------------------------------------------------------------------
@@ -275,33 +284,33 @@ class RestServer extends BaseConfig
     |
     | Default table schema:
     |   CREATE TABLE `petitions` (
-            `id` INT(11) NOT NULL AUTO_INCREMENT,
-            `controller` VARCHAR(100) NOT NULL COLLATE 'utf8_general_ci',
-            `method` VARCHAR(100) NOT NULL DEFAULT '*' COLLATE 'utf8_general_ci',
-            `http` VARCHAR(10) NOT NULL DEFAULT '*' COLLATE 'utf8_general_ci',
-            `auth` VARCHAR(10) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
-            `log` TINYINT(1) NULL DEFAULT NULL,
-            `limit` TINYINT(1) NULL DEFAULT NULL,
-            `level` TINYINT(1) NULL DEFAULT NULL,
-            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            `deleted_at` DATETIME NULL DEFAULT NULL,
-            PRIMARY KEY (`id`) USING BTREE,
-            UNIQUE INDEX `controller` (`controller`, `method`, `http`) USING BTREE,
-            INDEX `deleted_at` (`deleted_at`) USING BTREE
-        )
-        COLLATE='utf8_general_ci'
-        ENGINE=InnoDB
-        AUTO_INCREMENT=1
-        ;
-;
+			`id` INT(11) NOT NULL AUTO_INCREMENT,
+			`controller` VARCHAR(100) NOT NULL COLLATE 'utf8_general_ci',
+			`method` VARCHAR(100) NOT NULL DEFAULT '*' COLLATE 'utf8_general_ci',
+			`http` VARCHAR(10) NOT NULL DEFAULT '*' COLLATE 'utf8_general_ci',
+			`auth` VARCHAR(10) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+			`log` TINYINT(1) NULL DEFAULT NULL,
+			`limit` TINYINT(1) NULL DEFAULT NULL,
+			`time` INT(11) NULL DEFAULT NULL,
+			`level` TINYINT(1) NULL DEFAULT NULL,
+			`created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			`updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			`deleted_at` DATETIME NULL DEFAULT NULL,
+			PRIMARY KEY (`id`) USING BTREE,
+			UNIQUE INDEX `controller` (`controller`, `method`, `http`) USING BTREE,
+			INDEX `deleted_at` (`deleted_at`) USING BTREE
+		)
+		COLLATE='utf8_general_ci'
+		ENGINE=InnoDB
+		AUTO_INCREMENT=1
+		;
     |
     */
     public $restEnableOverridePetition = true;
 
     /*
     |--------------------------------------------------------------------------
-    | REST API Operations Table Name
+    | REST API Petition Table Name
     |--------------------------------------------------------------------------
     |
     | If not using the default table schema in 'restEnableOperations', specify the
@@ -321,24 +330,26 @@ class RestServer extends BaseConfig
     |
     | Default table schema:
     |   CREATE TABLE `logs` (
-            `id` INT(11) NOT NULL AUTO_INCREMENT,
-            `uri` VARCHAR(255) NOT NULL COLLATE 'utf8_general_ci',
-            `method` VARCHAR(6) NOT NULL COLLATE 'utf8_general_ci',
-            `params` TEXT NULL DEFAULT NULL COLLATE 'utf8_general_ci',
-            `api_key` VARCHAR(40) NOT NULL COLLATE 'utf8_general_ci',
-            `ip_address` VARCHAR(45) NOT NULL COLLATE 'utf8_general_ci',
-            `duration` FLOAT NULL DEFAULT NULL,
-            `authorized` VARCHAR(1) NOT NULL COLLATE 'utf8_general_ci',
-            `response_code` SMALLINT(3) NULL DEFAULT '0',
-            `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            `deleted_at` DATETIME NULL DEFAULT NULL,
-            PRIMARY KEY (`id`) USING BTREE,
-            INDEX `deleted_at` (`deleted_at`) USING BTREE
-        )
-        COLLATE='utf8_general_ci'
-        ENGINE=InnoDB
-        AUTO_INCREMENT=1
+			`id` INT(11) NOT NULL AUTO_INCREMENT,
+			`uri` VARCHAR(255) NOT NULL COLLATE 'utf8_general_ci',
+			`method` VARCHAR(6) NOT NULL COLLATE 'utf8_general_ci',
+			`params` TEXT NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+			`api_key` VARCHAR(40) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+			`ip_address` VARCHAR(45) NOT NULL COLLATE 'utf8_general_ci',
+			`duration` FLOAT NULL DEFAULT NULL,
+			`authorized` VARCHAR(1) NOT NULL COLLATE 'utf8_general_ci',
+			`response_code` SMALLINT(3) NULL DEFAULT '0',
+			`created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			`updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			`deleted_at` DATETIME NULL DEFAULT NULL,
+			PRIMARY KEY (`id`) USING BTREE,
+			INDEX `deleted_at` (`deleted_at`) USING BTREE,
+			INDEX `FK_logs_keys` (`api_key`) USING BTREE
+		)
+		COLLATE='utf8_general_ci'
+		ENGINE=InnoDB
+		AUTO_INCREMENT=1
+		;
     |
     */
     public $restEnableLogging = true;
@@ -364,6 +375,55 @@ class RestServer extends BaseConfig
     |
     */
     public $restLogsJsonParams = true;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | REST Enable Limits
+    |--------------------------------------------------------------------------
+    |
+    | When set to TRUE, the REST API will count the number of uses of each method
+    | by an API key each hour. This is a general rule that can be overridden in the
+    | $this->method array in each controller
+    |
+    | Default table schema:
+    |   CREATE TABLE `limits` (
+    |       `id` INT(11) NOT NULL AUTO_INCREMENT,
+    |       `uri` VARCHAR(255) NOT NULL,
+    |       `count` INT(10) NOT NULL,
+    |       `hour_started` INT(11) NOT NULL,
+    |       `api_key` VARCHAR(40) NOT NULL,
+    |       PRIMARY KEY (`id`)
+    |   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    */
+    public $restEnableLimits = true;
+
+    /*
+    |--------------------------------------------------------------------------
+    | REST API Limits Table Name
+    |--------------------------------------------------------------------------
+    |
+    | If not using the default table schema in 'rest_enable_limits', specify the
+    | table name to match e.g. my_limits
+    |
+    */
+    public $restLimitsTable = 'limits';
+
+    /*
+    |--------------------------------------------------------------------------
+    | REST API Limits method
+    |--------------------------------------------------------------------------
+    |
+    | Specify the method used to limit the API calls
+    |
+    | Available methods are :
+    | public $restLimitsMethod = 'IP_ADDRESS'; // Put a limit per ip address
+    | public $restLimitsMethod = 'API_KEY'; // Put a limit per api key
+    | public $restLimitsMethod = 'METHOD_NAME'; // Put a limit on method calls
+    | public $restLimitsMethod = 'ROUTED_URL';  // Put a limit on the routed URL
+    |
+    */
+    public $restLimitsMethod = 'API_KEY';
 
     /*
     |--------------------------------------------------------------------------
@@ -391,7 +451,7 @@ class RestServer extends BaseConfig
         'Content-Type',
         'Accept',
         'Access-Control-Request-Method',
-        '2FA-API-KEY',
+        'X-API-KEY',
         'Authorization'
     ];
 
@@ -444,7 +504,7 @@ class RestServer extends BaseConfig
     | If using CORS checks, always include the headers and values specified here
     | in the OPTIONS client preflight.
     | Example:
-    | $config['forced_cors_headers'] = [
+    | $config['forcedCorsHeaders'] = [
     |   'Access-Control-Allow-Credentials' => 'true'
     | ];
     |

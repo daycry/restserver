@@ -8,7 +8,10 @@ return [
     'tokenExpired'        => 'The token has expired',
     'tokenUnauthorized'        => 'Invalid Auth token',
     'ipDenied'        => 'IP denied',
-    'textUnauthorized' => 'Unauthorized'
+    'textUnauthorized' => 'Unauthorized',
+    'textRestApiKeyTimeLimit' => 'This API key has reached the time limit for this method',
+    'textRestApiKeyPermissions' => 'This API key does not have enough permissions',
+    'textRestIpAddressTimeLimit' => 'This IP Address has reached the time limit for this method'
 ];
 
 /*
