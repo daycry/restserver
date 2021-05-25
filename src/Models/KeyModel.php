@@ -37,4 +37,9 @@ class KeyModel extends Model
     {
         $this->allowedFields = [ 'user_id', $keyName, 'level', 'ignore_limits', 'is_private_key' ];
     }
+
+    public function setDBGroup( $DBGroup )
+    {
+        $this->DBGroup = $DBGroup;
+    }
 }

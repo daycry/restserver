@@ -289,6 +289,7 @@ class RestServer extends ResourceController
         //set Operation
         $petitionModel = new \Daycry\RestServer\Models\PetitionModel();
         $petitionModel->setTableName( $this->_restConfig->configRestPetitionsTable );
+        $petitionModel->setDBGroup( $this->_restConfig->restDatabaseGroup );
         
         $petition = $petitionModel->where( 'controller', $this->router->controllerName() )->where( 'method', $this->router->methodName() )->where( 'http', $this->request->getMethod() )->first();
 
@@ -489,6 +490,7 @@ class RestServer extends ResourceController
             $keyModel = new \Daycry\RestServer\Models\KeyModel();
             $keyModel->setTableName( $this->_restConfig->restKeysTable );
             $keyModel->setKeyName( $this->_restConfig->restKeyColumn );
+            $keyModel->setDBGroup( $this->_restConfig->restDatabaseGroup );
 
             if( !( $row = $keyModel->where( $this->_restConfig->restKeyColumn, $this->key )->first() ) )
             {
@@ -600,6 +602,7 @@ class RestServer extends ResourceController
 
             $limitModel = new \Daycry\RestServer\Models\LimitModel();
             $limitModel->setTableName( $this->_restConfig->restLimitsTable );
+            $limitModel->setDBGroup( $this->_restConfig->restDatabaseGroup );
 
             // Get data about a keys' usage and limit to one row
             $result = $limitModel->where( 'uri', $limited_uri )->where( 'api_key', $api_key )->first();
@@ -659,6 +662,7 @@ class RestServer extends ResourceController
 
         $accessModel = new \Daycry\RestServer\Models\LimitModel();
         $accessModel->setTableName( $this->_restConfig->restAccessTable );
+        $accessModel->setDBGroup( $this->_restConfig->restDatabaseGroup );
 
         //check if the key has all_access
         $result = $accessModel->where( 'api_key', $this->key )->where( 'controller', $this->router->controllerName() )->first();
@@ -816,6 +820,7 @@ class RestServer extends ResourceController
         // Insert the request into the log table
         $logModel = new \Daycry\RestServer\Models\LogModel();
         $logModel->setTableName( $this->_restConfig->configRestLogsTable );
+        $logModel->setDBGroup( $this->_restConfig->restDatabaseGroup );
 
         $data = [
             'uri'        => $this->request->uri,

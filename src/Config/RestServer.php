@@ -468,7 +468,7 @@ class RestServer extends BaseConfig
     | will access it through a browser
     |
     */
-    public $checkCors = true;
+    public $checkCors = false;
 
     /*
     |--------------------------------------------------------------------------

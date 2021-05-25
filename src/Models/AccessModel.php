@@ -32,4 +32,9 @@ class AccessModel extends Model
     {
         $this->table = $tableName;
     }
+
+    public function setDBGroup( $DBGroup )
+    {
+        $this->DBGroup = $DBGroup;
+    }
 }
