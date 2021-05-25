@@ -83,6 +83,21 @@ class RestServer extends BaseConfig
     | e.g: md5('admin:REST API:1234') = '1e957ebc35631ab22d5bd6526bd14ea2'
     |
     */
+
+    /*
+    |--------------------------------------------------------------------------
+    | Custom Auth class
+    |--------------------------------------------------------------------------
+
+        class AuthClass implements \Daycry\RestServer\Libraries\Auth\AuthInterface
+        {
+            public function __construct() {}
+
+            public function validate( $username, $password = true )
+            {
+                // todo
+            }
+    */
     public $authLibraryClass = \Daycry\RestServer\Libraries\JWT::class;
     public $authLibraryFunction = 'decode';
 
