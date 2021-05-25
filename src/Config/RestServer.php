@@ -147,7 +147,7 @@ class RestServer extends BaseConfig
     |    restrict certain methods to IPs in your whitelist
     |
     */
-    public $restIpWhitelistEnabled = true;
+    public $restIpWhitelistEnabled = false;
 
     /*
     |--------------------------------------------------------------------------
@@ -162,7 +162,7 @@ class RestServer extends BaseConfig
     | 127.0.0.1 and 0.0.0.0 are allowed by default
     |
     */
-    public $restIpWhitelist = '10.33.24.15';
+    public $restIpWhitelist = '';
 
     /*
     |--------------------------------------------------------------------------
@@ -233,7 +233,7 @@ class RestServer extends BaseConfig
     |   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
     |
     */
-    public $restEnableKeys = true;
+    public $restEnableKeys = false;
 
     /*
     |--------------------------------------------------------------------------
@@ -306,7 +306,7 @@ class RestServer extends BaseConfig
 		;
     |
     */
-    public $restEnableOverridePetition = true;
+    public $restEnableOverridePetition = false;
 
     /*
     |--------------------------------------------------------------------------
@@ -352,7 +352,7 @@ class RestServer extends BaseConfig
 		;
     |
     */
-    public $restEnableLogging = true;
+    public $restEnableLogging = false;
 
     /*
     |--------------------------------------------------------------------------
@@ -396,7 +396,7 @@ class RestServer extends BaseConfig
     |       PRIMARY KEY (`id`)
     |   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
     */
-    public $restEnableLimits = true;
+    public $restEnableLimits = false;
 
     /*
     |--------------------------------------------------------------------------
@@ -445,7 +445,7 @@ class RestServer extends BaseConfig
     |    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
     |
     */
-    public $restEnableAccess = true;
+    public $restEnableAccess = false;
 
     /*
     |--------------------------------------------------------------------------
