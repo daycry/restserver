@@ -136,7 +136,7 @@ abstract class BaseAuth
         $authLibraryClass = $this->restConfig->authLibraryClass;
         $authLibraryFunction = $this->restConfig->authLibraryFunction;
 
-        if( empty( $authLibraryClass ) )
+        if( empty( $authLibraryClass ) || ( $authLibraryClass instanceof AuthInterface === false ) )
         {
             log_message( 'critical', 'Library Auth: Failure, empty authLibraryClass' );
             return false;
