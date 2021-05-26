@@ -7,7 +7,7 @@ use Daycry\RestServer\Exceptions\ForbiddenException;
 
 abstract class BaseAuth
 {
-    protected $isValidRequest = false;
+    protected $isValidRequest = true;
 
     protected $restConfig = null;
 
@@ -43,7 +43,6 @@ abstract class BaseAuth
     {
         if( empty( $username ) )
         {
-            $this->isValidRequest = false;
             return false;
         }
 
@@ -67,7 +66,6 @@ abstract class BaseAuth
 
         if( $password === false )
         {
-            $this->isValidRequest = false;
             return false;
         }
 
@@ -80,13 +78,11 @@ abstract class BaseAuth
 
         if( array_key_exists( $username, $valid_logins ) === false )
         {
-            $this->isValidRequest = false;
             return false;
         }
 
         if( $valid_logins[ $username ] !== $password )
         {
-            $this->isValidRequest = false;
             return false;
         }
 

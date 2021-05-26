@@ -48,7 +48,6 @@ class DigestAuth extends BaseAuth implements AuthInterface
         // Check if the string don't compare (case-insensitive)
         if( strcasecmp( $response, $valid_response ) !== 0 )
         {
-            $this->isValidRequest = false;
             return false;
         }
 

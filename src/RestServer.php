@@ -58,8 +58,14 @@ class RestServer extends ResourceController
      *
      * @var object
      */
-    protected $user = true;
+    protected $user = false;
 
+    /**
+     * Auth method
+     * 
+     * @var class
+     */
+    private $authMethodclass = null;
     /**
      * The arguments for the query parameters.
      *
@@ -251,7 +257,6 @@ class RestServer extends ResourceController
             $this->_allow = $this->_detectApiKey();
         }
 
-
         // When there is no specific override for the current class/method, use the default auth value set in the config
         if( $this->_authOverride === false && ( !( $this->_restConfig->restEnableKeys && $this->_allow === true ) || ( $this->_restConfig->allowAuthAndKeys === true && $this->_allow === true ) ) )
         {
@@ -413,11 +418,11 @@ class RestServer extends ResourceController
         $classMap = $this->_restConfig->restAuthClassMap;
         if( $method && isset( $classMap[ $method ] ) )
         {
-            $class = new $classMap[ $method ]();
+            $this->authMethodclass = new $classMap[ $method ]();
 
-            if( \is_callable( [ $class, 'validate' ] ) )
+            if( \is_callable( [ $this->authMethodclass, 'validate' ] ) )
             {
-                return $class->validate();
+                return $this->authMethodclass->validate();
             }
         }
 
@@ -754,14 +759,14 @@ class RestServer extends ResourceController
             throw UnauthorizedException::forInvalidApiKey( $this->key );
         }
 
+        if( $this->authMethodclass && $this->authMethodclass->getIsValidRequest() )
+        {
+            throw UnauthorizedException::forInvalidCredentials();
+        }
+
         if( $this->_ipAllow === false )
         {
             throw UnauthorizedException::forIpDenied();
-        }
-
-        if( $this->user === false )
-        {
-            throw UnauthorizedException::forInvalidCredentials();
         }
 
         // Check to see if this key has access to the requested controller
@@ -834,8 +839,6 @@ class RestServer extends ResourceController
         ];
         $logModel->save( $data );
         $this->_logId = $logModel->getInsertID();
-
-        return $this->_logId;
     }
 
     /**
@@ -849,7 +852,7 @@ class RestServer extends ResourceController
         if( $this->_isLogAuthorized === true )
         {
             $this->_benchmark->stop( 'petition' );
-            $authorized = ( $this->user ) ? true : false;
+            $authorized = ( $this->authMethodclass && $this->authMethodclass->getIsValidRequest() ) ? $this->authMethodclass->getIsValidRequest() : true;
             $this->_logRequest( $authorized );
         }
     }
