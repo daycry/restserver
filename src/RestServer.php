@@ -58,7 +58,7 @@ class RestServer extends ResourceController
      *
      * @var object
      */
-    protected $user = null;
+    protected $user = true;
 
     /**
      * The arguments for the query parameters.
@@ -759,7 +759,7 @@ class RestServer extends ResourceController
             throw UnauthorizedException::forIpDenied();
         }
 
-        if( $this->user === false || $this->user == null )
+        if( $this->user === false )
         {
             throw UnauthorizedException::forInvalidCredentials();
         }

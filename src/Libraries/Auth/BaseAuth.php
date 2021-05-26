@@ -80,13 +80,13 @@ abstract class BaseAuth
 
         if( array_key_exists( $username, $valid_logins ) === false )
         {
-            $this->_isValidRequest = false;
+            $this->isValidRequest = false;
             return false;
         }
 
         if( $valid_logins[ $username ] !== $password )
         {
-            $this->_isValidRequest = false;
+            $this->isValidRequest = false;
             return false;
         }
 
