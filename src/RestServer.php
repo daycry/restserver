@@ -138,7 +138,7 @@ class RestServer extends ResourceController
     /**
      * @var bool
      */
-    private $_authOverride;
+    private $_authOverride = false;
 
     /**
      * Extend this function to apply additional checking early on in the process.
@@ -759,7 +759,7 @@ class RestServer extends ResourceController
             throw UnauthorizedException::forIpDenied();
         }
 
-        if( $this->user === false )
+        if( $this->user === false || $this->user == null )
         {
             throw UnauthorizedException::forInvalidCredentials();
         }

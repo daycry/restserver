@@ -36,7 +36,7 @@ class RestServer extends BaseConfig
     | FALSE     No login required
     | 'basic'   Unsecure login
     | 'digest'  More secure login
-    | 'jwt'  JWT Token
+    | 'bearer'     Bearer Token
     | 'session' Check for a PHP session variable. See 'auth_source' to set the
     |           authorization key
     |
@@ -47,7 +47,7 @@ class RestServer extends BaseConfig
     [
         'basic' => \Daycry\RestServer\Libraries\Auth\BasicAuth::class,
         'digest' => \Daycry\RestServer\Libraries\Auth\DigestAuth::class,
-        'jwt' => \Daycry\RestServer\Libraries\Auth\JWTAuth::class,
+        'bearer' => \Daycry\RestServer\Libraries\Auth\BearerAuth::class,
         'session' => \Daycry\RestServer\Libraries\Auth\SessionAuth::class
     ];
 

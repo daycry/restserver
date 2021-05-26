@@ -1,7 +1,7 @@
 <?php
 namespace Daycry\RestServer\Libraries\Auth;
 
-class JWTAuth extends BaseAuth implements AuthInterface
+class BearerAuth extends BaseAuth implements AuthInterface
 {
     public function __construct()
     {
