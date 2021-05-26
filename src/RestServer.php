@@ -759,7 +759,7 @@ class RestServer extends ResourceController
             throw UnauthorizedException::forInvalidApiKey( $this->key );
         }
 
-        if( $this->authMethodclass && $this->authMethodclass->getIsValidRequest() )
+        if( $this->authMethodclass && $this->authMethodclass->getIsValidRequest() === false )
         {
             throw UnauthorizedException::forInvalidCredentials();
         }
