@@ -827,10 +827,14 @@ class RestServer extends ResourceController
         $logModel->setTableName( $this->_restConfig->configRestLogsTable );
         $logModel->setDBGroup( $this->_restConfig->restDatabaseGroup );
 
+
+        $params = $this->args ? ( $this->_restConfig->restLogsJsonParams === true ? \json_encode( $this->args ) : \serialize( $this->args ) ) : null;
+        $params = ( $params != null && $this->_restConfig->restEncryptLogParams === true ) ? $this->encryption->encrypt( $params ) : $params;
+
         $data = [
             'uri'        => $this->request->uri,
             'method'     => $this->request->getMethod(),
-            'params'     => $this->args ? ($this->_restConfig->restLogsJsonParams === true ? json_encode( $this->args ) : serialize( $this->args ) ) : null,
+            'params'     => $params,
             'api_key'    => isset( $this->key ) ? $this->key : '',
             'ip_address' => $this->request->getIPAddress(),
             'duration'   => $this->_benchmark->getElapsedTime( 'petition' ),
