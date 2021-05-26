@@ -89,9 +89,9 @@ class RestServer extends BaseConfig
     | Custom Auth Library
     |--------------------------------------------------------------------------
     |
-		use Daycry\RestServer\Libraries\Auth\AuthInterface;
+		use Daycry\RestServer\Libraries\Auth\LibraryAuthInterface;
 
-		class AuthClass implements AuthInterface
+		class AuthClass implements LibraryAuthInterface
 		{
 			public function __construct()
 			{
