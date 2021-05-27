@@ -105,9 +105,27 @@ class JWT
     public function decode( $data )
     {
         $token = $this->configuration->parser()->parse( $data );
+        assert( $token instanceof UnencryptedToken );
 
+        $clock = new \Lcobucci\Clock\FrozenClock( new \DateTimeImmutable() );
+
+        $constraints = [
+            new \Lcobucci\JWT\Validation\Constraint\StrictValidAt( $clock ),
+        ];
+
+        if( !$this->configuration->validator()->validate( $token, ...$constraints ) )
+        {
+            throw new \RuntimeException('No way!');
+        }
+
+        try
+        {
+            $this->configuration->validator()->assert( $token, ...$constraints );
+        }catch( ConstraintViolation $e )
+        {
+            return null;
+        }
+        
         return $token->claims();
     }
-
-
 }

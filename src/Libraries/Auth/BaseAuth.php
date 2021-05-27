@@ -132,13 +132,13 @@ abstract class BaseAuth
         $authLibraryClass = $this->restConfig->authLibraryClass;
         $authLibraryFunction = $this->restConfig->authLibraryFunction;
 
+        $authLibraryClass = new $authLibraryClass();
+
         if( empty( $authLibraryClass ) || ( $authLibraryClass instanceof LibraryAuthInterface === false ) )
         {
             log_message( 'critical', 'Library Auth: Failure, empty authLibraryClass' );
             return false;
         }
-
-        $authLibraryClass = new $authLibraryClass();
 
         if( empty( $authLibraryFunction ) )
         {
@@ -148,7 +148,14 @@ abstract class BaseAuth
 
         if( \is_callable( [ $authLibraryClass, $authLibraryFunction ] ) )
         {
-            return $authLibraryClass->{$authLibraryFunction}( $username, $password );
+            try
+            {
+                return $authLibraryClass->{$authLibraryFunction}( $username, $password );
+            }catch( \Exception $ex )
+            {
+                log_message( 'critical', $ex->getMessage() );
+                return false;
+            }
         }
 
         return false;
