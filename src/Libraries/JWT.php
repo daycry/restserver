@@ -4,6 +4,10 @@ namespace Daycry\RestServer\Libraries;
 use CodeIgniter\Config\BaseConfig;
 
 use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\UnencryptedToken;
+
+use Lcobucci\JWT\Validation\RequiredConstraintsViolated;
+
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
 
@@ -113,16 +117,17 @@ class JWT
             new \Lcobucci\JWT\Validation\Constraint\StrictValidAt( $clock ),
         ];
 
-        if( !$this->configuration->validator()->validate( $token, ...$constraints ) )
+        /*if( !$this->configuration->validator()->validate( $token, ...$constraints ) )
         {
             throw new \RuntimeException('No way!');
-        }
+        }*/
 
         try
         {
             $this->configuration->validator()->assert( $token, ...$constraints );
-        }catch( ConstraintViolation $e )
+        }catch( RequiredConstraintsViolated  $e )
         {
+            log_message( 'critical', $e->getMessage() );
             return null;
         }
         
