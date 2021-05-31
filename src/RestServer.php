@@ -6,6 +6,8 @@ use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
 use Daycry\RestServer\Exceptions\UnauthorizedException;
+use Daycry\RestServer\Exceptions\UnauthorizedInterface;
+
 use Daycry\RestServer\Exceptions\ValidationException;
 use Daycry\RestServer\Exceptions\ForbiddenException;
 
