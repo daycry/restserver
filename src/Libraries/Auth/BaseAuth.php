@@ -154,7 +154,7 @@ abstract class BaseAuth
             }catch( \Exception $ex )
             {
                 log_message( 'critical', $ex->getMessage() );
-                return false;
+                return $ex;
             }
         }
 

@@ -764,6 +764,11 @@ class RestServer extends ResourceController
             throw UnauthorizedException::forInvalidCredentials();
         }
 
+        if( $this->user instanceof UnauthorizedInterface )
+        {
+            throw $this->user;
+        }
+        
         if( $this->_ipAllow === false )
         {
             throw UnauthorizedException::forIpDenied();

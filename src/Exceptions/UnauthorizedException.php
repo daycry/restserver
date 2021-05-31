@@ -5,7 +5,7 @@ use CodeIgniter\Exceptions\FrameworkException;
 //class UnauthorizedException extends \RuntimeException implements UnauthorizedInterface
 class UnauthorizedException extends FrameworkException implements UnauthorizedInterface
 {
-    //protected $code = 401;
+    protected $code = 401;
 
     public static function forTokenExpired()
     {
