@@ -40,6 +40,64 @@ Then you can adjust it to your needs. By default file will be present in `app/Co
 
 More information about install doctrine: https://github.com/daycry/doctrine
 
+## VERSION 3
+
+## Usage Loading Library
+
+```php
+<?php namespace App\Controllers;
+
+class Center extends \Daycry\RestServer\RestServer
+{
+    public function index()
+    {
+
+        return $this->respond( $this->content );
+    }
+}
+
+```
+
+If you need to validate the data, you can call `validation` method passing the string rules and Validation Config file y you need.
+
+For Example: `app/Config/Validation.php` or if rules are in custom namespace `app/Modules/Example/Config/Validation.php`
+
+```php
+	public $requiredLogin = [
+		'username'		=> 'required',
+		'password'		=> 'required',
+		//'fields'		=> 'required'
+	];
+```
+
+```
+<?php namespace App\Controllers;
+
+class Center extends \Daycry\RestServer\RestServer
+{
+    public function index()
+    {
+        $this->validation( 'requiredLogin' );
+        return $this->respond( $this->content );
+    }
+}
+```
+
+```
+<?php namespace App\Controllers;
+
+class Center extends \Daycry\RestServer\RestServer
+{
+    public function index()
+    {
+        $this->validation( 'requiredLogin', config( Example\\Validation ) );
+        return $this->respond( $this->content );
+    }
+}
+```
+____________________________________________________________________________________________
+
+## VERSION 2
 
 ## Usage Loading Library
 
