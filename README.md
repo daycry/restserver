@@ -2,13 +2,10 @@
 
 Rest Server with Doctrine for Codeigniter 4
 
-::: warning
-*Changes in Version 3 [Readme](https://github.com/daycry/restserver/blob/master/UPDATE-v3.md)*
-:::
+## UPDATE AVAILABLE V3
 
-<div class="warning">
-<em>here be dragons</em>
-</div>
+[Readme](https://github.com/daycry/restserver/blob/master/UPDATE-v3.md)
+
 
 ## Installation via composer
 
