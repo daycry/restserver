@@ -163,7 +163,6 @@ class RestServer extends ResourceController
 
         helper( 'security' );
 
-        $this->validator =  \Config\Services::validation();
         $this->encryption =  new \Daycry\Encryption\Encryption();
         $this->request = $request;
         $this->router = service('router');
@@ -262,8 +261,7 @@ class RestServer extends ResourceController
         // When there is no specific override for the current class/method, use the default auth value set in the config
         if( $this->_authOverride === false && ( !( $this->_restConfig->restEnableKeys && $this->_allow === true ) || ( $this->_restConfig->allowAuthAndKeys === true && $this->_allow === true ) ) )
         {
-            $rest_auth = strtolower( $this->_restConfig->restAuth );
-            $this->user = $this->_getAuthMethod( \strtolower( $rest_auth ) );
+            $this->user = $this->_getAuthMethod( $this->_restConfig->restAuth );
 
             if( $this->_restConfig->restIpWhitelistEnabled === true )
             {
@@ -418,9 +416,9 @@ class RestServer extends ResourceController
     private function _getAuthMethod( $method )
     {
         $classMap = $this->_restConfig->restAuthClassMap;
-        if( $method && isset( $classMap[ $method ] ) )
+        if( $method && isset( $classMap[ \strtolower( $method ) ] ) )
         {
-            $this->authMethodclass = new $classMap[ $method ]();
+            $this->authMethodclass = new $classMap[ \strtolower( $method ) ]();
 
             if( \is_callable( [ $this->authMethodclass, 'validate' ] ) )
             {
@@ -746,78 +744,100 @@ class RestServer extends ResourceController
      *
      * @throws Exception
      */
-    protected function checkRequest( $validation = null )
+    public function _remap( $method, ...$params )
     {
         $parser = \Config\Services::parser();
 
-        if( $this->_restConfig->forceHttps && $this->_ssl === false )
+        // Call the controller method and passed arguments
+        try
         {
-            throw ForbiddenException::forUnsupportedProtocol();
-        }
-
-        // They provided a key, but it wasn't valid, so get them out of here
-        if( $this->_restConfig->restEnableKeys && $this->_allow === false  )
-        {
-            throw UnauthorizedException::forInvalidApiKey( $this->key );
-        }
-
-        if( $this->authMethodclass && $this->authMethodclass->getIsValidRequest() === false )
-        {
-            throw UnauthorizedException::forInvalidCredentials();
-        }
-
-        if( $this->user instanceof UnauthorizedInterface )
-        {
-            throw $this->user;
-        }
-        
-        if( $this->_ipAllow === false )
-        {
-            throw UnauthorizedException::forIpDenied();
-        }
-
-        // Check to see if this key has access to the requested controller
-        if( $this->_restConfig->restEnableKeys && empty( $this->key ) === false && $this->_checkAccess() === false )
-        {    
-            throw UnauthorizedException::forApiKeyUnauthorized();
-        }
-
-        // Doing key related stuff? Can only do it if they have a key right?
-        if( $this->_restConfig->restEnableKeys && empty( $this->key ) === false )
-        {
-            // Check the limit
-            if( $this->_restConfig->restEnableLimits && $this->_checkLimit() === false )
+            if( $this->_restConfig->forceHttps && $this->_ssl === false )
             {
-                throw UnauthorizedException::forApiKeyLimit();
+                throw ForbiddenException::forUnsupportedProtocol();
             }
 
-            // If no level is set use 0, they probably aren't using permissions
-            $level = ( $this->_petition && !empty( $this->_petition->level ) ) ? $this->_petition->level : 0;
+            // They provided a key, but it wasn't valid, so get them out of here
+            if( $this->_restConfig->restEnableKeys && $this->_allow === false  )
+            {
+                throw UnauthorizedException::forInvalidApiKey( $this->key );
+            }
+
+            if( $this->authMethodclass && $this->authMethodclass->getIsValidRequest() === false )
+            {
+                throw UnauthorizedException::forInvalidCredentials();
+            }
+
+            if( $this->user instanceof UnauthorizedInterface )
+            {
+                throw $this->user;
+            }
             
-            // If no level is set, or it is lower than/equal to the key's level
-            $authorized = $level <= $this->apiUser->level;
-
-            if( $authorized === false )
+            if( $this->_ipAllow === false )
             {
-                // They don't have good enough perms
-                throw UnauthorizedException::forApiKeyPermissions();
+                throw UnauthorizedException::forIpDenied();
             }
-        }
-        //check request limit by ip without login
-        elseif( $this->_restConfig->restLimitsMethod == 'IP_ADDRESS' && $this->_restConfig->restEnableLimits && $this->_checkLimit() === false )
-        {
-            throw UnauthorizedException::forIpAddressTimeLimit();
-        }
 
-        if( $validation != null )
-        {
-            if( !$this->validator->run( (array)$this->content, $validation ) )
+            // Check to see if this key has access to the requested controller
+            if( $this->_restConfig->restEnableKeys && empty( $this->key ) === false && $this->_checkAccess() === false )
+            {    
+                throw UnauthorizedException::forApiKeyUnauthorized();
+            }
+
+            // Doing key related stuff? Can only do it if they have a key right?
+            if( $this->_restConfig->restEnableKeys && empty( $this->key ) === false )
             {
-                throw ValidationException::validationError();
-            }
-        }
+                // Check the limit
+                if( $this->_restConfig->restEnableLimits && $this->_checkLimit() === false )
+                {
+                    throw UnauthorizedException::forApiKeyLimit();
+                }
 
-        return true;
+                // If no level is set use 0, they probably aren't using permissions
+                $level = ( $this->_petition && !empty( $this->_petition->level ) ) ? $this->_petition->level : 0;
+                
+                // If no level is set, or it is lower than/equal to the key's level
+                $authorized = $level <= $this->apiUser->level;
+
+                if( $authorized === false )
+                {
+                    // They don't have good enough perms
+                    throw UnauthorizedException::forApiKeyPermissions();
+                }
+            }
+            //check request limit by ip without login
+            elseif( $this->_restConfig->restLimitsMethod == 'IP_ADDRESS' && $this->_restConfig->restEnableLimits && $this->_checkLimit() === false )
+            {
+                throw UnauthorizedException::forIpAddressTimeLimit();
+            }
+
+            return \call_user_func_array( [ $this, $this->router->methodName() ], $params );
+
+        } catch ( \Daycry\RestServer\Exceptions\UnauthorizedInterface $ex ) {
+
+            return $this->failUnauthorized( $ex->getMessage() );
+
+        } catch ( \Daycry\RestServer\Exceptions\ForbiddenInterface $ex ) {
+
+            return $this->failForbidden( $ex->getMessage() );
+
+        } catch ( \Daycry\RestServer\Exceptions\ValidationInterface $ex ) {
+
+            return $this->fail( $this->validator->getErrors() );
+
+        } catch ( \Exception $ex ) {
+
+            return $this->fail( $ex->getMessage() );
+        }
+    }
+
+    protected function validation( String $rules, \Config\Validation $config = null )
+    {
+        $this->validator =  \Config\Services::validation( $config );
+
+        if( !$this->validator->run( (array)$this->content, $rules ) )
+        {
+            throw ValidationException::validationError();
+        }
     }
 
     /**

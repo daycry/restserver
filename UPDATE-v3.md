@@ -2,11 +2,6 @@
 
 Rest Server with Doctrine for Codeigniter 4
 
-::: warning
-Changes in Version 3 [Readme](https://github.com/daycry/restserver/blob/master/UPDATE-v3.md)
-:::
-
-
 ## Installation via composer
 
 Use the package with composer install
@@ -48,39 +43,17 @@ class Center extends \Daycry\RestServer\RestServer
 {
     public function index()
     {
-        try
-		{
-            $validation = $this->checkRequest( null );
-            //if( $validation !== true ){ return $validation; }
 
-            return $this->respond( $this->content );
-
-        }catch ( \Exception $e )
-		{
-            return $this->fail( $e->getMessage() );
-        }
-    }
-
-    public function encrypt( $id = null, $petitionId = null )
-    {
-        try
-		{
-            $validation = $this->checkRequest( null );
-            if( $validation !== true ){ return $validation; }
-
-            return $this->respond( $this->encryption->encrypt('data') );
-
-        }catch ( \Exception $e )
-		{
-            return $this->fail( $e->getMessage() );
-        }
+        return $this->respond( $this->content );
     }
 }
 
 ```
-You can pass validation group rules in `checkRequest` function as a string.
 
-In `app/Config/Validation.php`
+If you need to validate the data, you can call `validation` method passing the string rules and Validation Config file y you need.
+
+For Example: `app/Config/Validation.php` or if rules are in custom namespace `app/Modules/Example/Config/Validation.php`
+
 ```php
 	public $requiredLogin = [
 		'username'		=> 'required',
@@ -88,7 +61,30 @@ In `app/Config/Validation.php`
 		//'fields'		=> 'required'
 	];
 ```
+
 ```
-$validation = $this->checkRequest( 'requiredLogin' );
+<?php namespace App\Controllers;
+
+class Center extends \Daycry\RestServer\RestServer
+{
+    public function index()
+    {
+        $this->validation( 'requiredLogin' );
+        return $this->respond( $this->content );
+    }
+}
+```
+
+```
+<?php namespace App\Controllers;
+
+class Center extends \Daycry\RestServer\RestServer
+{
+    public function index()
+    {
+        $this->validation( 'requiredLogin', config( Example\\Validation ) );
+        return $this->respond( $this->content );
+    }
+}
 ```
 
