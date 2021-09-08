@@ -43,7 +43,6 @@ class Center extends \Daycry\RestServer\RestServer
 {
     public function index()
     {
-
         return $this->respond( $this->content );
     }
 }
@@ -62,7 +61,7 @@ For Example: `app/Config/Validation.php` or if rules are in custom namespace `ap
 	];
 ```
 
-```
+```php
 <?php namespace App\Controllers;
 
 class Center extends \Daycry\RestServer\RestServer
@@ -75,7 +74,7 @@ class Center extends \Daycry\RestServer\RestServer
 }
 ```
 
-```
+```php
 <?php namespace App\Controllers;
 
 class Center extends \Daycry\RestServer\RestServer
