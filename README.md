@@ -2,11 +2,11 @@
 
 Rest Server with Doctrine for Codeigniter 4
 
-
 ## UPDATE AVAILABLE V3
 
-[Readme](https://github.com/daycry/restserver/blob/master/UPDATE-v3.md)
+This update is not compatible with the previous version and greatly improves error handling.
 
+[Readme](https://github.com/daycry/restserver/blob/master/UPDATE-v3.md)
 
 
 ## Installation via composer
