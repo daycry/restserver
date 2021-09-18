@@ -167,7 +167,7 @@ class RestServer extends ResourceController
         $this->request = $request;
         $this->router = service('router');
 
-        if( class_exists( 'Daycry\\Doctrine\\Doctrine' ) )
+        if( class_exists( '\\Daycry\\Doctrine\\Doctrine' ) )
         {
             $this->doctrine = \Config\Services::doctrine();
         }
