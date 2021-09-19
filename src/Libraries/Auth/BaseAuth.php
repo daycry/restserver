@@ -130,6 +130,13 @@ abstract class BaseAuth
         }
 
         $authLibraryClass = $this->restConfig->authLibraryClass;
+
+        if( !\class_exists( $authLibraryClass ) )
+        {
+            log_message( 'critical', 'Library Auth: Failure, ' . $authLibraryClass . ' does not exist' );
+            return false;
+        }
+        
         $authLibraryFunction = $this->restConfig->authLibraryFunction;
 
         $authLibraryClass = new $authLibraryClass();
