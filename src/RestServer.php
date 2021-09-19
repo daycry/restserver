@@ -213,7 +213,6 @@ class RestServer extends ResourceController
         if( $this->_restConfig->restEnableOverridePetition === true )
         {
             $this->_petition = $this->_getPetition();
-            var_dump("aquiii2");exit;
         }
 
         // Log the loading time to the log table
