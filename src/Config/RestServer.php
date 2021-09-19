@@ -198,7 +198,7 @@ class RestServer extends BaseConfig
     | if you have any of these features enabled
     |
     */
-    public $restDatabaseGroup = 'api';
+    public $restDatabaseGroup = 'default';
 
     /*
     |--------------------------------------------------------------------------

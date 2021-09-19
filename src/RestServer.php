@@ -213,7 +213,6 @@ class RestServer extends ResourceController
         if( $this->_restConfig->restEnableOverridePetition === true )
         {
             $this->_petition = $this->_getPetition();
-            var_dump("aquiii2");exit;
         }
 
         // Log the loading time to the log table
@@ -423,7 +422,7 @@ class RestServer extends ResourceController
     /**
      * Get a auth method
      */
-    private function _getAuthMethod( $method )
+    private function _getAuthMethod( String $method )
     {
         $classMap = $this->_restConfig->restAuthClassMap;
         if( $method && isset( $classMap[ \strtolower( $method ) ] ) )
