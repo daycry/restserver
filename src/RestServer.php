@@ -773,6 +773,8 @@ class RestServer extends ResourceController
                 throw UnauthorizedException::forInvalidCredentials();
             }
 
+            var_dump( $this->authMethodclass->getIsValidRequest() );exit;
+
             if( $this->user instanceof UnauthorizedInterface )
             {
                 throw $this->user;
