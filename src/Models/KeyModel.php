@@ -2,10 +2,12 @@
 namespace Daycry\RestServer\Models;
 
 use CodeIgniter\Model;
+use CodeIgniter\Validation\ValidationInterface;
+use CodeIgniter\Database\ConnectionInterface;
 
 class KeyModel extends Model
 {
-    protected $DBGroup = 'api';
+    protected $DBGroup = 'default';
 
     protected $table      = 'keys';
 
@@ -28,6 +30,11 @@ class KeyModel extends Model
     protected $validationMessages = [];
     protected $skipValidation     = false;
 
+    public function __construct(?ConnectionInterface &$db = null, ?ValidationInterface $validation = null)
+    {
+        parent::__construct( $db, $validation );
+    }
+
     public function setTableName( $tableName )
     {
         $this->table = $tableName;
@@ -36,10 +43,5 @@ class KeyModel extends Model
     public function setKeyName( $keyName )
     {
         $this->allowedFields = [ 'user_id', $keyName, 'level', 'ignore_limits', 'is_private_key' ];
-    }
-
-    public function setDBGroup( $DBGroup )
-    {
-        $this->DBGroup = $DBGroup;
     }
 }
