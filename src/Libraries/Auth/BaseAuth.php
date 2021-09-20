@@ -58,10 +58,11 @@ abstract class BaseAuth
             return md5( $username . ':' . $this->restConfig->restRealm . ':' . ( isset( $valid_logins[ $username ] ) ? $valid_logins[ $username ] : '' ) );
         }
 
-        if( !$auth_source && $rest_auth === 'jwt' )
+        if( !$auth_source && $rest_auth === 'bearer' )
         {
             $jwtLibrary = new \Daycry\RestServer\Libraries\JWT();
             $claims = $jwtLibrary->decode( $username );
+
             if( !$claims )
             { 
                 $this->isValidRequest = false;

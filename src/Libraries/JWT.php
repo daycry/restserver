@@ -60,6 +60,8 @@ class JWT
     public function setSplitData()
     {
         $this->split = true;
+
+        return $this;
     }
 
     public function encode( $data, $uid = null )
@@ -68,7 +70,7 @@ class JWT
 
         $token = $this->configuration->builder();
 
-        if( is_array( $data ) )
+        if( is_array( $data ) || is_object( $data ) )
         {
             if( $this->split )
             {
