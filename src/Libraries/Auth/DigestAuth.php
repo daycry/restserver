@@ -27,24 +27,37 @@ class DigestAuth extends BaseAuth implements AuthInterface
         }
 
         // We need to retrieve authentication data from the $digest_string variable
-        $matches = [];
-        preg_match_all( '@(username|nonce|uri|nc|cnonce|qop|response)=[\'"]?([^\'",]+)@', $digest_string, $matches );
-        $digest = ( empty( $matches[1] ) || empty( $matches[2] ) ) ? [] : array_combine( $matches[1], $matches[2] );
 
-        //Workaround for access atributes
-        $username = $uri = $nonce = $nc = $cnonce = $qop = $response = false;
-        foreach( $digest as $key => $value ){ ${$key} = $digest[ $key ]; }
+        // protect against missing data
+        $needed_parts = array('nonce'=>1, 'nc'=>1, 'cnonce'=>1, 'qop'=>1, 'username'=>1, 'uri'=>1, 'response'=>1);
+        $data = array();
+        preg_match_all( '@(\w+)=(?:(?:\'([^\']+)\'|"([^"]+)")|([^\s,]+))@', $digest_string, $matches, PREG_SET_ORDER );
 
-        // For digest authentication the library function should return already stored md5(username:restrealm:password) for that username see rest.php::auth_library_function config
-        $usernameMd5 = $this->checkLogin( $username, true );
-        
-        if( array_key_exists( 'username', $digest ) === false || $usernameMd5 === false )
+        foreach( $matches as $m )
+        {
+            $data[$m[1]] = $m[2] ? $m[2] : ($m[3] ? $m[3] : $m[4]);
+            unset($needed_parts[$m[1]]);
+        }
+
+        if( $needed_parts )
         {
             $this->forceLogin( $unique_id );
         }
 
-        $md5 = md5( strtoupper( $this->request->getMethod() ).':'.$uri );
-        $valid_response = md5( $usernameMd5 . ':' . $nonce . ':' . $nc . ':' . $cnonce . ':'.$qop . ':' . $md5 );
+        $username = $nonce = $nc = $cnonce = $qop = $username = $uri = $response = null;
+        foreach( $data as $key => $value ){ ${ $key } = $value; }
+        
+        // For digest authentication the library function should return already stored md5(username:restrealm:password) for that username see rest.php::auth_library_function config
+        $usernameMD5 = $this->checkLogin( $username, true );
+        
+        if( $username === false || $usernameMD5 === false )
+        {
+            $this->forceLogin( $unique_id );
+        }
+
+        $md5 = md5( strtoupper( $this->request->getMethod() ).':'. $uri );
+
+        $valid_response = md5( $usernameMD5 . ':' . $nonce . ':' . $nc . ':' . $cnonce . ':'. $qop . ':' . $md5 );
 
         // Check if the string don't compare (case-insensitive)
         if( \strcasecmp( $response, $valid_response ) !== 0 )
