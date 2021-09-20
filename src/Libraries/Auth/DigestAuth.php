@@ -30,7 +30,7 @@ class DigestAuth extends BaseAuth implements AuthInterface
         $matches = [];
         preg_match_all( '@(username|nonce|uri|nc|cnonce|qop|response)=[\'"]?([^\'",]+)@', $digest_string, $matches );
         $digest = ( empty( $matches[1] ) || empty( $matches[2] ) ) ? [] : array_combine( $matches[1], $matches[2] );
-        
+
         //Workaround for access atributes
         $username = $uri = $nonce = $nc = $cnonce = $qop = $response = false;
         foreach( $digest as $key => $value ){ ${$key} = $digest[ $key ]; }
@@ -38,11 +38,6 @@ class DigestAuth extends BaseAuth implements AuthInterface
         // For digest authentication the library function should return already stored md5(username:restrealm:password) for that username see rest.php::auth_library_function config
         $usernameMd5 = $this->checkLogin( $username, true );
         
-        if( $usernameMd5 instanceof \Exception )
-        {
-            return $usernameMd5;
-        }
-
         if( array_key_exists( 'username', $digest ) === false || $usernameMd5 === false )
         {
             $this->forceLogin( $unique_id );

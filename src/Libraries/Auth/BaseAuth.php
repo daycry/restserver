@@ -163,14 +163,7 @@ abstract class BaseAuth
 
         if( \is_callable( [ $authLibraryClass, $authLibraryFunction ] ) )
         {
-            try
-            {
-                return $authLibraryClass->{$authLibraryFunction}( $username, $password );
-            }catch( \Exception $ex )
-            {
-                log_message( 'critical', $ex->getMessage() );
-                return $ex;
-            }
+            return $authLibraryClass->{$authLibraryFunction}( $username, $password );
         }
 
         return false;

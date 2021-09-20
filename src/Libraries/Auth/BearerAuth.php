@@ -26,11 +26,6 @@ class BearerAuth extends BaseAuth implements AuthInterface
 
         $username = $this->checkLogin( $username, true );
 
-        if( $username instanceof \Exception )
-        {
-            return $username;
-        }
-
         if( $username === false )
         {
             $this->forceLogin();

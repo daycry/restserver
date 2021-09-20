@@ -33,11 +33,6 @@ class BasicAuth extends BaseAuth implements AuthInterface
         // Check if the user is logged into the system
         $username = $this->checkLogin( $username, $password );
 
-        if( $username instanceof \Exception )
-        {
-            return $username;
-        }
-
         if( $username === false )
         {
             $this->forceLogin();

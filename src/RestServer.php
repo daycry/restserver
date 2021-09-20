@@ -431,7 +431,14 @@ class RestServer extends ResourceController
 
             if( \is_callable( [ $this->authMethodclass, 'validate' ] ) )
             {
-                return $this->authMethodclass->validate();
+                try
+                {
+                    return $this->authMethodclass->validate();
+                }catch( \Exception $ex )
+                {
+                    log_message( 'critical', $ex->getMessage() );
+                    return $ex;
+                }
             }
         }
 
@@ -777,7 +784,7 @@ class RestServer extends ResourceController
             {
                 throw $this->user;
             }
-            
+
             if( $this->_ipAllow === false )
             {
                 throw UnauthorizedException::forIpDenied();
