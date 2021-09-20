@@ -117,6 +117,8 @@ class JWT
 
         $constraints = [
             new \Lcobucci\JWT\Validation\Constraint\StrictValidAt( $clock ),
+            new \Lcobucci\JWT\Validation\Constraint\IdentifiedBy( $this->JWTConfig->identifier ),
+            new \Lcobucci\JWT\Validation\Constraint\PermittedFor( $this->JWTConfig->audience )
         ];
 
         /*if( !$this->configuration->validator()->validate( $token, ...$constraints ) )
