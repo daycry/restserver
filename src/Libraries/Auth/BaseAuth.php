@@ -48,8 +48,8 @@ abstract class BaseAuth
             return false;
         }
 
-        $auth_source = strtolower( $this->restConfig->authSource );
-        $rest_auth = strtolower( $this->restConfig->restAuth );
+        $auth_source = \strtolower( $this->restConfig->authSource );
+        $rest_auth = \strtolower( $this->method );
         $valid_logins = $this->restConfig->restValidLogins;
 
         if( !$this->restConfig->authSource && $rest_auth === 'digest' )
@@ -107,7 +107,7 @@ abstract class BaseAuth
      */
     protected function forceLogin( $nonce = '' )
     {
-        $rest_auth = $this->restConfig->restAuth;
+        $rest_auth = \strtolower( $this->method );
         $rest_realm = $this->restConfig->restRealm;
 
         if( strtolower( $rest_auth ) === 'basic' )
