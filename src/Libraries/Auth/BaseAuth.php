@@ -60,7 +60,12 @@ abstract class BaseAuth
         {
             $jwtLibrary = new \Daycry\RestServer\Libraries\JWT();
             $claims = $jwtLibrary->decode( $username );
-            if( !$claims ){ return false; }
+            if( !$claims )
+            { 
+                $this->isValidRequest = false;
+                return false;
+            }
+            
             return $claims;
         }
 
@@ -83,6 +88,7 @@ abstract class BaseAuth
 
         if( $valid_logins[ $username ] !== $password )
         {
+            $this->isValidRequest = false;
             return false;
         }
 

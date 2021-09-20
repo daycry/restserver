@@ -89,22 +89,26 @@ class RestServer extends BaseConfig
     | Custom Auth Library
     |--------------------------------------------------------------------------
     |
-		use Daycry\RestServer\Libraries\Auth\LibraryAuthInterface;
+		<?php
 
-		class AuthClass implements LibraryAuthInterface
-		{
-			public function __construct()
-			{
-			}
+        namespace Auth\Libraries;
 
+        use Daycry\RestServer\Libraries\Auth\LibraryAuthInterface;
 
-			public function validate( $username, $password = true )
-			{
-				//todo
-				
-				return $data; //user data
-			}
-		}
+        class CheckAuth implements LibraryAuthInterface
+        {
+            public function __construct()
+            {
+            }
+
+            public function validate( $username, $password = true )
+            {
+                if( $username != 'admin )
+                {
+                    throw \Daycry\RestServer\Exceptions\UnauthorizedException::forInvalidCredentials();
+                }
+            }
+        }
     */
 	
     public $authLibraryClass = \Daycry\RestServer\Libraries\AuthClass::class;
