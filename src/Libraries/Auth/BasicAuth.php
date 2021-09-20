@@ -5,6 +5,7 @@ class BasicAuth extends BaseAuth implements AuthInterface
 {
     public function __construct()
     {
+        $this->method = 'basic';
         parent::__construct();
     }
 

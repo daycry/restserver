@@ -75,7 +75,6 @@ class RestServer extends BaseConfig
     | If library authentication is used define the class and function name
     |
     | The function should accept two parameters: class->function($username, $password)
-    | In other cases override the function _perform_library_auth in your controller
     |
     | For digest authentication the library function should return already a stored
     | md5(username:restrealm:password) for that username
@@ -88,6 +87,9 @@ class RestServer extends BaseConfig
     |--------------------------------------------------------------------------
     | Custom Auth Library
     |--------------------------------------------------------------------------
+    |
+    | Each validation method allows you to configure your own custom library, 
+    | it is useful when using different validation methods according to each api call.
     |
 		<?php
 
@@ -111,7 +113,13 @@ class RestServer extends BaseConfig
         }
     */
 	
-    public $authLibraryClass = \Daycry\RestServer\Libraries\AuthClass::class;
+    public $authLibraryClass = 
+    [
+        'basic' => null, // \Daycry\RestServer\Libraries\AuthClass::class
+        'digest' => null, // \Daycry\RestServer\Libraries\AuthClass::class
+        'bearer' => null // \Daycry\RestServer\Libraries\AuthClass::class
+    ];
+
     public $authLibraryFunction = 'validate';
 
     /*

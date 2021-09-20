@@ -5,6 +5,7 @@ class BearerAuth extends BaseAuth implements AuthInterface
 {
     public function __construct()
     {
+        $this->method = 'bearer';
         parent::__construct();
     }
 

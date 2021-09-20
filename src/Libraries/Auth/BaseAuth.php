@@ -15,6 +15,8 @@ abstract class BaseAuth
 
     protected $request = true;
 
+    protected $method = null;
+
     public function __construct()
     {
         $this->restConfig = config( 'RestServer' );
@@ -137,15 +139,15 @@ abstract class BaseAuth
 
         $authLibraryClass = $this->restConfig->authLibraryClass;
 
-        if( !\class_exists( $authLibraryClass ) )
+        if( !isset( $authLibraryClass[ $this->method ] ) || !\class_exists( $authLibraryClass[ $this->method ] ) )
         {
-            log_message( 'critical', 'Library Auth: Failure, ' . $authLibraryClass . ' does not exist' );
+            log_message( 'critical', 'Library Auth: Failure, ' . $this->method . ' does not exist' );
             return false;
         }
         
         $authLibraryFunction = $this->restConfig->authLibraryFunction;
 
-        $authLibraryClass = new $authLibraryClass();
+        $authLibraryClass = new $authLibraryClass[ $this->method ]();
 
         if( empty( $authLibraryClass ) || ( $authLibraryClass instanceof LibraryAuthInterface === false ) )
         {

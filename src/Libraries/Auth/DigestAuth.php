@@ -5,6 +5,7 @@ class DigestAuth extends BaseAuth implements AuthInterface
 {
     public function __construct()
     {
+        $this->method = 'digest';
         parent::__construct();
     }
 
