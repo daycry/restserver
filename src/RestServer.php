@@ -123,6 +123,13 @@ class RestServer extends ResourceController
     private $_supported_formats = null;
 
     /**
+     * Response format
+     *
+     * @var object
+     */
+    protected $responseFormat;
+
+    /**
      * is SSL request
      *
      * @var array
@@ -174,6 +181,7 @@ class RestServer extends ResourceController
         $this->encryption =  new \Daycry\Encryption\Encryption();
         $this->request = $request;
         $this->router = service('router');
+        $this->responseFormat = new \stdClass();
 
         $this->db = Database::connect( setting( 'Daycry\\RestServer\\RestServer.restDatabaseGroup' ) );
 
@@ -232,6 +240,13 @@ class RestServer extends ResourceController
         $ft = $request->negotiate( 'media', $this->_supported_formats );
         $this->setResponseFormat( $ft );
         $formatter = $this->format(); //call this function for force output format
+
+        $f = explode( "/", $ft );
+        if( isset( $f[ 1 ] ) )
+        {
+            $this->responseFormat->format = $f[ 1 ];
+            $this->responseFormat->mime = $ft;
+        }
 
         // Try to find a format for the request (means we have a request body)
         $inputFormat = $this->_detectInputFormat();
