@@ -271,14 +271,18 @@ class RestServer extends ResourceController
         // Extend this function to apply additional checking early on in the process
         $this->early_checks();
 
+        $usekey = $this->_restConfig->restEnableKeys;
+
         // Check if there is a specific auth type for the current class/method
         if( $this->_petition )
         {
             $this->_authOverride = $this->_authOverrideCheck();
+            $usekey = ( $this->_petition->key === null || $this->_petition->key == 1 ) ? $this->_restConfig->restEnableKeys : false;
         }
 
         // Checking for keys? GET TO WorK!
-        if( $this->_restConfig->restEnableKeys && $this->_authOverride !== true )
+        //if( $this->_restConfig->restEnableKeys && $this->_authOverride !== true )
+        if( $usekey )
         {
             $this->_allow = $this->_detectApiKey();
         }
