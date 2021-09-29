@@ -277,7 +277,11 @@ class RestServer extends ResourceController
         if( $this->_petition )
         {
             $this->_authOverride = $this->_authOverrideCheck();
-            $usekey = ( $this->_petition->key === null || $this->_petition->key == 1 ) ? $this->_restConfig->restEnableKeys : false;
+            
+            if( isset( $this->_petition->key ) )
+            {
+                $usekey = ( $this->_petition->key === null || $this->_petition->key == 1 ) ? $this->_restConfig->restEnableKeys : false;
+            }
         }
 
         // Checking for keys? GET TO WorK!

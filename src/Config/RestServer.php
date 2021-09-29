@@ -301,6 +301,7 @@ class RestServer extends BaseConfig
 			`method` VARCHAR(100) NOT NULL DEFAULT '*' COLLATE 'utf8_general_ci',
 			`http` VARCHAR(10) NOT NULL DEFAULT '*' COLLATE 'utf8_general_ci',
 			`auth` VARCHAR(10) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+            `key` TINYINT(1) NULL DEFAULT NULL,
 			`log` TINYINT(1) NULL DEFAULT NULL,
 			`limit` TINYINT(1) NULL DEFAULT NULL,
 			`time` INT(11) NULL DEFAULT NULL,
