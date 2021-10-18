@@ -150,4 +150,58 @@ In `app/Config/Validation.php`
 ```
 $validation = $this->checkRequest( 'requiredLogin' );
 ```
+____________________________________________________________________________________________
+
+## OPTIONS
+
+You can customize the requests independently using the `petition` table.
+
+Fiels | Value | Options | Desctiption
+-------- | ------------- | ------- | -----------
+`controller` | `\App\Controllers\Auth` | | Use this field to configure the controller in namespace format
+`method`| `login` | | Use this field to configure the method of controller
+`http`| `post` | `get`,`post`,`put`,`patch`, `options` | Use this field to configure the method of controller
+`auth`| `bearer` | `false`,`basic`,`digest`,`bearer` | Use this field to configure the autentication method
+`log`| `null` | `null`,`1`,`0` | Use this field if you want log the petition
+`limit`| `null` | `null`,`1`,`15` | Use this field if you want to set a request limit, this value must be an integer
+`time`| `null` | `null`,`1`,`15` | This field is used to know how often the request limit is reset
+`level`| `null` | `null`,`1`,`10` | Use this field to indicate the level of permissions in the request, if the token has level 1 and the request has level 3, you will not be able to make the request
+
+## RESPONSE
+
+The default response is in `json` but you can change to `xml` in the headers.
+
+```
+Accept: application/json
+```
+or
+```
+Accept: application/xml
+```
+
+## INPUT BODY
+
+The body of petition is `json` by defult, but you can change it.
+
+```
+Content-Type: application/json
+```
+or
+```
+Content-Type: application/xml
+```
+
+## API TOKEN
+
+You can sent `api rest token` like this.
+```
+X-API-KEY: application/json
+```
+
+## LANGUAGE
+
+You can sent `api rest token` like this.
+```
+Accept-Language: en
+```
 
