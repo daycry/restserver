@@ -155,7 +155,7 @@ class RestServer extends BaseConfig
     | 1. Set to TRUE and select an auth option for extreme security (client's IP
     |    address must be in whitelist and they must also log in)
     | 2. Set to TRUE with auth set to FALSE to allow whitelisted IPs access with no login
-    | 3. Set to FALSE but set 'auth_override_class_method' to 'whitelist' to
+    | 3. Set to FALSE but set 'restEnableOverridePetition' to 'whitelist' to
     |    restrict certain methods to IPs in your whitelist
     |
     */
@@ -184,7 +184,7 @@ class RestServer extends BaseConfig
     | Prevent connections to the REST server from blacklisted IP addresses
     |
     | Usage:
-    | 1. Set to TRUE and add any IP address to 'rest_ip_blacklist'
+    | 1. Set to TRUE and add any IP address to 'restIpBlacklist'
     |
     */
     public $restIpBlacklistEnabled = false;
@@ -214,13 +214,23 @@ class RestServer extends BaseConfig
 
     /*
     |--------------------------------------------------------------------------
+    | REST API Users Table Name
+    |--------------------------------------------------------------------------
+    |
+    | The table name in your database that stores API keys
+    |
+    */
+    public $restUsersTable = 'restserver_user';
+
+    /*
+    |--------------------------------------------------------------------------
     | REST API Keys Table Name
     |--------------------------------------------------------------------------
     |
     | The table name in your database that stores API keys
     |
     */
-    public $restKeysTable = 'keys';
+    public $restKeysTable = 'restserver_key';
 
     /*
     |--------------------------------------------------------------------------
@@ -290,33 +300,7 @@ class RestServer extends BaseConfig
     | REST Petitions
     |--------------------------------------------------------------------------
     |
-    | When set to TRUE, the REST API will look for a column name called 'key'.
-    | If no key is provided, the request will result in an error. To override the
-    | column name see 'rest_key_column'
-    |
-    | Default table schema:
-    |   CREATE TABLE `petitions` (
-			`id` INT(11) NOT NULL AUTO_INCREMENT,
-			`controller` VARCHAR(100) NOT NULL COLLATE 'utf8_general_ci',
-			`method` VARCHAR(100) NOT NULL DEFAULT '*' COLLATE 'utf8_general_ci',
-			`http` VARCHAR(10) NOT NULL DEFAULT '*' COLLATE 'utf8_general_ci',
-			`auth` VARCHAR(10) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
-            `key` TINYINT(1) NULL DEFAULT NULL,
-			`log` TINYINT(1) NULL DEFAULT NULL,
-			`limit` TINYINT(1) NULL DEFAULT NULL,
-			`time` INT(11) NULL DEFAULT NULL,
-			`level` TINYINT(1) NULL DEFAULT NULL,
-			`created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-			`updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-			`deleted_at` DATETIME NULL DEFAULT NULL,
-			PRIMARY KEY (`id`) USING BTREE,
-			UNIQUE INDEX `controller` (`controller`, `method`, `http`) USING BTREE,
-			INDEX `deleted_at` (`deleted_at`) USING BTREE
-		)
-		COLLATE='utf8_general_ci'
-		ENGINE=InnoDB
-		AUTO_INCREMENT=1
-		;
+    | When set to TRUE, the REST API will look for an override method
     |
     */
     public $restEnableOverridePetition = false;
@@ -326,11 +310,11 @@ class RestServer extends BaseConfig
     | REST API Petition Table Name
     |--------------------------------------------------------------------------
     |
-    | If not using the default table schema in 'restEnableOperations', specify the
+    | If not using the default table schema in 'petitions', specify the
     | table name to match e.g. my_operations
     |
     */
-    public $configRestPetitionsTable = 'petitions';
+    public $configRestPetitionsTable = 'restserver_petition';
 
     /*
     |--------------------------------------------------------------------------
@@ -340,29 +324,6 @@ class RestServer extends BaseConfig
     | When set to TRUE, the REST API will log actions based on the column names 'key', 'date',
     | 'time' and 'ip_address'. This is a general rule that can be overridden in the
     | $this->method array for each controller
-    |
-    | Default table schema:
-    |   CREATE TABLE `logs` (
-			`id` INT(11) NOT NULL AUTO_INCREMENT,
-			`uri` VARCHAR(255) NOT NULL COLLATE 'utf8_general_ci',
-			`method` VARCHAR(6) NOT NULL COLLATE 'utf8_general_ci',
-			`params` TEXT NULL DEFAULT NULL COLLATE 'utf8_general_ci',
-			`api_key` VARCHAR(40) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
-			`ip_address` VARCHAR(45) NOT NULL COLLATE 'utf8_general_ci',
-			`duration` FLOAT NULL DEFAULT NULL,
-			`authorized` VARCHAR(1) NOT NULL COLLATE 'utf8_general_ci',
-			`response_code` SMALLINT(3) NULL DEFAULT '0',
-			`created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-			`updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-			`deleted_at` DATETIME NULL DEFAULT NULL,
-			PRIMARY KEY (`id`) USING BTREE,
-			INDEX `deleted_at` (`deleted_at`) USING BTREE,
-			INDEX `FK_logs_keys` (`api_key`) USING BTREE
-		)
-		COLLATE='utf8_general_ci'
-		ENGINE=InnoDB
-		AUTO_INCREMENT=1
-		;
     |
     */
     public $restEnableLogging = false;
@@ -376,7 +337,7 @@ class RestServer extends BaseConfig
     | table name to match e.g. my_logs
     |
     */
-    public $configRestLogsTable = 'logs';
+    public $configRestLogsTable = 'restserver_log';
 
     /*
     |--------------------------------------------------------------------------
@@ -408,15 +369,6 @@ class RestServer extends BaseConfig
     | by an API key each hour. This is a general rule that can be overridden in the
     | $this->method array in each controller
     |
-    | Default table schema:
-    |   CREATE TABLE `limits` (
-    |       `id` INT(11) NOT NULL AUTO_INCREMENT,
-    |       `uri` VARCHAR(255) NOT NULL,
-    |       `count` INT(10) NOT NULL,
-    |       `hour_started` INT(11) NOT NULL,
-    |       `api_key` VARCHAR(40) NOT NULL,
-    |       PRIMARY KEY (`id`)
-    |   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
     */
     public $restEnableLimits = false;
 
@@ -425,11 +377,11 @@ class RestServer extends BaseConfig
     | REST API Limits Table Name
     |--------------------------------------------------------------------------
     |
-    | If not using the default table schema in 'rest_enable_limits', specify the
+    | If not using the default table schema in 'restEnableLimits', specify the
     | table name to match e.g. my_limits
     |
     */
-    public $restLimitsTable = 'limits';
+    public $restLimitsTable = 'resetserver_limit';
 
     /*
     |--------------------------------------------------------------------------
@@ -452,19 +404,9 @@ class RestServer extends BaseConfig
     | REST Method Access Control
     |--------------------------------------------------------------------------
     | When set to TRUE, the REST API will check the access table to see if
-    | the API key can access that controller. 'rest_enable_keys' must be enabled
-    | to use this
-    |
-    | Default table schema:
-    |   CREATE TABLE `access` (
-    |       `id` INT(11) unsigned NOT NULL AUTO_INCREMENT,
-    |       `key` VARCHAR(40) NOT NULL DEFAULT '',
-    |       `all_access` TINYINT(1) NOT NULL DEFAULT '0',
-    |       `controller` VARCHAR(50) NOT NULL DEFAULT '',
-    |       `date_created` DATETIME DEFAULT NULL,
-    |       `date_modified` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    |       PRIMARY KEY (`id`)
-    |    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    | the API key can access that controller. 'restEnableKeys' must be enabled
+    | to use this.
+    | You can filter an access with controller method when the 'all_access' field is '0'
     |
     */
     public $restEnableAccess = false;
@@ -478,7 +420,7 @@ class RestServer extends BaseConfig
     | table name to match e.g. my_access
     |
     */
-    public $restAccessTable = 'access';
+    public $restAccessTable = 'restserver_access';
 
     /*
     |--------------------------------------------------------------------------

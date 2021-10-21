@@ -335,10 +335,10 @@ class RestServer extends ResourceController
             $petition = $petitionModel->where( 'controller', $this->router->controllerName() )->where( 'method', $this->router->methodName() )->where( 'http', '*' )->first();
             if( !$petition )
             {
-                $petition = $petitionModel->where( 'controller', $this->router->controllerName() )->where( 'method', '*' )->where( 'http', $this->request->getMethod() )->first();
+                $petition = $petitionModel->where( 'controller', $this->router->controllerName() )->where( 'method', null )->where( 'http', $this->request->getMethod() )->first();
                 if( !$petition )
                 {
-                    $petition = $petitionModel->where( 'controller', $this->router->controllerName() )->where( 'method', '*' )->where( 'http', '*' )->first();
+                    $petition = $petitionModel->where( 'controller', $this->router->controllerName() )->where( 'method', null )->where( 'http', null )->first();
                 }
             }
         }
@@ -702,18 +702,33 @@ class RestServer extends ResourceController
             return true;
         }
 
-        $accessModel = new \Daycry\RestServer\Models\LimitModel( $this->db );
+        $accessModel = new \Daycry\RestServer\Models\AccessModel( $this->db );
         $accessModel->setTableName( $this->_restConfig->restAccessTable );
 
         //check if the key has all_access
-        $result = $accessModel->where( 'api_key', $this->key )->where( 'controller', $this->router->controllerName() )->first();
+        $results = $accessModel->where( 'api_key', $this->key )->where( 'controller', $this->router->controllerName() )->findAll();
 
-        if( !empty( $result ) && !empty( $result->all_access ) )
+        $return = false;
+
+        if( !empty( $results ) )
         {
-            return true;
+            foreach( $results as $result )
+            {
+                if( $result->all_access )
+                {
+                    $return = true;
+                    break;
+                }else{
+                    if( $this->router->methodName() == $result->method )
+                    {
+                        $return = true;
+                        break;
+                    }
+                }
+            }
         }
 
-        return false;
+        return $return;
     }
 
     /**
