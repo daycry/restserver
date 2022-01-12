@@ -18,6 +18,7 @@ class CreateRestServerTables extends Migration
             'http'                  => ['type' => 'varchar', 'constraint' => 10, 'null' => true, 'default' => null],
             'auth'                  => ['type' => 'varchar', 'constraint' => 10, 'null' => true, 'default' => null],
             'key'                   => ['type' => 'tinyint', 'constraint' => 1,'null' => true, 'default' => null],
+            'log'                   => ['type' => 'tinyint', 'constraint' => 1,'null' => true, 'default' => null],
             'limit'                 => ['type' => 'tinyint', 'constraint' => 1,'null' => true, 'default' => null],
             'time'                  => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'null' => true, 'default' => null],
             'level'                 => ['type' => 'tinyint', 'constraint' => 1,'null' => true, 'default' => null],
@@ -61,6 +62,8 @@ class CreateRestServerTables extends Migration
             'is_private_key'           => ['type' => 'tinyint', 'constraint' => 1, 'null' => false, 'default' => 0],
             'ip_addresses'             => ['type' => 'text', 'null' => null, 'default' => null],
             'created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
+            'updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+            'deleted_at'            => ['type' => 'datetime', 'null' => true, 'default' => null]
         ]);
 
         $this->forge->addKey('id', true);
