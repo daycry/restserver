@@ -426,7 +426,8 @@ class RestServer extends ResourceController
     private function _detectInputFormat()
     {
         // Get the CONTENT-TYPE value from the SERVER variable
-        $content_type = $this->request->getServer( 'CONTENT_TYPE' );
+        //$content_type = $this->request->getServer( 'CONTENT_TYPE' );
+        $content_type = $this->request->getHeaderLine( 'CONTENT-TYPE' );
 
         if( empty( $content_type ) === false )
         {
