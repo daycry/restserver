@@ -529,7 +529,7 @@ class RestServer extends ResourceController
         $key_name = 'HTTP_' . strtoupper( str_replace( '-', '_', $api_key_variable ) );
 
         // Find the key from server or arguments
-        if( ( $this->key = isset( $this->_args[ $api_key_variable ] ) ? $this->args[ $api_key_variable ] : $this->request->getServer( $key_name ) ) )
+        if( ( $this->key = isset( $this->args[ $api_key_variable ] ) ? $this->args[ $api_key_variable ] : $this->request->getServer( $key_name ) ) )
         {
             $keyModel = new \Daycry\RestServer\Models\KeyModel( $this->db );
             $keyModel->setTableName( $this->_restConfig->restKeysTable );
