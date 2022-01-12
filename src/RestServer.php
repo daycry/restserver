@@ -75,12 +75,20 @@ class RestServer extends ResourceController
      * @var class
      */
     private $authMethodclass = null;
+
     /**
      * The arguments for the query parameters.
      *
      * @var array
      */
     private $_queryArgs = [];
+
+    /**
+     * The arguments for the query parameters.
+     *
+     * @var array
+     */
+    private $_postArgs = [];
 
     /**
      * The arguments for the HEAD.
@@ -263,11 +271,15 @@ class RestServer extends ResourceController
 
         // Set up the query parameters
         $this->_parseQuery();
+        $this->_parsePost();
         $this->_queryArgs = array_merge( $this->_queryArgs, $this->_detectSegment() );
 
         //get header vars
         $this->_headArgs = $this->_getHeaders();
 
+        $this->args = array_merge( $this->_queryArgs, $this->_headArgs, $this->_postArgs );
+            
+        
         // Extend this function to apply additional checking early on in the process
         $this->early_checks();
 
@@ -308,12 +320,6 @@ class RestServer extends ResourceController
         }else{
             $this->content = (object)$request->getRawInput();
         }
-
-        $this->args = (object)array(
-            'query' => $this->_queryArgs,
-            'header' => $this->_headArgs,
-            'body' => (array)$this->content
-        );
     }
 
     /**
@@ -354,6 +360,16 @@ class RestServer extends ResourceController
     protected function _parseQuery()
     {
         $this->_queryArgs = $this->request->getGet();
+    }
+
+    /**
+     * Parse the query parameters.
+     *
+     * @return void
+     */
+    protected function _parsePost()
+    {
+        $this->_postArgs = $this->request->getPost();
     }
 
     /**
@@ -526,10 +542,10 @@ class RestServer extends ResourceController
         $api_key_variable = $this->_restConfig->restKeyName;
 
         // Work out the name of the SERVER entry based on config
-        $key_name = 'HTTP_' . strtoupper( str_replace( '-', '_', $api_key_variable ) );
+        //$key_name = 'HTTP_' . strtoupper( str_replace( '-', '_', $api_key_variable ) );
 
         // Find the key from server or arguments
-        if( ( $this->key = isset( $this->args[ $api_key_variable ] ) ? $this->args[ $api_key_variable ] : $this->request->getServer( $key_name ) ) )
+        if( ( $this->key = isset( $this->args[ $api_key_variable ] ) ? $this->args[ $api_key_variable ] : $this->request->getHeaderLine( $api_key_variable ) ) )
         {
             $keyModel = new \Daycry\RestServer\Models\KeyModel( $this->db );
             $keyModel->setTableName( $this->_restConfig->restKeysTable );
