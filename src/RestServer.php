@@ -131,6 +131,13 @@ class RestServer extends ResourceController
     private $_supported_formats = null;
 
     /**
+     * List all supported languages, the first will be the default language.
+     *
+     * @var array
+     */
+    private $_supported_languages = null;
+
+    /**
      * Response format
      *
      * @var object
@@ -202,7 +209,9 @@ class RestServer extends ResourceController
         $this->_restConfig = config( 'RestServer' );
 
         //Get lang
-        $this->lang = $request->getLocale();
+        $this->_supported_languages = config( 'App' )->supportedLocales;
+        $this->lang = $request->negotiate( 'language', $this->_supported_languages );
+        //$this->lang = $request->getLocale();
 
         // Check to see if the current IP address is blacklisted
         if( $this->_restConfig->restIpBlacklistEnabled === true )
