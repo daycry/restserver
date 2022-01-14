@@ -961,5 +961,8 @@ class RestServer extends ResourceController
             $authorized = ( $this->authMethodclass && $this->authMethodclass->getIsValidRequest() ) ? $this->authMethodclass->getIsValidRequest() : true;
             $this->_logRequest( $authorized );
         }
+
+        //reset previous validation at end
+        $this->validator->reset();
     }
 }
