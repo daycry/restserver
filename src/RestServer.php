@@ -907,9 +907,9 @@ class RestServer extends ResourceController
         }
     }
 
-    protected function validation( String $rules, \Config\Validation $config = null )
+    protected function validation( String $rules, \Config\Validation $config = null, bool $getShared = true )
     {
-        $this->validator =  \Config\Services::validation( $config );
+        $this->validator =  \Config\Services::validation( $config, $getShared );
 
         if( !$this->validator->run( (array)$this->content, $rules ) )
         {
