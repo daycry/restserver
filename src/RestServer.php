@@ -963,6 +963,9 @@ class RestServer extends ResourceController
         }
 
         //reset previous validation at end
-        $this->validator->reset();
+        if( $this->validator )
+        {
+            $this->validator->reset();
+        }
     }
 }
