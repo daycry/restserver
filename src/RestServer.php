@@ -471,12 +471,13 @@ class RestServer extends ResourceController
     /**
      * Get a auth method
      */
-    private function _getAuthMethod( String $method )
+    private function _getAuthMethod( string $method )
     {
         $classMap = $this->_restConfig->restAuthClassMap;
         if( $method && isset( $classMap[ \strtolower( $method ) ] ) )
         {
-            $this->authMethodclass = new $classMap[ \strtolower( $method ) ]();
+            $method = \strtolower( $method );
+            $this->authMethodclass = new $classMap[ $method ]();
 
             if( \is_callable( [ $this->authMethodclass, 'validate' ] ) )
             {
@@ -567,6 +568,16 @@ class RestServer extends ResourceController
             }
 
             $this->key = $row->{ $this->_restConfig->restKeyColumn };
+
+            if( $row->user_id )
+            {
+                //Get User Model Information
+                $userModel = new \Daycry\RestServer\Models\UserModel( $this->db );
+                $userModel->setTableName( $this->_restConfig->restUsersTable );
+                $user = $userModel->where( 'id', $row->user_id )->first();
+
+                $row->user_id = $user;
+            }
 
             $this->apiUser = $row;
 
