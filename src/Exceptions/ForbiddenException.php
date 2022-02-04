@@ -4,7 +4,7 @@ use CodeIgniter\Exceptions\FrameworkException;
 
 class ForbiddenException extends FrameworkException implements ForbiddenInterface
 {
-    //protected $code = 403;
+    protected $code = 403;
 
     public static function forUnsupportedProtocol()
     {

@@ -1,11 +1,13 @@
 <?php
 namespace Daycry\RestServer\Models;
 
-use CodeIgniter\Model;
 use CodeIgniter\Validation\ValidationInterface;
 use CodeIgniter\Database\ConnectionInterface;
 
-class UserModel extends Model
+use Daycry\RestServer\Libraries\User\UserAbstract;
+use Daycry\RestServer\Interfaces\UserInterface;
+
+class UserModel extends UserAbstract
 {
     protected $DBGroup = 'default';
 
@@ -19,7 +21,7 @@ class UserModel extends Model
 
     protected $useSoftDeletes = true;
 
-    protected $allowedFields = [ 'name' ];
+    protected $allowedFields = [ 'name', 'key_id' ];
 
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
@@ -29,14 +31,4 @@ class UserModel extends Model
     protected $validationRules    = [];
     protected $validationMessages = [];
     protected $skipValidation     = false;
-
-    public function __construct(?ConnectionInterface &$db = null, ?ValidationInterface $validation = null)
-    {
-        parent::__construct( $db, $validation );
-    }
-
-    public function setTableName( $tableName )
-    {
-        $this->table = $tableName;
-    }
 }

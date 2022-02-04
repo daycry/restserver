@@ -1,6 +1,8 @@
 <?php
 namespace Daycry\RestServer\Libraries\Auth;
 
+use Daycry\RestServer\Interfaces\AuthInterface;
+
 class DigestAuth extends BaseAuth implements AuthInterface
 {
     public function __construct()

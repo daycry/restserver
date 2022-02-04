@@ -95,7 +95,7 @@ class RestServer extends BaseConfig
 
         namespace Auth\Libraries;
 
-        use Daycry\RestServer\Libraries\Auth\LibraryAuthInterface;
+        use Daycry\RestServer\Interfaces\LibraryAuthInterface;
 
         class CheckAuth implements LibraryAuthInterface
         {
@@ -222,6 +222,16 @@ class RestServer extends BaseConfig
     */
     public $restUsersTable = 'restserver_user';
 
+
+    /**
+     * If you want to link users with the keys you have to assign the user model
+     * 
+     * Example:
+     * 
+     * public $userModelClass = \Daycry\RestServer\Models\UserModel::class;
+     */
+    public $userModelClass = \Daycry\RestServer\Models\UserModel::class;
+    public $userKeyColumn = 'key_id';
     /*
     |--------------------------------------------------------------------------
     | REST API Keys Table Name

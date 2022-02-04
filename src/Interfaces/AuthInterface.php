@@ -1,5 +1,5 @@
 <?php
-namespace Daycry\RestServer\Libraries\Auth;
+namespace Daycry\RestServer\Interfaces;
 
 interface AuthInterface
 {

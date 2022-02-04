@@ -1,9 +1,9 @@
 <?php
 namespace Daycry\RestServer\Libraries\Auth;
 
-use Daycry\RestServer\Exceptions\UnauthorizedException;
-use Daycry\RestServer\Exceptions\ValidationException;
-use Daycry\RestServer\Exceptions\ForbiddenException;
+//use Daycry\RestServer\Exceptions\UnauthorizedException;
+//use Daycry\RestServer\Exceptions\ValidationException;
+//use Daycry\RestServer\Exceptions\ForbiddenException;
 
 abstract class BaseAuth
 {

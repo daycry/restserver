@@ -1,15 +1,15 @@
 <?php
-namespace Daycry\RestServer\Models;
+namespace Daycry\RestServer\Libraries\User;
 
 use CodeIgniter\Model;
 use CodeIgniter\Validation\ValidationInterface;
 use CodeIgniter\Database\ConnectionInterface;
 
-class KeyModel extends Model
+abstract class UserAbstract extends Model
 {
     protected $DBGroup = 'default';
 
-    protected $table      = 'keys';
+    protected $table      = 'users';
 
     protected $primaryKey = 'id';
 
@@ -19,7 +19,7 @@ class KeyModel extends Model
 
     protected $useSoftDeletes = true;
 
-    protected $allowedFields = [];
+    protected $allowedFields = [ 'name', 'key_id' ];
 
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
@@ -35,13 +35,10 @@ class KeyModel extends Model
         parent::__construct( $db, $validation );
     }
 
-    public function setTableName( $tableName )
+    public function setTableName( $tableName, $columnKey )
     {
         $this->table = $tableName;
-    }
 
-    public function setKeyName( $keyName )
-    {
-        $this->allowedFields = [ $keyName, 'level', 'ignore_limits', 'is_private_key' ];
+        $this->allowedFields = [ 'name', $columnKey ];
     }
 }

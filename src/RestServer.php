@@ -13,6 +13,8 @@ use Daycry\RestServer\Exceptions\UnauthorizedInterface;
 use Daycry\RestServer\Exceptions\ValidationException;
 use Daycry\RestServer\Exceptions\ForbiddenException;
 
+use Daycry\RestServer\Libraries\User\UserAbstract;
+
 class RestServer extends ResourceController
 {
     /**
@@ -486,7 +488,6 @@ class RestServer extends ResourceController
                     return $this->authMethodclass->validate();
                 }catch( \Exception $ex )
                 {
-                    log_message( 'critical', $ex->getMessage() );
                     return $ex;
                 }
             }
@@ -569,14 +570,26 @@ class RestServer extends ResourceController
 
             $this->key = $row->{ $this->_restConfig->restKeyColumn };
 
-            if( $row->user_id )
+            if( $this->_restConfig->userModelClass )
             {
                 //Get User Model Information
-                $userModel = new \Daycry\RestServer\Models\UserModel( $this->db );
-                $userModel->setTableName( $this->_restConfig->restUsersTable );
-                $user = $userModel->where( 'id', $row->user_id )->first();
+                $userModel = new $this->_restConfig->userModelClass( $this->db );
+                
+                try
+                {
+                    if(  $userModel instanceof UserAbstract === false )
+                    {
+                        throw ValidationException::validationError();
+                    }
+                }catch( \Exception $ex )
+                {
+                    return $ex;
+                }
 
-                $row->user_id = $user;
+                $userModel->setTableName( $this->_restConfig->restUsersTable, $this->_restConfig->userKeyColumn );
+                $user = $userModel->where( $this->_restConfig->userKeyColumn, $row->id )->first();
+
+                $row->user = $user;
             }
 
             $this->apiUser = $row;
@@ -844,6 +857,11 @@ class RestServer extends ResourceController
                 throw ForbiddenException::forUnsupportedProtocol();
             }
 
+            if( $this->_allow instanceof UnauthorizedInterface )
+            {
+                throw $this->user;
+            }
+
             // They provided a key, but it wasn't valid, so get them out of here
             if( $this->_restConfig->restEnableKeys && $this->_allow === false  )
             {
@@ -872,7 +890,7 @@ class RestServer extends ResourceController
             }
 
             // Doing key related stuff? Can only do it if they have a key right?
-            if( $this->_restConfig->restEnableKeys && empty( $this->key ) === false )
+            if( $this->_allow === true && $this->_restConfig->restEnableKeys && empty( $this->key ) === false )
             {
                 // Check the limit
                 if( $this->_restConfig->restEnableLimits && $this->_checkLimit() === false )
@@ -885,7 +903,6 @@ class RestServer extends ResourceController
                 
                 // If no level is set, or it is lower than/equal to the key's level
                 $authorized = $level <= $this->apiUser->level;
-
                 if( $authorized === false )
                 {
                     // They don't have good enough perms
