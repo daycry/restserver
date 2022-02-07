@@ -102,6 +102,8 @@ class Center extends \Daycry\RestServer\RestServer
 }
 ```
 
+## User Model Class
+
 By default you can associate users with keys via the '\Daycry\RestServer\Models\UserModel' model, but you can customize it by creating an existing class of '\Daycry\RestServer\Libraries\User\UserAbstract'.
 
 Example:
