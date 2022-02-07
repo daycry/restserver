@@ -741,7 +741,13 @@ class RestServer extends ResourceController
 
         } catch ( \Exception $ex ) {
 
-            return $this->fail( $ex->getMessage() );
+            if( $ex->getCode() )
+            {
+                return $this->fail( $ex->getMessage(), $ex->getCode() );
+            }else{
+                return $this->fail( $ex->getMessage() );
+            }
+            
         }
     }
 
