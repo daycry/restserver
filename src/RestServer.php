@@ -744,4 +744,66 @@ class RestServer extends ResourceController
             return $this->fail( $ex->getMessage() );
         }
     }
+
+    protected function validation( String $rules, \Config\Validation $config = null, bool $getShared = true )
+    {
+        $this->validator =  \Config\Services::validation( $config, $getShared );
+
+        if( !$this->validator->run( (array)$this->content, $rules ) )
+        {
+            throw ValidationException::validationError();
+        }
+    }
+
+    /**
+     * Add the request to the log table.
+     *
+     * @param bool $authorized TRUE the user is authorized; otherwise, FALSE
+     *
+     * @return bool TRUE the data was inserted; otherwise, FALSE
+     */
+    protected function _logRequest( $authorized = false )
+    {
+        // Insert the request into the log table
+        $logModel = new \Daycry\RestServer\Models\LogModel( $this->db );
+        $logModel->setTableName( $this->_restConfig->configRestLogsTable );
+
+        $params = $this->args ? ( $this->_restConfig->restLogsJsonParams === true ? \json_encode( $this->args ) : \serialize( $this->args ) ) : null;
+        $params = ( $params != null && $this->_restConfig->restEncryptLogParams === true ) ? $this->encryption->encrypt( $params ) : $params;
+
+        $data = [
+            'uri'        => $this->request->uri,
+            'method'     => $this->request->getMethod(),
+            'params'     => $params,
+            'api_key'    => isset( $this->key ) ? $this->key : '',
+            'ip_address' => $this->request->getIPAddress(),
+            'duration'   => $this->_benchmark->getElapsedTime( 'petition' ),
+            'response_code' => $this->response->getStatusCode(),
+            'authorized' => $authorized,
+        ];
+        $logModel->save( $data );
+        $this->_logId = $logModel->getInsertID();
+    }
+
+    /**
+     * De-constructor.
+     * 
+     * @return void
+     */
+    public function __destruct()
+    {
+        // Log the loading time to the log table
+        if( $this->_isLogAuthorized === true )
+        {
+            $this->_benchmark->stop( 'petition' );
+            $authorized = ( $this->authMethodclass && $this->authMethodclass->getIsValidRequest() ) ? $this->authMethodclass->getIsValidRequest() : true;
+            $this->_logRequest( $authorized );
+        }
+
+        //reset previous validation at end
+        if( $this->validator )
+        {
+            $this->validator->reset();
+        }
+    }
 }
