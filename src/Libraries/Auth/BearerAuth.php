@@ -2,6 +2,7 @@
 namespace Daycry\RestServer\Libraries\Auth;
 
 use Daycry\RestServer\Interfaces\AuthInterface;
+use Daycry\RestServer\Exceptions\UnauthorizedException;
 
 class BearerAuth extends BaseAuth implements AuthInterface
 {
@@ -31,6 +32,7 @@ class BearerAuth extends BaseAuth implements AuthInterface
         if( $username === false )
         {
             $this->forceLogin();
+            throw UnauthorizedException::forInvalidCredentials();
         }
 
         return $username;

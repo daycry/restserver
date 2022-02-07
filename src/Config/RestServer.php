@@ -11,6 +11,7 @@ class RestServer extends BaseConfig
     |
     | Set to force the use of HTTPS for REST API calls
     |
+    | @deprecated you can must forceGlobalSecureRequests in App.php
     */
     public $forceHttps = true;
 
@@ -232,6 +233,7 @@ class RestServer extends BaseConfig
      */
     public $userModelClass = \Daycry\RestServer\Models\UserModel::class;
     public $userKeyColumn = 'key_id';
+    
     /*
     |--------------------------------------------------------------------------
     | REST API Keys Table Name

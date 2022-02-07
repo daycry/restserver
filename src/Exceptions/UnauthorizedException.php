@@ -2,8 +2,7 @@
 
 use CodeIgniter\Exceptions\FrameworkException;
 
-//class UnauthorizedException extends \RuntimeException implements UnauthorizedInterface
-class UnauthorizedException extends FrameworkException implements UnauthorizedInterface
+class UnauthorizedException extends \RuntimeException implements \Daycry\RestServer\Interfaces\UnauthorizedInterface
 {
     protected $code = 401;
 

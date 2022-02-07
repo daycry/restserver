@@ -2,6 +2,7 @@
 namespace Daycry\RestServer\Libraries\Auth;
 
 use Daycry\RestServer\Interfaces\AuthInterface;
+use Daycry\RestServer\Exceptions\UnauthorizedException;
 
 class SessionAuth extends BaseAuth implements AuthInterface
 {
@@ -20,7 +21,7 @@ class SessionAuth extends BaseAuth implements AuthInterface
         if( !$session->get( $this->restConfig->authSource ) )
         {
             $this->isValidRequest = false;
-            return false;
+            throw UnauthorizedException::forUnauthorized();
         }
 
         return $session->get( $this->restConfig->authSource );

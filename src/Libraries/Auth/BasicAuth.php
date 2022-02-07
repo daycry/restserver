@@ -2,6 +2,7 @@
 namespace Daycry\RestServer\Libraries\Auth;
 
 use Daycry\RestServer\Interfaces\AuthInterface;
+use Daycry\RestServer\Exceptions\UnauthorizedException;
 
 class BasicAuth extends BaseAuth implements AuthInterface
 {
@@ -38,7 +39,7 @@ class BasicAuth extends BaseAuth implements AuthInterface
         if( $username === false )
         {
             $this->forceLogin();
-            return false;
+            throw UnauthorizedException::forInvalidCredentials();
         }
 
         return $username;

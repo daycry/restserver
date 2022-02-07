@@ -36,6 +36,7 @@ $psr4 = [
 Run command:
 
 	> php spark restserver:publish
+    > php spark settings:publish
 
 This command will copy a config file to your app namespace
 Then you can adjust it to your needs. By default file will be present in `app/Config/RestServer.php`.
@@ -100,7 +101,55 @@ class Center extends \Daycry\RestServer\RestServer
     }
 }
 ```
-____________________________________________________________________________________________
+
+By default you can associate users with keys via the '\Daycry\RestServer\Models\UserModel' model, but you can customize it by creating an existing class of '\Daycry\RestServer\Libraries\User\UserAbstract'.
+
+Example:
+
+```php
+<?php
+namespace App\Models;
+
+use Daycry\RestServer\Libraries\User\UserAbstract;
+
+class CustomUserModel extends UserAbstract
+{
+    protected $DBGroup = 'default';
+
+    protected $table      = 'users';
+
+    protected $primaryKey = 'id';
+
+    protected $useAutoIncrement = true;
+
+    protected $returnType     = 'object';
+
+    protected $useSoftDeletes = true;
+
+    protected $allowedFields = [ 'name', 'key_id' ];
+
+    protected $useTimestamps = true;
+    protected $createdField  = 'created_at';
+    protected $updatedField  = 'updated_at';
+    protected $deletedField  = 'deleted_at';
+
+    protected $validationRules    = [];
+    protected $validationMessages = [];
+    protected $skipValidation     = false;
+}
+```
+
+If you customize the user class, you have to modify the default configuration
+
+Example:
+
+```php
+<?php
+    public $restUsersTable = 'restserver_user'; //user table name
+    public $userModelClass = \Daycry\RestServer\Models\UserModel::class; //user model Class
+    public $userKeyColumn = 'key_id'; // column that associates the key 
+```
+_________________________________________________________________________________________
 
 ## VERSION 2
 

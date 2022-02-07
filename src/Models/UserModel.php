@@ -1,9 +1,6 @@
 <?php
 namespace Daycry\RestServer\Models;
 
-use CodeIgniter\Validation\ValidationInterface;
-use CodeIgniter\Database\ConnectionInterface;
-
 use Daycry\RestServer\Libraries\User\UserAbstract;
 use Daycry\RestServer\Interfaces\UserInterface;
 

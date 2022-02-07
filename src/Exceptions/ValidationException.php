@@ -1,8 +1,6 @@
 <?php namespace Daycry\RestServer\Exceptions;
 
-use CodeIgniter\Exceptions\FrameworkException;
-
-class ValidationException extends FrameworkException implements ValidationInterface
+class ValidationException extends \RuntimeException implements \Daycry\RestServer\Interfaces\ValidationInterface
 {
     protected $code = 400;
 

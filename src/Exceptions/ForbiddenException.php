@@ -1,8 +1,6 @@
 <?php namespace Daycry\RestServer\Exceptions;
 
-use CodeIgniter\Exceptions\FrameworkException;
-
-class ForbiddenException extends FrameworkException implements ForbiddenInterface
+class ForbiddenException extends \RuntimeException implements \Daycry\RestServer\Interfaces\ForbiddenInterface
 {
     protected $code = 403;
 
