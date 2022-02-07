@@ -727,15 +727,15 @@ class RestServer extends ResourceController
 
             return \call_user_func_array( [ $this, $this->router->methodName() ], $params );
 
-        } catch ( \Daycry\RestServer\Exceptions\UnauthorizedInterface $ex ) {
+        } catch ( \Daycry\RestServer\Interfaces\UnauthorizedInterface $ex ) {
 
             return $this->failUnauthorized( $ex->getMessage() );
 
-        } catch ( \Daycry\RestServer\Exceptions\ForbiddenInterface $ex ) {
+        } catch ( \Daycry\RestServer\Interfaces\ForbiddenInterface $ex ) {
 
             return $this->failForbidden( $ex->getMessage() );
 
-        } catch ( \Daycry\RestServer\Exceptions\ValidationInterface $ex ) {
+        } catch ( \Daycry\RestServer\Interfaces\ValidationInterface $ex ) {
 
             return $this->fail( $this->validator->getErrors() );
 
