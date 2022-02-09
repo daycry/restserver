@@ -145,7 +145,7 @@ class CreateRestServerTables extends Migration
 		// drop constraints first to prevent errors
         if ($this->db->DBDriver != 'SQLite3') // @phpstan-ignore-line
         {
-            $this->forge->dropForeignKey($config->restKeysTable, $config->restKeysTable . '_user_id_foreign');
+            $this->forge->dropForeignKey($config->restUsersTable, $config->restUsersTable . '_key_id_foreign');
             $this->forge->dropForeignKey($config->restAccessTable, $config->restAccessTable . '_api_key_foreign');
         }
 
