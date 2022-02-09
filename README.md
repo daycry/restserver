@@ -38,12 +38,16 @@ Run command:
 	> php spark restserver:publish
     > php spark settings:publish
 
-This command will copy a config file to your app namespace
+This command will copy a config file to your app namespace.
 Then you can adjust it to your needs. By default file will be present in `app/Config/RestServer.php`.
 
     > php spark migrate -all
 
 This command create rest server tables in your database.
+
+If you want load and Example Seed you can use this command.
+
+    >php spark db:seed Daycry\RestServer\Database\Seeds\ExampleSeeder
 
 More information about install doctrine: https://github.com/daycry/doctrine
 
