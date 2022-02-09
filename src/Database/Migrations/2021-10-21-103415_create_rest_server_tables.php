@@ -34,28 +34,10 @@ class CreateRestServerTables extends Migration
         $this->forge->createTable($config->configRestPetitionsTable, true);
 
         /*
-         * Users
-         */
-        $this->forge->addField([
-            'id'                    => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
-            'name'                  => ['type' => 'varchar', 'constraint' => 255, 'null' => false],
-            'created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
-            'updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
-            'deleted_at'            => ['type' => 'datetime', 'null' => true, 'default' => null]
-        ]);
-
-        $this->forge->addKey('id', true);
-        $this->forge->addKey('deleted_at');
-        $this->forge->addUniqueKey('name');
-
-        $this->forge->createTable($config->restUsersTable, true);
-
-        /*
          * Keys
          */
         $this->forge->addField([
             'id'                       => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
-            'user_id'                  => ['type' => 'int', 'unsigned' => true, 'constraint' => 11, 'null' => false],
             $config->restKeyColumn     => ['type' => 'varchar', 'constraint' => $config->restKeyLength, 'null' => false],
             'level'                    => ['type' => 'int', 'constraint' => 2, 'null' => false],
             'ignore_limits'            => ['type' => 'tinyint', 'constraint' => 1, 'null' => false, 'default' => 0],
@@ -67,13 +49,29 @@ class CreateRestServerTables extends Migration
         ]);
 
         $this->forge->addKey('id', true);
-        $this->forge->addKey('user_id');
         $this->forge->addUniqueKey('key');
-        $this->forge->addUniqueKey(['user_id','key']);
-        $this->forge->addForeignKey('user_id', $config->restUsersTable, 'id', '', 'CASCADE');
 
         $this->forge->createTable($config->restKeysTable, true);
 
+        /*
+         * Users
+         */
+        $this->forge->addField([
+            'id'                    => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+            'name'                  => ['type' => 'varchar', 'constraint' => 255, 'null' => false],
+            $config->userKeyColumn  => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'null' => true],
+            'created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
+            'updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+            'deleted_at'            => ['type' => 'datetime', 'null' => true, 'default' => null]
+        ]);
+
+        $this->forge->addKey('id', true);
+        $this->forge->addKey('deleted_at');
+        $this->forge->addUniqueKey('name');
+        $this->forge->addForeignKey( $config->userKeyColumn, $config->restKeysTable, 'id', '', 'CASCADE');
+
+        $this->forge->createTable($config->restUsersTable, true);
+        
         /*
          * Logs
          */
