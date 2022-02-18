@@ -39,6 +39,10 @@ abstract class UserAbstract extends Model
     {
         $this->table = $tableName;
 
-        $this->allowedFields = [ 'name', $columnKey ];
+        if( !in_array( $columnKey, $this->allowedFields) )
+        {
+            array_push( $this->allowedFields, $columnKey );
+        }
+        //$this->allowedFields = [ 'name', $columnKey ];
     }
 }
