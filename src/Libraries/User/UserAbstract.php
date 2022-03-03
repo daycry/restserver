@@ -4,6 +4,7 @@ namespace Daycry\RestServer\Libraries\User;
 use CodeIgniter\Model;
 use CodeIgniter\Validation\ValidationInterface;
 use CodeIgniter\Database\ConnectionInterface;
+use Config\Database;
 
 abstract class UserAbstract extends Model
 {
@@ -32,6 +33,9 @@ abstract class UserAbstract extends Model
 
     public function __construct(?ConnectionInterface &$db = null, ?ValidationInterface $validation = null)
     {
+        if( $db === null ) {
+            $db = Database::connect( config('RestServer')->restDatabaseGroup );
+        }
         parent::__construct( $db, $validation );
     }
 

@@ -4,6 +4,7 @@ namespace Daycry\RestServer\Models;
 use CodeIgniter\Model;
 use CodeIgniter\Validation\ValidationInterface;
 use CodeIgniter\Database\ConnectionInterface;
+use Config\Database;
 
 class KeyModel extends Model
 {
@@ -32,10 +33,17 @@ class KeyModel extends Model
 
     public function __construct(?ConnectionInterface &$db = null, ?ValidationInterface $validation = null)
     {
+        if( $db === null ) {
+            $db = Database::connect( config('RestServer')->restDatabaseGroup );
+        }
+
+        $this->table = config('RestServer')->restKeysTable;
+        $this->allowedFields = [ config('RestServer')->restKeyColumn, 'level', 'ignore_limits', 'is_private_key' ];
+
         parent::__construct( $db, $validation );
     }
 
-    public function setTableName( $tableName )
+    /*public function setTableName( $tableName )
     {
         $this->table = $tableName;
     }
@@ -43,5 +51,5 @@ class KeyModel extends Model
     public function setKeyName( $keyName )
     {
         $this->allowedFields = [ $keyName, 'level', 'ignore_limits', 'is_private_key' ];
-    }
+    }*/
 }

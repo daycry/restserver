@@ -4,6 +4,7 @@ namespace Daycry\RestServer\Models;
 use CodeIgniter\Model;
 use CodeIgniter\Validation\ValidationInterface;
 use CodeIgniter\Database\ConnectionInterface;
+use Config\Database;
 
 class PetitionModel extends Model
 {
@@ -32,11 +33,17 @@ class PetitionModel extends Model
 
     public function __construct(?ConnectionInterface &$db = null, ?ValidationInterface $validation = null)
     {
+        if( $db === null ) {
+            $db = Database::connect( config('RestServer')->restDatabaseGroup );
+        }
+
+        $this->table = config('RestServer')->configRestPetitionsTable;
+
         parent::__construct( $db, $validation );
     }
 
-    public function setTableName( $tableName )
+    /*public function setTableName( $tableName )
     {
         $this->table = $tableName;
-    }
+    }*/
 }

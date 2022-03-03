@@ -4,6 +4,7 @@ namespace Daycry\RestServer\Models;
 use CodeIgniter\Model;
 use CodeIgniter\Validation\ValidationInterface;
 use CodeIgniter\Database\ConnectionInterface;
+use Config\Database;
 
 class LogModel extends Model
 {
@@ -32,6 +33,12 @@ class LogModel extends Model
 
     public function __construct(?ConnectionInterface &$db = null, ?ValidationInterface $validation = null)
     {
+        if( $db === null ) {
+            $db = Database::connect( config('RestServer')->restDatabaseGroup );
+        }
+
+        $this->table = config('RestServer')->configRestLogsTable;
+        
         parent::__construct( $db, $validation );
     }
 
