@@ -36,10 +36,20 @@ abstract class UserAbstract extends Model
         if( $db === null ) {
             $db = Database::connect( config('RestServer')->restDatabaseGroup );
         }
+
+        $this->table = config('RestServer')->restUsersTable;
+
+        $columnKey = config('RestServer')->userKeyColumn;
+
+        if( !in_array( $columnKey, $this->allowedFields) )
+        {
+            array_push( $this->allowedFields, $columnKey );
+        }
+
         parent::__construct( $db, $validation );
     }
 
-    public function setTableName( $tableName, $columnKey )
+    /*public function setTableName( $tableName, $columnKey )
     {
         $this->table = $tableName;
 
@@ -47,6 +57,5 @@ abstract class UserAbstract extends Model
         {
             array_push( $this->allowedFields, $columnKey );
         }
-        //$this->allowedFields = [ 'name', $columnKey ];
-    }
+    }*/
 }
