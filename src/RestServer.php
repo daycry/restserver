@@ -480,7 +480,7 @@ class RestServer extends ResourceController
                     throw \Daycry\RestServer\Exceptions\UserException::forInvalidUserClass();
                 }
 
-                $userModel->setTableName( $this->_restConfig->restUsersTable, $this->_restConfig->userKeyColumn );
+                //$userModel->setTableName( $this->_restConfig->restUsersTable, $this->_restConfig->userKeyColumn );
                 $user = $userModel->where( $this->_restConfig->userKeyColumn, $row->id )->first();
 
                 $row->user = $user;
