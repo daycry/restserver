@@ -1,6 +1,7 @@
 <?php
 namespace Daycry\RestServer\Libraries\Auth;
 
+use Daycry\RestServer\Interfaces\LibraryAuthInterface;
 use Daycry\RestServer\Exceptions\UnauthorizedException;
 
 abstract class BaseAuth
