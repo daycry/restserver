@@ -750,6 +750,11 @@ class RestServer extends ResourceController
                 throw ForbiddenException::forUnsupportedProtocol();
             }
 
+            if( $this->request->isAJAX() === false && $this->_restConfig->restAjaxOnly )
+            {
+                throw ForbiddenException::forOnlyAjax();
+            }
+
             // Check to see if the current IP address is blacklisted
             if( $this->_restConfig->restIpBlacklistEnabled === true )
             {

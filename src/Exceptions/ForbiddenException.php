@@ -8,4 +8,9 @@ class ForbiddenException extends \RuntimeException implements \Daycry\RestServer
     {
         return new self( lang( 'Rest.textRestUnsupported' ) );
     }
+
+    public static function forOnlyAjax()
+    {
+        return new self( lang( 'Rest.textRestAjaxOnly' ) );
+    }
 }

@@ -436,6 +436,21 @@ class RestServer extends BaseConfig
 
     /*
     |--------------------------------------------------------------------------
+    | REST AJAX Only
+    |--------------------------------------------------------------------------
+    |
+    | Set to TRUE to allow AJAX requests only. Set to FALSE to accept HTTP requests
+    |
+    | Note: If set to TRUE and the request is not AJAX, a 505 response with the
+    | error message 'Only AJAX requests are accepted.' will be returned.
+    |
+    | Hint: This is good for production environments
+    |
+    */
+    public $restAjaxOnly = false;
+
+    /*
+    |--------------------------------------------------------------------------
     | CORS Check
     |--------------------------------------------------------------------------
     |
