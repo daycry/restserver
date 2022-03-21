@@ -395,14 +395,15 @@ class RestServer extends ResourceController
     {
         // Response Format - If no Header Accept get default format
         $ft = $this->request->negotiate( 'media', config( 'Format' )->supportedResponseFormats );
-        $this->setResponseFormat( $ft );
-        $formatter = $this->format(); //call this function for force output format
 
         $f = explode( "/", $ft );
         if( isset( $f[ 1 ] ) )
         {
             $this->responseFormat->format = $f[ 1 ];
             $this->responseFormat->mime = $ft;
+
+            $this->setResponseFormat( $this->responseFormat->format );
+            $formatter = $this->format(); //call this function for force output format
         }
     }
 
