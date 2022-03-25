@@ -97,10 +97,11 @@ class RestServer extends BaseConfig
         namespace Auth\Libraries;
 
         use Daycry\RestServer\Interfaces\LibraryAuthInterface;
-
+        use CodeIgniter\Config\BaseConfig;
+        
         class CheckAuth implements LibraryAuthInterface
         {
-            public function __construct()
+            public function __construct( BaseConfig $config = null )
             {
             }
 
