@@ -14,8 +14,9 @@ class ForbiddenException extends \RuntimeException implements \Daycry\RestServer
         return new self( lang( 'Rest.textRestAjaxOnly' ) );
     }
 
-    public static function validationtMethodParamsError()
+    public static function validationtMethodParamsError( $param )
     {
-        return new self( lang( 'Rest.textInvalidMethodParams' ) );
+        $parser = \Config\Services::parser();
+        return new self( $parser->setData( array( 'param' => $param ) )->renderString( lang( 'Rest.textInvalidMethodParams' ) ) );
     }
 }

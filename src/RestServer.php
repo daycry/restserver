@@ -875,7 +875,7 @@ class RestServer extends ResourceController
             {
                 if( !array_key_exists( $key, $config->{$rules} ) )
                 {
-                    throw ForbiddenException::validationtMethodParamsError();
+                    throw ForbiddenException::validationtMethodParamsError( $key );
                 }
             }
         }
