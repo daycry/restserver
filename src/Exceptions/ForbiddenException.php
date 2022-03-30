@@ -13,4 +13,9 @@ class ForbiddenException extends \RuntimeException implements \Daycry\RestServer
     {
         return new self( lang( 'Rest.textRestAjaxOnly' ) );
     }
+
+    public static function validationtMethodParamsError()
+    {
+        return new self( lang( 'Rest.textInvalidMethodParams' ) );
+    }
 }

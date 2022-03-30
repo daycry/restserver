@@ -860,13 +860,24 @@ class RestServer extends ResourceController
         }
     }
 
-    protected function validation( String $rules, \Config\Validation $config = null, bool $getShared = true )
+    protected function validation( String $rules, \Config\Validation $config = null, bool $getShared = true, bool $filter = false )
     {
         $this->validator =  \Config\Services::validation( $config, $getShared );
 
         if( !$this->validator->run( (array)$this->content, $rules ) )
         {
             throw ValidationException::validationError();
+        }
+
+        if( $filter )
+        {
+            foreach( $this->content as $key => $value )
+            {
+                if( !array_key_exists( $key, $config->{$rules} ) )
+                {
+                    throw ForbiddenException::validationtMethodParamsError();
+                }
+            }
         }
     }
 
