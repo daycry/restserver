@@ -1,4 +1,6 @@
-<?php namespace Daycry\RestServer\Config;
+<?php
+
+namespace Daycry\RestServer\Config;
 
 use CodeIgniter\Config\BaseConfig;
 
@@ -44,7 +46,7 @@ class RestServer extends BaseConfig
     */
     public $restAuth = false;
 
-    public $restAuthClassMap = 
+    public $restAuthClassMap =
     [
         'basic' => \Daycry\RestServer\Libraries\Auth\BasicAuth::class,
         'digest' => \Daycry\RestServer\Libraries\Auth\DigestAuth::class,
@@ -83,22 +85,22 @@ class RestServer extends BaseConfig
     | e.g: md5('admin:REST API:1234') = '1e957ebc35631ab22d5bd6526bd14ea2'
     |
     */
-	
-	/*
+
+    /*
     |--------------------------------------------------------------------------
     | Custom Auth Library
     |--------------------------------------------------------------------------
     |
-    | Each validation method allows you to configure your own custom library, 
+    | Each validation method allows you to configure your own custom library,
     | it is useful when using different validation methods according to each api call.
     |
-		<?php
+        <?php
 
         namespace Auth\Libraries;
 
         use Daycry\RestServer\Interfaces\LibraryAuthInterface;
         use CodeIgniter\Config\BaseConfig;
-        
+
         class CheckAuth implements LibraryAuthInterface
         {
             public function __construct( BaseConfig $config = null )
@@ -114,8 +116,8 @@ class RestServer extends BaseConfig
             }
         }
     */
-	
-    public $authLibraryClass = 
+
+    public $authLibraryClass =
     [
         'basic' => null, // \Daycry\RestServer\Libraries\AuthClass::class
         'digest' => null, // \Daycry\RestServer\Libraries\AuthClass::class
@@ -135,7 +137,7 @@ class RestServer extends BaseConfig
     */
     public $allowAuthAndKeys = true;
     public $strictApiAndAuth = true; // force the use of both api and auth before a valid api request is made
-    
+
     /*
     |--------------------------------------------------------------------------
     | REST Login Usernames
@@ -227,14 +229,14 @@ class RestServer extends BaseConfig
 
     /**
      * If you want to link users with the keys you have to assign the user model
-     * 
+     *
      * Example:
-     * 
+     *
      * public $userModelClass = \Daycry\RestServer\Models\UserModel::class;
      */
     public $userModelClass = \Daycry\RestServer\Models\UserModel::class;
     public $userKeyColumn = 'key_id';
-    
+
     /*
     |--------------------------------------------------------------------------
     | REST API Keys Table Name

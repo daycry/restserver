@@ -1,4 +1,6 @@
-<?php namespace Daycry\RestServer\Exceptions;
+<?php
+
+namespace Daycry\RestServer\Exceptions;
 
 use CodeIgniter\Exceptions\FrameworkException;
 
@@ -11,6 +13,6 @@ class UserException extends FrameworkException
      */
     public static function forInvalidUserClass()
     {
-        return new self( lang( 'Rest.textInvalidUserClassConfiguration' ) );
+        return new self(lang('Rest.textInvalidUserClassConfiguration'));
     }
 }

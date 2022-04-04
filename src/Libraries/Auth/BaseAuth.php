@@ -1,4 +1,5 @@
 <?php
+
 namespace Daycry\RestServer\Libraries\Auth;
 
 use Daycry\RestServer\Interfaces\LibraryAuthInterface;
@@ -18,8 +19,8 @@ abstract class BaseAuth
 
     public function __construct()
     {
-        $this->restConfig = config( 'RestServer' );
-        $this->request = service( 'request' );
+        $this->restConfig = config('RestServer');
+        $this->request = service('request');
     }
 
     public function getIpAllow()
@@ -40,56 +41,48 @@ abstract class BaseAuth
      * @param bool|string $password The user's password
      * @return bool
      */
-    protected function checkLogin( $username = null, $password = false )
+    protected function checkLogin($username = null, $password = false)
     {
-        if( empty( $username ) )
-        {
+        if (empty($username)) {
             return false;
         }
 
-        $auth_source = \strtolower( $this->restConfig->authSource );
-        $rest_auth = \strtolower( $this->method );
+        $auth_source = \strtolower($this->restConfig->authSource);
+        $rest_auth = \strtolower($this->method);
         $valid_logins = $this->restConfig->restValidLogins;
 
-        if( !$this->restConfig->authSource && $rest_auth === 'digest' )
-        {
+        if (!$this->restConfig->authSource && $rest_auth === 'digest') {
             // For digest we do not have a password passed as argument
-            return md5( $username . ':' . $this->restConfig->restRealm . ':' . ( isset( $valid_logins[ $username ] ) ? $valid_logins[ $username ] : '' ) );
+            return md5($username . ':' . $this->restConfig->restRealm . ':' . (isset($valid_logins[ $username ]) ? $valid_logins[ $username ] : ''));
         }
 
-        if( !$auth_source && $rest_auth === 'bearer' )
-        {
+        if (!$auth_source && $rest_auth === 'bearer') {
             $jwtLibrary = new \Daycry\RestServer\Libraries\JWT();
-            $claims = $jwtLibrary->decode( $username );
+            $claims = $jwtLibrary->decode($username);
 
-            if( !$claims )
-            { 
+            if (!$claims) {
                 $this->isValidRequest = false;
                 return false;
             }
-            
+
             return $claims;
         }
 
-        if( $password === false )
-        {
+        if ($password === false) {
             return false;
         }
 
-        if( $auth_source === 'library' )
-        {
-            log_message( 'debug', "Performing Library authentication for $username" );
+        if ($auth_source === 'library') {
+            log_message('debug', "Performing Library authentication for $username");
 
-            return $this->_performLibraryAuth( $username, $password );
+            return $this->_performLibraryAuth($username, $password);
         }
 
-        if( array_key_exists( $username, $valid_logins ) === false )
-        {
+        if (array_key_exists($username, $valid_logins) === false) {
             return false;
         }
 
-        if( $valid_logins[ $username ] !== $password )
-        {
+        if ($valid_logins[ $username ] !== $password) {
             $this->isValidRequest = false;
             return false;
         }
@@ -104,68 +97,60 @@ abstract class BaseAuth
      * @param string $nonce A server-specified data string which should be uniquely generated each time
      * @return void
      */
-    protected function forceLogin( $nonce = '' )
+    protected function forceLogin($nonce = '')
     {
-        $rest_auth = \strtolower( $this->method );
+        $rest_auth = \strtolower($this->method);
         $rest_realm = $this->restConfig->restRealm;
 
-        if( strtolower( $rest_auth ) === 'basic' )
-        {
+        if (strtolower($rest_auth) === 'basic') {
             // See http://tools.ietf.org/html/rfc2617#page-5
             header('WWW-Authenticate: Basic realm="' . $rest_realm . '"');
-        }
-        elseif( strtolower( $rest_auth ) === 'digest' )
-        {
+        } elseif (strtolower($rest_auth) === 'digest') {
             // See http://tools.ietf.org/html/rfc2617#page-18
             header(
                 'WWW-Authenticate: Digest realm="' . $rest_realm
                 . '", qop="auth", nonce="' . $nonce
-                . '", opaque="' . md5( $rest_realm ) . '"');
+                . '", opaque="' . md5($rest_realm) . '"'
+            );
         }
 
-        if( $this->restConfig->strictApiAndAuth === true )
-        {
+        if ($this->restConfig->strictApiAndAuth === true) {
             $this->isValidRequest = false;
         }
 
         //throw UnauthorizedException::forUnauthorized();
     }
 
-    protected function _performLibraryAuth( $username = '', $password = null )
+    protected function _performLibraryAuth($username = '', $password = null)
     {
-        if( empty( $username ) )
-        {
-            log_message( 'critical', 'Library Auth: Failure, empty username' );
+        if (empty($username)) {
+            log_message('critical', 'Library Auth: Failure, empty username');
             return false;
         }
 
         $authLibraryClass = $this->restConfig->authLibraryClass;
 
-        if( !isset( $authLibraryClass[ $this->method ] ) || !\class_exists( $authLibraryClass[ $this->method ] ) )
-        {
-            log_message( 'critical', 'Library Auth: Failure, ' . $this->method . ' does not exist' );
+        if (!isset($authLibraryClass[ $this->method ]) || !\class_exists($authLibraryClass[ $this->method ])) {
+            log_message('critical', 'Library Auth: Failure, ' . $this->method . ' does not exist');
             return false;
         }
-        
+
         $authLibraryFunction = $this->restConfig->authLibraryFunction;
 
         $authLibraryClass = new $authLibraryClass[ $this->method ]();
 
-        if( empty( $authLibraryClass ) || ( $authLibraryClass instanceof LibraryAuthInterface === false ) )
-        {
-            log_message( 'critical', 'Library Auth: Failure, empty authLibraryClass' );
+        if (empty($authLibraryClass) || ($authLibraryClass instanceof LibraryAuthInterface === false)) {
+            log_message('critical', 'Library Auth: Failure, empty authLibraryClass');
             return false;
         }
 
-        if( empty( $authLibraryFunction ) )
-        {
-            log_message( 'critical', 'Library Auth: Failure, empty authLibraryFunction' );
+        if (empty($authLibraryFunction)) {
+            log_message('critical', 'Library Auth: Failure, empty authLibraryFunction');
             return false;
         }
 
-        if( \is_callable( [ $authLibraryClass, $authLibraryFunction ] ) )
-        {
-            return $authLibraryClass->{$authLibraryFunction}( $username, $password );
+        if (\is_callable([ $authLibraryClass, $authLibraryFunction ])) {
+            return $authLibraryClass->{$authLibraryFunction}($username, $password);
         }
 
         return false;

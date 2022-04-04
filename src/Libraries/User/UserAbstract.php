@@ -1,4 +1,5 @@
 <?php
+
 namespace Daycry\RestServer\Libraries\User;
 
 use CodeIgniter\Model;
@@ -33,20 +34,19 @@ abstract class UserAbstract extends Model
 
     public function __construct(?ConnectionInterface &$db = null, ?ValidationInterface $validation = null)
     {
-        if( $db === null ) {
-            $db = Database::connect( config('RestServer')->restDatabaseGroup );
+        if ($db === null) {
+            $db = Database::connect(config('RestServer')->restDatabaseGroup);
         }
 
         $this->table = config('RestServer')->restUsersTable;
 
         $columnKey = config('RestServer')->userKeyColumn;
 
-        if( !in_array( $columnKey, $this->allowedFields) )
-        {
-            array_push( $this->allowedFields, $columnKey );
+        if (!in_array($columnKey, $this->allowedFields)) {
+            array_push($this->allowedFields, $columnKey);
         }
 
-        parent::__construct( $db, $validation );
+        parent::__construct($db, $validation);
     }
 
     /*public function setTableName( $tableName, $columnKey )

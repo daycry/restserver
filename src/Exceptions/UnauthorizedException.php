@@ -1,4 +1,6 @@
-<?php namespace Daycry\RestServer\Exceptions;
+<?php
+
+namespace Daycry\RestServer\Exceptions;
 
 use CodeIgniter\Exceptions\FrameworkException;
 
@@ -8,52 +10,52 @@ class UnauthorizedException extends \RuntimeException implements \Daycry\RestSer
 
     public static function forTokenExpired()
     {
-        return new self( lang( 'Rest.tokenExpired' ) );
+        return new self(lang('Rest.tokenExpired'));
     }
 
     public static function forTokenUnauthorized()
     {
-        return new self( lang( 'Rest.tokenUnauthorized' ) );
+        return new self(lang('Rest.tokenUnauthorized'));
     }
 
-    public static function forInvalidApiKey( $apiKey )
+    public static function forInvalidApiKey($apiKey)
     {
         $parser = \Config\Services::parser();
-        return new self( $parser->setData( array( 'key' => $apiKey ) )->renderString( lang( 'Rest.textRestInvalidApiKey' ) ) );
+        return new self($parser->setData(array( 'key' => $apiKey ))->renderString(lang('Rest.textRestInvalidApiKey')));
     }
 
     public static function forApiKeyUnauthorized()
     {
-        return new self( lang( 'Rest.textRestApiKeyUnauthorized' ) );
+        return new self(lang('Rest.textRestApiKeyUnauthorized'));
     }
 
     public static function forInvalidCredentials()
     {
-        return new self( lang( 'Rest.textRestInvalidCredentials' ) );
+        return new self(lang('Rest.textRestInvalidCredentials'));
     }
 
     public static function forUnauthorized()
     {
-        return new self( lang( 'Rest.textUnauthorized' ) );
+        return new self(lang('Rest.textUnauthorized'));
     }
 
     public static function forIpDenied()
     {
-        return new self( lang( 'Rest.ipDenied' ) );
+        return new self(lang('Rest.ipDenied'));
     }
 
     public static function forApiKeyLimit()
     {
-        return new self( lang( 'Rest.textRestApiKeyTimeLimit' ) );
+        return new self(lang('Rest.textRestApiKeyTimeLimit'));
     }
 
     public static function forApiKeyPermissions()
     {
-        return new self( lang( 'Rest.textRestApiKeyPermissions' ) );
+        return new self(lang('Rest.textRestApiKeyPermissions'));
     }
 
     public static function forIpAddressTimeLimit()
     {
-        return new self( lang( 'Rest.textRestIpAddressTimeLimit' ) );
+        return new self(lang('Rest.textRestIpAddressTimeLimit'));
     }
 }

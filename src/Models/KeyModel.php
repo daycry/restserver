@@ -1,4 +1,5 @@
 <?php
+
 namespace Daycry\RestServer\Models;
 
 use CodeIgniter\Model;
@@ -33,14 +34,14 @@ class KeyModel extends Model
 
     public function __construct(?ConnectionInterface &$db = null, ?ValidationInterface $validation = null)
     {
-        if( $db === null ) {
-            $db = Database::connect( config('RestServer')->restDatabaseGroup );
+        if ($db === null) {
+            $db = Database::connect(config('RestServer')->restDatabaseGroup);
         }
 
         $this->table = config('RestServer')->restKeysTable;
         $this->allowedFields = [ config('RestServer')->restKeyColumn, 'level', 'ignore_limits', 'is_private_key' ];
 
-        parent::__construct( $db, $validation );
+        parent::__construct($db, $validation);
     }
 
     /*public function setTableName( $tableName )

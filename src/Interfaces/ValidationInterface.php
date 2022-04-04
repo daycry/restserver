@@ -1,6 +1,10 @@
-<?php namespace Daycry\RestServer\Interfaces;
+<?php
+
+namespace Daycry\RestServer\Interfaces;
 
 /**
  * @package Daycry\RestServer\Interfaces
  */
-interface ValidationInterface {}
+interface ValidationInterface
+{
+}

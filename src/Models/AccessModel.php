@@ -1,4 +1,5 @@
 <?php
+
 namespace Daycry\RestServer\Models;
 
 use CodeIgniter\Model;
@@ -33,13 +34,13 @@ class AccessModel extends Model
 
     public function __construct(?ConnectionInterface &$db = null, ?ValidationInterface $validation = null)
     {
-        if( $db === null ) {
-            $db = Database::connect( config('RestServer')->restDatabaseGroup );
+        if ($db === null) {
+            $db = Database::connect(config('RestServer')->restDatabaseGroup);
         }
 
         $this->table = config('RestServer')->restAccessTable;
 
-        parent::__construct( $db, $validation );
+        parent::__construct($db, $validation);
     }
 
     /*public function setTableName( $tableName )

@@ -1,4 +1,6 @@
-<?php namespace Daycry\RestServer;
+<?php
+
+namespace Daycry\RestServer;
 
 use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\HTTP\RequestInterface;
@@ -19,7 +21,7 @@ class RestServer extends ResourceController
 {
     /**
      * Request of petition
-     * 
+     *
      * @var CodeIgniter\HTTP\RequestInterface
      */
     protected $request = null;
@@ -31,31 +33,31 @@ class RestServer extends ResourceController
 
     /**
      * DBGroup
-     * 
+     *
      * @var Config\Database
      */
     protected $db = null;
 
     /**
-	 * Doctrine Instance
-	 */
+     * Doctrine Instance
+     */
     protected $doctrine = null;
 
     /**
-	 * Encryption Instance
-     * 
+     * Encryption Instance
+     *
      * @var Daycry\Encryption\Encryption
-	 */
+     */
     protected $encryption = null;
 
     /**
-	 * Validation
-	 */
+     * Validation
+     */
     protected $validator = null;
 
     /**
-	 * Language
-	 */
+     * Language
+     */
     protected $lang = null;
 
     /**
@@ -79,7 +81,7 @@ class RestServer extends ResourceController
 
     /**
      * Auth method
-     * 
+     *
      * @var class
      */
     private $authMethodclass = null;
@@ -162,13 +164,15 @@ class RestServer extends ResourceController
      *
      * @return void
      */
-    protected function earlyChecks(){}
+    protected function earlyChecks()
+    {
+    }
 
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
-	{
-        helper( 'security' );
+    {
+        helper('security');
 
-        parent::initController( $request, $response, $logger );
+        parent::initController($request, $response, $logger);
 
         $this->encryption =  new \Daycry\Encryption\Encryption();
         $this->request = $request;
@@ -176,31 +180,31 @@ class RestServer extends ResourceController
         $this->responseFormat = new \stdClass();
 
         //$this->db = Database::connect( service('settings')->get( 'Daycry\RestServer\RestServer.restDatabaseGroup' ) );
-        $this->db = Database::connect( config('RestServer')->restDatabaseGroup );
+        $this->db = Database::connect(config('RestServer')->restDatabaseGroup);
 
-        if( class_exists( '\Daycry\Doctrine\Doctrine' ) ){ $this->doctrine = \Config\Services::doctrine(); }
+        if (class_exists('\Daycry\Doctrine\Doctrine')) {
+            $this->doctrine = \Config\Services::doctrine();
+        }
 
         // Rest server config
-        $this->_restConfig = config( 'RestServer' );
+        $this->_restConfig = config('RestServer');
 
-        $this->lang = $request->negotiate( 'language', config( 'App' )->supportedLocales );
+        $this->lang = $request->negotiate('language', config('App')->supportedLocales);
 
         //set override Petition
-        if( $this->_restConfig->restEnableOverridePetition === true )
-        {
+        if ($this->_restConfig->restEnableOverridePetition === true) {
             $this->_petition = $this->_getPetition();
         }
 
         // Log the loading time to the log table
-        if( 
-            ( is_null( $this->_petition ) && $this->_restConfig->restEnableLogging === true ) ||
-            ( $this->_restConfig->restEnableLogging === true && ( !is_null( $this->_petition ) && is_null( $this->_petition->log ) ) ) ||
-            ( !is_null( $this->_petition ) && $this->_petition->log ) 
-        )
-        {
+        if (
+            (is_null($this->_petition) && $this->_restConfig->restEnableLogging === true) ||
+            ($this->_restConfig->restEnableLogging === true && (!is_null($this->_petition) && is_null($this->_petition->log))) ||
+            (!is_null($this->_petition) && $this->_petition->log)
+        ) {
             $this->_isLogAuthorized = true;
             $this->_benchmark = \Config\Services::timer();
-            $this->_benchmark->start( 'petition' );
+            $this->_benchmark->start('petition');
         }
 
         // Try to find a format for the response
@@ -210,20 +214,19 @@ class RestServer extends ResourceController
         $this->_detectInputFormat();
 
         // Check for CORS access request
-        if( $this->_restConfig->checkCors === TRUE )
-        {
+        if ($this->_restConfig->checkCors === true) {
             $this->_checkCors();
         }
 
         // Set up the query parameters
         $this->_parseQuery();
         $this->_parsePost();
-        $this->_queryArgs = array_merge( $this->_queryArgs, $this->_detectSegment() );
+        $this->_queryArgs = array_merge($this->_queryArgs, $this->_detectSegment());
 
         //get header vars
         $this->_headArgs = $this->_getHeaders();
 
-        $this->args = array_merge( $this->_queryArgs, $this->_headArgs, $this->_postArgs );
+        $this->args = array_merge($this->_queryArgs, $this->_headArgs, $this->_postArgs);
 
         // Extend this function to apply additional checking early on in the process
         $this->earlyChecks();
@@ -255,10 +258,9 @@ class RestServer extends ResourceController
     protected function _getHeaders()
     {
         $headers = array_map(
-            function( $header )
-            { 
-                return $header->getValueLine(); 
-            }, 
+            function ($header) {
+                return $header->getValueLine();
+            },
             $this->request->getHeaders()
         );
 
@@ -273,22 +275,18 @@ class RestServer extends ResourceController
     private function _detectSegment()
     {
         $i = 0;
-		$lastval = '';
+        $lastval = '';
         $retval = array();
 
-		foreach( $this->request->uri->getSegments() as $seg )
-		{
-			if ( $i % 2 )
-			{
-				$retval[ $lastval ] = $seg;
-			}
-			else
-			{
-				$retval[ $seg ] = NULL;
-				$lastval = $seg;
-			}
+        foreach ($this->request->uri->getSegments() as $seg) {
+            if ($i % 2) {
+                $retval[ $lastval ] = $seg;
+            } else {
+                $retval[ $seg ] = null;
+                $lastval = $seg;
+            }
 
-			$i++;
+            $i++;
         }
 
         return $retval;
@@ -296,27 +294,24 @@ class RestServer extends ResourceController
 
     /**
      * Get petition of request
-     * 
+     *
      * @return string|null Supported input format; otherwise, NULL
      * @access private
      */
     private function _getPetition()
     {
         //set Operation
-        $petitionModel = new \Daycry\RestServer\Models\PetitionModel( $this->db );
+        $petitionModel = new \Daycry\RestServer\Models\PetitionModel($this->db);
         //$petitionModel->setTableName( $this->_restConfig->configRestPetitionsTable );
-        
-        $petition = $petitionModel->where( 'controller', $this->router->controllerName() )->where( 'method', $this->router->methodName() )->where( 'http', $this->request->getMethod() )->first();
 
-        if( !$petition )
-        {
-            $petition = $petitionModel->where( 'controller', $this->router->controllerName() )->where( 'method', $this->router->methodName() )->where( 'http', '*' )->first();
-            if( !$petition )
-            {
-                $petition = $petitionModel->where( 'controller', $this->router->controllerName() )->where( 'method', null )->where( 'http', $this->request->getMethod() )->first();
-                if( !$petition )
-                {
-                    $petition = $petitionModel->where( 'controller', $this->router->controllerName() )->where( 'method', null )->where( 'http', null )->first();
+        $petition = $petitionModel->where('controller', $this->router->controllerName())->where('method', $this->router->methodName())->where('http', $this->request->getMethod())->first();
+
+        if (!$petition) {
+            $petition = $petitionModel->where('controller', $this->router->controllerName())->where('method', $this->router->methodName())->where('http', '*')->first();
+            if (!$petition) {
+                $petition = $petitionModel->where('controller', $this->router->controllerName())->where('method', null)->where('http', $this->request->getMethod())->first();
+                if (!$petition) {
+                    $petition = $petitionModel->where('controller', $this->router->controllerName())->where('method', null)->where('http', null)->first();
                 }
             }
         }
@@ -331,10 +326,14 @@ class RestServer extends ResourceController
      */
     private function _authOverrideCheck()
     {
-        if( !$this->_petition ){ return false; }
-        if( !$this->_petition->auth ){ return false; }
+        if (!$this->_petition) {
+            return false;
+        }
+        if (!$this->_petition->auth) {
+            return false;
+        }
 
-        $this->user = $this->_getAuthMethod( \strtolower( $this->_petition->auth ) );
+        $this->user = $this->_getAuthMethod(\strtolower($this->_petition->auth));
 
         return true;
     }
@@ -342,16 +341,14 @@ class RestServer extends ResourceController
     /**
      * Get a auth method
      */
-    private function _getAuthMethod( string $method )
+    private function _getAuthMethod(string $method)
     {
         $classMap = $this->_restConfig->restAuthClassMap;
-        if( $method && isset( $classMap[ \strtolower( $method ) ] ) )
-        {
-            $method = \strtolower( $method );
+        if ($method && isset($classMap[ \strtolower($method) ])) {
+            $method = \strtolower($method);
             $this->authMethodclass = new $classMap[ $method ]();
 
-            if( \is_callable( [ $this->authMethodclass, 'validate' ] ) )
-            {
+            if (\is_callable([ $this->authMethodclass, 'validate' ])) {
                 return $this->authMethodclass->validate();
             }
         }
@@ -365,20 +362,17 @@ class RestServer extends ResourceController
      * @access private
      * @return string|null Supported input format; otherwise, NULL
      */
-    private function _detectInputFormat() :void
+    private function _detectInputFormat(): void
     {
         //$content_type = $this->request->getServer( 'CONTENT_TYPE' );
-        $content_type = $this->request->getHeaderLine( 'CONTENT-TYPE' );
+        $content_type = $this->request->getHeaderLine('CONTENT-TYPE');
 
-        if( empty( $content_type ) === false )
-        {
-            foreach( config( 'Format' )->supportedResponseFormats as $type )
-            {
+        if (empty($content_type) === false) {
+            foreach (config('Format')->supportedResponseFormats as $type) {
                 // $type = mime type e.g. application/json
-                if( $content_type === $type )
-                {
-                    $ft = explode( '/', $content_type );
-                    $this->setFormat( end( $ft ) );
+                if ($content_type === $type) {
+                    $ft = explode('/', $content_type);
+                    $this->setFormat(end($ft));
                     $this->inputFormat = $type;
                 }
             }
@@ -394,15 +388,14 @@ class RestServer extends ResourceController
     private function _detectOutputFormat()
     {
         // Response Format - If no Header Accept get default format
-        $ft = $this->request->negotiate( 'media', config( 'Format' )->supportedResponseFormats );
+        $ft = $this->request->negotiate('media', config('Format')->supportedResponseFormats);
 
-        $f = explode( "/", $ft );
-        if( isset( $f[ 1 ] ) )
-        {
+        $f = explode("/", $ft);
+        if (isset($f[ 1 ])) {
             $this->responseFormat->format = $f[ 1 ];
             $this->responseFormat->mime = $ft;
 
-            $this->setResponseFormat( $this->responseFormat->format );
+            $this->setResponseFormat($this->responseFormat->format);
             $formatter = $this->format(); //call this function for force output format
         }
     }
@@ -416,10 +409,9 @@ class RestServer extends ResourceController
     private function _checkBlacklistAuth()
     {
         // Match an ip address in a blacklist e.g. 127.0.0.0, 0.0.0.0
-        $pattern = sprintf( '/(?:,\s*|^)\Q%s\E(?=,\s*|$)/m', $this->request->getIPAddress() );
+        $pattern = sprintf('/(?:,\s*|^)\Q%s\E(?=,\s*|$)/m', $this->request->getIPAddress());
 
-        if ( preg_match( $pattern, $this->_restConfig->restIpBlacklist ) )
-        {
+        if (preg_match($pattern, $this->_restConfig->restIpBlacklist)) {
             throw UnauthorizedException::forIpDenied();
         }
     }
@@ -432,16 +424,14 @@ class RestServer extends ResourceController
      */
     private function _checkWhitelistAuth()
     {
-        $whitelist = explode( ',', $this->_restConfig->restIpWhitelist );
-        array_push( $whitelist, '127.0.0.1', '0.0.0.0' );
+        $whitelist = explode(',', $this->_restConfig->restIpWhitelist);
+        array_push($whitelist, '127.0.0.1', '0.0.0.0');
 
-        foreach( $whitelist as &$ip )
-        {
-            $ip = trim( $ip );
+        foreach ($whitelist as &$ip) {
+            $ip = trim($ip);
         }
 
-        if( in_array( $this->request->getIPAddress(), $whitelist ) === false )
-        {
+        if (in_array($this->request->getIPAddress(), $whitelist) === false) {
             throw UnauthorizedException::forIpDenied();
         }
     }
@@ -458,31 +448,27 @@ class RestServer extends ResourceController
 
         // Find the key from server or arguments
         $key = null;
-        if( ( $key = isset( $this->args[ $this->_restConfig->restKeyName ] ) ? $this->args[ $this->_restConfig->restKeyName ] : $this->request->getHeaderLine( $this->_restConfig->restKeyName ) ) )
-        {
-            $keyModel = new \Daycry\RestServer\Models\KeyModel( $this->db );
+        if (($key = isset($this->args[ $this->_restConfig->restKeyName ]) ? $this->args[ $this->_restConfig->restKeyName ] : $this->request->getHeaderLine($this->_restConfig->restKeyName))) {
+            $keyModel = new \Daycry\RestServer\Models\KeyModel($this->db);
             //$keyModel->setTableName( $this->_restConfig->restKeysTable );
             //$keyModel->setKeyName( $this->_restConfig->restKeyColumn );
 
-            if( !( $row = $keyModel->where( $this->_restConfig->restKeyColumn, $key )->first() ) )
-            {
-                throw UnauthorizedException::forInvalidApiKey( $key );
+            if (!($row = $keyModel->where($this->_restConfig->restKeyColumn, $key)->first())) {
+                throw UnauthorizedException::forInvalidApiKey($key);
             }
 
             $this->key = $row->{ $this->_restConfig->restKeyColumn };
 
-            if( $this->_restConfig->userModelClass )
-            {
+            if ($this->_restConfig->userModelClass) {
                 //Get User Model Information
-                $userModel = new $this->_restConfig->userModelClass( $this->db );
+                $userModel = new $this->_restConfig->userModelClass($this->db);
 
-                if( $userModel instanceof UserAbstract === false )
-                {
+                if ($userModel instanceof UserAbstract === false) {
                     throw \Daycry\RestServer\Exceptions\UserException::forInvalidUserClass();
                 }
 
                 //$userModel->setTableName( $this->_restConfig->restUsersTable, $this->_restConfig->userKeyColumn );
-                $user = $userModel->where( $this->_restConfig->userKeyColumn, $row->id )->first();
+                $user = $userModel->where($this->_restConfig->userKeyColumn, $row->id)->first();
 
                 $row->user = $user;
             }
@@ -493,44 +479,35 @@ class RestServer extends ResourceController
              * If "is private key" is enabled, compare the ip address with the list
              * of valid ip addresses stored in the database
              */
-            if( empty( $row->is_private_key ) === false )
-            {
+            if (empty($row->is_private_key) === false) {
                 $found_address = false;
                 // Check for a list of valid ip addresses
-                if( isset( $row->ip_addresses ) )
-                {
+                if (isset($row->ip_addresses)) {
                     $ip_address = $this->request->getIPAddress();
-                    
+
                     // multiple ip addresses must be separated using a comma, explode and loop
-                    $list_ip_addresses = explode( ',', $row->ip_addresses );
-                    
-                    foreach( $list_ip_addresses as $list_ip )
-                    {
-                        if( strpos( $list_ip, '/' ) !== false )
-                        {
+                    $list_ip_addresses = explode(',', $row->ip_addresses);
+
+                    foreach ($list_ip_addresses as $list_ip) {
+                        if (strpos($list_ip, '/') !== false) {
                             //check IP is in the range
-                            $found_address = \Daycry\RestServer\Libraries\CheckIp::ipv4_in_range( trim( $list_ip ), $row->ip_addresses );
-                        }
-                        else if( $ip_address === trim( $list_ip ) )
-                        {
+                            $found_address = \Daycry\RestServer\Libraries\CheckIp::ipv4_in_range(trim($list_ip), $row->ip_addresses);
+                        } elseif ($ip_address === trim($list_ip)) {
                             // there is a match, set the the value to TRUE and break out of the loop
                             $found_address = true;
                             break;
                         }
                     }
 
-                    if( !$found_address )
-                    {
+                    if (!$found_address) {
                         throw UnauthorizedException::forIpDenied();
                     }
-
                 } else {
-                    
                     throw UnauthorizedException::forIpDenied();
                 }
             }
-        }else{
-            throw UnauthorizedException::forInvalidApiKey( $key );
+        } else {
+            throw UnauthorizedException::forInvalidApiKey($key);
         }
     }
 
@@ -542,30 +519,25 @@ class RestServer extends ResourceController
     protected function _checkAccess()
     {
         // If we don't want to check access, just return TRUE
-        if( $this->_restConfig->restEnableAccess === false )
-        {
+        if ($this->_restConfig->restEnableAccess === false) {
             return true;
         }
 
-        $accessModel = new \Daycry\RestServer\Models\AccessModel( $this->db );
+        $accessModel = new \Daycry\RestServer\Models\AccessModel($this->db);
         //$accessModel->setTableName( $this->_restConfig->restAccessTable );
 
         //check if the key has all_access
-        $results = $accessModel->where( 'api_key', $this->key )->where( 'controller', $this->router->controllerName() )->findAll();
+        $results = $accessModel->where('api_key', $this->key)->where('controller', $this->router->controllerName())->findAll();
 
         $return = false;
 
-        if( !empty( $results ) )
-        {
-            foreach( $results as $result )
-            {
-                if( $result->all_access )
-                {
+        if (!empty($results)) {
+            foreach ($results as $result) {
+                if ($result->all_access) {
                     $return = true;
                     break;
-                }else{
-                    if( $this->router->methodName() == $result->method )
-                    {
+                } else {
+                    if ($this->router->methodName() == $result->method) {
                         $return = true;
                         break;
                     }
@@ -585,19 +557,16 @@ class RestServer extends ResourceController
      */
     private function _checkLimit()
     {
-        if( $this->_petition )
-        {
+        if ($this->_petition) {
             // They are special, or it might not even have a limit
-            if( isset( $this->apiUser ) && isset( $this->apiUser->ignore_limits ) && empty( $this->apiUser->ignore_limits ) === false )
-            {
+            if (isset($this->apiUser) && isset($this->apiUser->ignore_limits) && empty($this->apiUser->ignore_limits) === false) {
                 // Everything is fine
                 return true;
             }
 
-            $api_key = isset( $this->key ) ? $this->key : null;
+            $api_key = isset($this->key) ? $this->key : null;
 
-            switch( $this->_restConfig->restLimitsMethod )
-            {
+            switch ($this->_restConfig->restLimitsMethod) {
                 case 'IP_ADDRESS':
                     $api_key = $this->request->getIPAddress();
                     $limited_uri = 'ip-address:' . $api_key;
@@ -618,8 +587,7 @@ class RestServer extends ResourceController
                     break;
             }
 
-            if( $this->_petition->limit === false )
-            {
+            if ($this->_petition->limit === false) {
                 // Everything is fine
                 return true;
             }
@@ -627,18 +595,17 @@ class RestServer extends ResourceController
             // How many times can you get to this method in a defined time_limit (default: 1 hour)?
             $limit = $this->_petition->limit;
 
-            $time_limit = ( isset( $this->_petition->time ) ? $this->_petition->time : 3600 ); // 3600 = 60 * 60
+            $time_limit = (isset($this->_petition->time) ? $this->_petition->time : 3600); // 3600 = 60 * 60
 
 
-            $limitModel = new \Daycry\RestServer\Models\LimitModel( $this->db );
+            $limitModel = new \Daycry\RestServer\Models\LimitModel($this->db);
             //$limitModel->setTableName( $this->_restConfig->restLimitsTable );
 
             // Get data about a keys' usage and limit to one row
-            $result = $limitModel->where( 'uri', $limited_uri )->where( 'api_key', $api_key )->first();
+            $result = $limitModel->where('uri', $limited_uri)->where('api_key', $api_key)->first();
 
             // No calls have been made for this key
-            if( $result === null )
-            {
+            if ($result === null) {
                 $data = [
                     'uri'          => $limited_uri,
                     'api_key'      => $api_key,
@@ -646,30 +613,28 @@ class RestServer extends ResourceController
                     'hour_started' => time(),
                 ];
 
-                $limitModel->save( $data );
+                $limitModel->save($data);
             }
 
             // Been a time limit (or by default an hour) since they called
-            elseif( $result->hour_started < ( time() - $time_limit ) )
-            {
+            elseif ($result->hour_started < (time() - $time_limit)) {
                 $result->hour_started = time();
                 $result->count = 1;
 
                 // Reset the started period and count
-                $limitModel->save( $result );
+                $limitModel->save($result);
             }
 
             // They have called within the hour, so lets update
             else {
                 // The limit has been exceeded
-                if( $result->count >= $limit )
-                {
+                if ($result->count >= $limit) {
                     return false;
                 }
 
                 // Increase the count by one
                 $result->count = $result->count + 1;
-                $limitModel->save( $result );
+                $limitModel->save($result);
             }
         }
 
@@ -685,47 +650,39 @@ class RestServer extends ResourceController
     protected function _checkCors()
     {
         // Convert the config items into strings
-        $allowed_headers = implode( ', ', $this->_restConfig->allowedCorsHeaders );
-        $allowed_methods = implode( ', ', $this->_restConfig->allowedCorsMethods );
+        $allowed_headers = implode(', ', $this->_restConfig->allowedCorsHeaders);
+        $allowed_methods = implode(', ', $this->_restConfig->allowedCorsMethods);
 
         // If we want to allow any domain to access the API
-        if( $this->_restConfig->allowAnyCorsDomain === true )
-        {
-            header( 'Access-Control-Allow-Origin: *' );
-            header( 'Access-Control-Allow-Headers: ' . $allowed_headers );
-            header( 'Access-Control-Allow-Methods: ' . $allowed_methods );
-        }
-        else
-        {
+        if ($this->_restConfig->allowAnyCorsDomain === true) {
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Headers: ' . $allowed_headers);
+            header('Access-Control-Allow-Methods: ' . $allowed_methods);
+        } else {
             // We're going to allow only certain domains access
             // Store the HTTP Origin header
-            $origin = $this->request->getServer( 'HTTP_ORIGIN' );
-            if( $origin === NULL )
-            {
+            $origin = $this->request->getServer('HTTP_ORIGIN');
+            if ($origin === null) {
                 $origin = '';
             }
 
             // If the origin domain is in the allowed_cors_origins list, then add the Access Control headers
-            if( in_array( $origin, $this->_restConfig->allowedCorsOrigins ) )
-            {
-                header( 'Access-Control-Allow-Origin: ' . $origin );
-                header( 'Access-Control-Allow-Headers: ' . $allowed_headers );
-                header( 'Access-Control-Allow-Methods: ' . $allowed_methods );
+            if (in_array($origin, $this->_restConfig->allowedCorsOrigins)) {
+                header('Access-Control-Allow-Origin: ' . $origin);
+                header('Access-Control-Allow-Headers: ' . $allowed_headers);
+                header('Access-Control-Allow-Methods: ' . $allowed_methods);
             }
         }
 
         // If there are headers that should be forced in the CORS check, add them now
-        if( is_array( $this->_restConfig->forcedCorsHeaders ) )
-        {
-            foreach( $this->_restConfig->forcedCorsHeaders as $header => $value )
-            {
-                header( $header.': '.$value );
+        if (is_array($this->_restConfig->forcedCorsHeaders)) {
+            foreach ($this->_restConfig->forcedCorsHeaders as $header => $value) {
+                header($header.': '.$value);
             }
         }
 
         // If the request HTTP method is 'OPTIONS', kill the response and send it to the client
-        if( $this->request->getMethod() === 'options' )
-        {
+        if ($this->request->getMethod() === 'options') {
             exit;
         }
     }
@@ -740,142 +697,115 @@ class RestServer extends ResourceController
      *
      * @throws Exception
      */
-    public function _remap( $method, ...$params )
+    public function _remap($method, ...$params)
     {
         $parser = \Config\Services::parser();
 
-        try
-        {
-            if( config( 'App' )->forceGlobalSecureRequests && $this->request->isSecure() === false )
-            {
+        try {
+            if (config('App')->forceGlobalSecureRequests && $this->request->isSecure() === false) {
                 throw ForbiddenException::forUnsupportedProtocol();
             }
 
-            if( $this->request->isAJAX() === false && $this->_restConfig->restAjaxOnly )
-            {
+            if ($this->request->isAJAX() === false && $this->_restConfig->restAjaxOnly) {
                 throw ForbiddenException::forOnlyAjax();
             }
 
             // Check to see if the current IP address is blacklisted
-            if( $this->_restConfig->restIpBlacklistEnabled === true )
-            {
+            if ($this->_restConfig->restIpBlacklistEnabled === true) {
                 $this->_checkBlacklistAuth();
             }
 
-            if( $this->_restConfig->restIpWhitelistEnabled === true )
-            {
+            if ($this->_restConfig->restIpWhitelistEnabled === true) {
                 $this->_checkWhitelistAuth();
             }
 
             $usekey = $this->_restConfig->restEnableKeys;
 
             // Check if there is a specific auth type for the current class/method
-            if( $this->_petition )
-            {
+            if ($this->_petition) {
                 $this->_authOverride = $this->_authOverrideCheck();
-                
-                if( isset( $this->_petition->key ) )
-                {
-                    $usekey = ( $this->_petition->key === null || $this->_petition->key == 1 ) ? $this->_restConfig->restEnableKeys : false;
+
+                if (isset($this->_petition->key)) {
+                    $usekey = ($this->_petition->key === null || $this->_petition->key == 1) ? $this->_restConfig->restEnableKeys : false;
                 }
             }
 
             // Checking for keys? GET TO WorK!
-            if( $usekey )
-            {
+            if ($usekey) {
                 $this->_detectApiKey();
             }
 
             // When there is no specific override for the current class/method, use the default auth value set in the config
-            if( $this->_authOverride === false )
-            {
-                $this->user = $this->_getAuthMethod( $this->_restConfig->restAuth );
+            if ($this->_authOverride === false) {
+                $this->user = $this->_getAuthMethod($this->_restConfig->restAuth);
             }
 
             // Check to see if this key has access to the requested controller
-            if( $this->_restConfig->restEnableKeys && empty( $this->key ) === false && $this->_checkAccess() === false )
-            {    
+            if ($this->_restConfig->restEnableKeys && empty($this->key) === false && $this->_checkAccess() === false) {
                 throw UnauthorizedException::forApiKeyUnauthorized();
             }
-            
-            if( $this->inputFormat == 'application/json' )
-            {
+
+            if ($this->inputFormat == 'application/json') {
                 $this->content = $this->request->getJSON();
-            }else{
+            } else {
                 $this->content = (object)$this->request->getRawInput();
             }
 
-            $this->args = array_merge( $this->args, (array)$this->content );
+            $this->args = array_merge($this->args, (array)$this->content);
 
             // Doing key related stuff? Can only do it if they have a key right?
-            if( $this->_restConfig->restEnableKeys && empty( $this->key ) === false )
-            {
+            if ($this->_restConfig->restEnableKeys && empty($this->key) === false) {
                 // Check the limit
-                if( $this->_restConfig->restEnableLimits && $this->_checkLimit() === false )
-                {
+                if ($this->_restConfig->restEnableLimits && $this->_checkLimit() === false) {
                     throw UnauthorizedException::forApiKeyLimit();
                 }
 
                 // If no level is set use 0, they probably aren't using permissions
-                $level = ( $this->_petition && !empty( $this->_petition->level ) ) ? $this->_petition->level : 0;
-                
+                $level = ($this->_petition && !empty($this->_petition->level)) ? $this->_petition->level : 0;
+
                 // If no level is set, or it is lower than/equal to the key's level
                 $authorized = $level <= $this->apiUser->level;
 
-                if( $authorized === false )
-                {
+                if ($authorized === false) {
                     // They don't have good enough perms
                     throw UnauthorizedException::forApiKeyPermissions();
                 }
             }
             //check request limit by ip without login
-            elseif( $this->_restConfig->restLimitsMethod == 'IP_ADDRESS' && $this->_restConfig->restEnableLimits && $this->_checkLimit() === false )
-            {
+            elseif ($this->_restConfig->restLimitsMethod == 'IP_ADDRESS' && $this->_restConfig->restEnableLimits && $this->_checkLimit() === false) {
                 throw UnauthorizedException::forIpAddressTimeLimit();
             }
 
-            return \call_user_func_array( [ $this, $this->router->methodName() ], $params );
-
-        } catch ( \Daycry\RestServer\Interfaces\UnauthorizedInterface $ex ) {
-
-            return $this->failUnauthorized( $ex->getMessage() );
-
-        } catch ( \Daycry\RestServer\Interfaces\ForbiddenInterface $ex ) {
-
-            return $this->failForbidden( $ex->getMessage() );
-
-        } catch ( \Daycry\RestServer\Interfaces\ValidationInterface $ex ) {
-
-            return $this->fail( $this->validator->getErrors() );
-
-        } catch ( \Exception $ex ) {
-
-            if( $ex->getCode() )
-            {
-                return $this->fail( $ex->getMessage(), $ex->getCode() );
-            }else{
-                return $this->fail( $ex->getMessage() );
+            return \call_user_func_array([ $this, $this->router->methodName() ], $params);
+        } catch (\Daycry\RestServer\Interfaces\UnauthorizedInterface $ex) {
+            return $this->failUnauthorized($ex->getMessage());
+        } catch (\Daycry\RestServer\Interfaces\ForbiddenInterface $ex) {
+            return $this->failForbidden($ex->getMessage());
+        } catch (\Daycry\RestServer\Interfaces\ValidationInterface $ex) {
+            return $this->fail($this->validator->getErrors());
+        } catch (\Exception $ex) {
+            if ($ex->getCode()) {
+                return $this->fail($ex->getMessage(), $ex->getCode());
+            } else {
+                return $this->fail($ex->getMessage());
             }
-            
         }
     }
 
-    protected function validation( String $rules, \Config\Validation $config = null, bool $getShared = true, bool $filter = false )
+    protected function validation(String $rules, \Config\Validation $config = null, bool $getShared = true, bool $filter = false)
     {
-        $this->validator =  \Config\Services::validation( $config, $getShared );
+        $this->validator =  \Config\Services::validation($config, $getShared);
 
-        if( !$this->validator->run( (array)$this->content, $rules ) )
-        {
+        if (!$this->validator->run((array)$this->content, $rules)) {
             throw ValidationException::validationError();
         }
 
-        if( $filter )
-        {
-            foreach( $this->content as $key => $value )
-            {
-                if( !array_key_exists( $key, $config->{$rules} ) )
-                {
-                    throw ForbiddenException::validationtMethodParamsError( $key );
+        if ($filter) {
+            if ($this->content) {
+                foreach ($this->content as $key => $value) {
+                    if (!array_key_exists($key, $config->{$rules})) {
+                        throw ForbiddenException::validationtMethodParamsError($key);
+                    }
                 }
             }
         }
@@ -888,47 +818,45 @@ class RestServer extends ResourceController
      *
      * @return bool TRUE the data was inserted; otherwise, FALSE
      */
-    protected function _logRequest( $authorized = false )
+    protected function _logRequest($authorized = false)
     {
         // Insert the request into the log table
-        $logModel = new \Daycry\RestServer\Models\LogModel( $this->db );
+        $logModel = new \Daycry\RestServer\Models\LogModel($this->db);
         //$logModel->setTableName( $this->_restConfig->configRestLogsTable );
 
-        $params = $this->args ? ( $this->_restConfig->restLogsJsonParams === true ? \json_encode( $this->args ) : \serialize( $this->args ) ) : null;
-        $params = ( $params != null && $this->_restConfig->restEncryptLogParams === true ) ? $this->encryption->encrypt( $params ) : $params;
+        $params = $this->args ? ($this->_restConfig->restLogsJsonParams === true ? \json_encode($this->args) : \serialize($this->args)) : null;
+        $params = ($params != null && $this->_restConfig->restEncryptLogParams === true) ? $this->encryption->encrypt($params) : $params;
 
         $data = [
             'uri'        => $this->request->uri,
             'method'     => $this->request->getMethod(),
             'params'     => $params,
-            'api_key'    => isset( $this->key ) ? $this->key : '',
+            'api_key'    => isset($this->key) ? $this->key : '',
             'ip_address' => $this->request->getIPAddress(),
-            'duration'   => $this->_benchmark->getElapsedTime( 'petition' ),
+            'duration'   => $this->_benchmark->getElapsedTime('petition'),
             'response_code' => $this->response->getStatusCode(),
             'authorized' => $authorized,
         ];
-        $logModel->save( $data );
+        $logModel->save($data);
         $this->_logId = $logModel->getInsertID();
     }
 
     /**
      * De-constructor.
-     * 
+     *
      * @return void
      */
     public function __destruct()
     {
         // Log the loading time to the log table
-        if( $this->_isLogAuthorized === true )
-        {
-            $this->_benchmark->stop( 'petition' );
-            $authorized = ( $this->authMethodclass && $this->authMethodclass->getIsValidRequest() ) ? $this->authMethodclass->getIsValidRequest() : true;
-            $this->_logRequest( $authorized );
+        if ($this->_isLogAuthorized === true) {
+            $this->_benchmark->stop('petition');
+            $authorized = ($this->authMethodclass && $this->authMethodclass->getIsValidRequest()) ? $this->authMethodclass->getIsValidRequest() : true;
+            $this->_logRequest($authorized);
         }
 
         //reset previous validation at end
-        if( $this->validator )
-        {
+        if ($this->validator) {
             $this->validator->reset();
         }
     }

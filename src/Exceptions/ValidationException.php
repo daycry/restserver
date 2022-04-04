@@ -1,4 +1,6 @@
-<?php namespace Daycry\RestServer\Exceptions;
+<?php
+
+namespace Daycry\RestServer\Exceptions;
 
 class ValidationException extends \RuntimeException implements \Daycry\RestServer\Interfaces\ValidationInterface
 {
@@ -6,6 +8,6 @@ class ValidationException extends \RuntimeException implements \Daycry\RestServe
 
     public static function validationError()
     {
-        return new self( "" );
+        return new self("");
     }
 }

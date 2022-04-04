@@ -1,4 +1,5 @@
 <?php
+
 namespace Daycry\RestServer\Models;
 
 use Daycry\RestServer\Libraries\User\UserAbstract;

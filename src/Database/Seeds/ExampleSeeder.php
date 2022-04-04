@@ -45,10 +45,9 @@ class ExampleSeeder extends Seeder
 
     private function _getConfig()
     {
-        $config = config( 'RestServer' );
+        $config = config('RestServer');
 
-        if( !$config )
-        {
+        if (!$config) {
             $config = new \Daycry\RestServer\Config\RestServer();
         }
 

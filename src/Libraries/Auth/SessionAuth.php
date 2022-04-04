@@ -1,4 +1,5 @@
 <?php
+
 namespace Daycry\RestServer\Libraries\Auth;
 
 use Daycry\RestServer\Interfaces\AuthInterface;
@@ -18,13 +19,11 @@ class SessionAuth extends BaseAuth implements AuthInterface
         $session = \Config\Services::session();
 
         // If false, then the user isn't logged in
-        if( !$session->get( $this->restConfig->authSource ) )
-        {
+        if (!$session->get($this->restConfig->authSource)) {
             $this->isValidRequest = false;
             throw UnauthorizedException::forUnauthorized();
         }
 
-        return $session->get( $this->restConfig->authSource );
-
+        return $session->get($this->restConfig->authSource);
     }
 }

@@ -1,4 +1,6 @@
-<?php namespace Daycry\RestServer\Exceptions;
+<?php
+
+namespace Daycry\RestServer\Exceptions;
 
 class ForbiddenException extends \RuntimeException implements \Daycry\RestServer\Interfaces\ForbiddenInterface
 {
@@ -6,17 +8,17 @@ class ForbiddenException extends \RuntimeException implements \Daycry\RestServer
 
     public static function forUnsupportedProtocol()
     {
-        return new self( lang( 'Rest.textRestUnsupported' ) );
+        return new self(lang('Rest.textRestUnsupported'));
     }
 
     public static function forOnlyAjax()
     {
-        return new self( lang( 'Rest.textRestAjaxOnly' ) );
+        return new self(lang('Rest.textRestAjaxOnly'));
     }
 
-    public static function validationtMethodParamsError( $param )
+    public static function validationtMethodParamsError($param)
     {
         $parser = \Config\Services::parser();
-        return new self( $parser->setData( array( 'param' => $param ) )->renderString( lang( 'Rest.textInvalidMethodParams' ) ) );
+        return new self($parser->setData(array( 'param' => $param ))->renderString(lang('Rest.textInvalidMethodParams')));
     }
 }
