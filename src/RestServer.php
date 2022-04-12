@@ -584,7 +584,7 @@ class RestServer extends ResourceController
                     break;
             }
 
-            if ($this->_petition->limit === false) {
+            if (boolval($this->_petition->limit) === false) {
                 // Everything is fine
                 return true;
             }
