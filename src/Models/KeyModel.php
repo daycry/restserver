@@ -43,14 +43,4 @@ class KeyModel extends Model
 
         parent::__construct($db, $validation);
     }
-
-    /*public function setTableName( $tableName )
-    {
-        $this->table = $tableName;
-    }
-
-    public function setKeyName( $keyName )
-    {
-        $this->allowedFields = [ $keyName, 'level', 'ignore_limits', 'is_private_key' ];
-    }*/
 }

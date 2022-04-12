@@ -179,9 +179,6 @@ class RestServer extends ResourceController
         $this->router = service('router');
         $this->responseFormat = new \stdClass();
 
-        //$this->db = Database::connect( service('settings')->get( 'Daycry\RestServer\RestServer.restDatabaseGroup' ) );
-        $this->db = Database::connect(config('RestServer')->restDatabaseGroup);
-
         if (class_exists('\Daycry\Doctrine\Doctrine')) {
             $this->doctrine = \Config\Services::doctrine();
         }
@@ -301,7 +298,7 @@ class RestServer extends ResourceController
     private function _getPetition()
     {
         //set Operation
-        $petitionModel = new \Daycry\RestServer\Models\PetitionModel($this->db);
+        $petitionModel = new \Daycry\RestServer\Models\PetitionModel();
         //$petitionModel->setTableName( $this->_restConfig->configRestPetitionsTable );
 
         $petition = $petitionModel->where('controller', $this->router->controllerName())->where('method', $this->router->methodName())->where('http', $this->request->getMethod())->first();
@@ -449,7 +446,7 @@ class RestServer extends ResourceController
         // Find the key from server or arguments
         $key = null;
         if (($key = isset($this->args[ $this->_restConfig->restKeyName ]) ? $this->args[ $this->_restConfig->restKeyName ] : $this->request->getHeaderLine($this->_restConfig->restKeyName))) {
-            $keyModel = new \Daycry\RestServer\Models\KeyModel($this->db);
+            $keyModel = new \Daycry\RestServer\Models\KeyModel();
             //$keyModel->setTableName( $this->_restConfig->restKeysTable );
             //$keyModel->setKeyName( $this->_restConfig->restKeyColumn );
 
@@ -461,7 +458,7 @@ class RestServer extends ResourceController
 
             if ($this->_restConfig->userModelClass) {
                 //Get User Model Information
-                $userModel = new $this->_restConfig->userModelClass($this->db);
+                $userModel = new $this->_restConfig->userModelClass();
 
                 if ($userModel instanceof UserAbstract === false) {
                     throw \Daycry\RestServer\Exceptions\UserException::forInvalidUserClass();
@@ -523,7 +520,7 @@ class RestServer extends ResourceController
             return true;
         }
 
-        $accessModel = new \Daycry\RestServer\Models\AccessModel($this->db);
+        $accessModel = new \Daycry\RestServer\Models\AccessModel();
         //$accessModel->setTableName( $this->_restConfig->restAccessTable );
 
         //check if the key has all_access
@@ -598,7 +595,7 @@ class RestServer extends ResourceController
             $time_limit = (isset($this->_petition->time) ? $this->_petition->time : 3600); // 3600 = 60 * 60
 
 
-            $limitModel = new \Daycry\RestServer\Models\LimitModel($this->db);
+            $limitModel = new \Daycry\RestServer\Models\LimitModel();
             //$limitModel->setTableName( $this->_restConfig->restLimitsTable );
 
             // Get data about a keys' usage and limit to one row
@@ -821,7 +818,7 @@ class RestServer extends ResourceController
     protected function _logRequest($authorized = false)
     {
         // Insert the request into the log table
-        $logModel = new \Daycry\RestServer\Models\LogModel($this->db);
+        $logModel = new \Daycry\RestServer\Models\LogModel();
         //$logModel->setTableName( $this->_restConfig->configRestLogsTable );
 
         $params = $this->args ? ($this->_restConfig->restLogsJsonParams === true ? \json_encode($this->args) : \serialize($this->args)) : null;
@@ -837,6 +834,7 @@ class RestServer extends ResourceController
             'response_code' => $this->response->getStatusCode(),
             'authorized' => $authorized,
         ];
+
         $logModel->save($data);
         $this->_logId = $logModel->getInsertID();
     }

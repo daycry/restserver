@@ -86,7 +86,7 @@ class CreateRestServerTables extends Migration
             'ip_address'               => ['type' => 'varchar', 'constraint' => 45, 'null' => false],
             'duration'                 => ['type' => 'float', 'null' => true, 'default' => null],
             'authorized'               => ['type' => 'tinyint', 'constraint' => 1, 'null' => false],
-            'response_code'            => ['type' => 'tinyint', 'constraint' => 3, 'null' => true, 'default' => 0],
+            'response_code'            => ['type' => 'int', 'constraint' => 11, 'null' => true, 'default' => 0],
             'created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
             'updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
             'deleted_at'               => ['type' => 'datetime', 'null' => true, 'default' => null]

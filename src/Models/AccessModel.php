@@ -42,9 +42,4 @@ class AccessModel extends Model
 
         parent::__construct($db, $validation);
     }
-
-    /*public function setTableName( $tableName )
-    {
-        $this->table = $tableName;
-    }*/
 }
