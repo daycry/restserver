@@ -246,30 +246,6 @@ class RestServer extends BaseConfig
     |
     */
     public $restKeysTable = 'restserver_key';
-
-    /*
-    |--------------------------------------------------------------------------
-    | REST Enable Keys
-    |--------------------------------------------------------------------------
-    |
-    | When set to TRUE, the REST API will look for a column name called 'key'.
-    | If no key is provided, the request will result in an error. To override the
-    | column name see 'rest_key_column'
-    |
-    | Default table schema:
-    |   CREATE TABLE `keys` (
-    |       `id` INT(11) NOT NULL AUTO_INCREMENT,
-    |       `user_id` INT(11) NOT NULL,
-    |       `key` VARCHAR(40) NOT NULL,
-    |       `level` INT(2) NOT NULL,
-    |       `ignore_limits` TINYINT(1) NOT NULL DEFAULT '0',
-    |       `is_private_key` TINYINT(1)  NOT NULL DEFAULT '0',
-    |       `ip_addresses` TEXT NULL DEFAULT NULL,
-    |       `date_created` INT(11) NOT NULL,
-    |       PRIMARY KEY (`id`)
-    |   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-    |
-    */
     public $restEnableKeys = false;
 
     /*
@@ -436,6 +412,19 @@ class RestServer extends BaseConfig
     |
     */
     public $restAccessTable = 'restserver_access';
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enable block Invalid Attempts
+    |--------------------------------------------------------------------------
+    |
+    | IP blocking on consecutive failed attempts
+    |
+    */
+    public $restEnableInvalidAttempts = true;
+    public $restInvalidAttemptsTable = 'restserver_attempts';
+    public $restMaxAttempts = 3;
+    public $restTimeBlocked = 3600;
 
     /*
     |--------------------------------------------------------------------------

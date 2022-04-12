@@ -6,10 +6,14 @@ use CodeIgniter\Database\Migration;
 
 class CreateRestServerTables extends Migration
 {
+    protected $DBGroup = 'default';
+
     public function up()
     {
         $config = $this->_getConfig();
 
+        $this->DBGroup = $config->restDatabaseGroup;
+        
         /*
          * Petitions
          */

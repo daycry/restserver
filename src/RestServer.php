@@ -7,11 +7,7 @@ use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
-use Config\Database;
-
 use Daycry\RestServer\Exceptions\UnauthorizedException;
-use Daycry\RestServer\Exceptions\UnauthorizedInterface;
-
 use Daycry\RestServer\Exceptions\ValidationException;
 use Daycry\RestServer\Exceptions\ForbiddenException;
 
@@ -30,13 +26,6 @@ class RestServer extends ResourceController
      * Router
      */
     protected $router = null;
-
-    /**
-     * DBGroup
-     *
-     * @var Config\Database
-     */
-    protected $db = null;
 
     /**
      * Doctrine Instance
@@ -78,6 +67,13 @@ class RestServer extends ResourceController
      * @var object
      */
     protected $user = false;
+
+    /**
+     * Authorized Petition.
+     *
+     * @var object
+     */
+    protected $authorized = true;
 
     /**
      * Auth method
@@ -409,6 +405,7 @@ class RestServer extends ResourceController
         $pattern = sprintf('/(?:,\s*|^)\Q%s\E(?=,\s*|$)/m', $this->request->getIPAddress());
 
         if (preg_match($pattern, $this->_restConfig->restIpBlacklist)) {
+            $this->authorized = false;
             throw UnauthorizedException::forIpDenied();
         }
     }
@@ -429,6 +426,7 @@ class RestServer extends ResourceController
         }
 
         if (in_array($this->request->getIPAddress(), $whitelist) === false) {
+            $this->authorized = false;
             throw UnauthorizedException::forIpDenied();
         }
     }
@@ -451,6 +449,7 @@ class RestServer extends ResourceController
             //$keyModel->setKeyName( $this->_restConfig->restKeyColumn );
 
             if (!($row = $keyModel->where($this->_restConfig->restKeyColumn, $key)->first())) {
+                $this->authorized = false;
                 throw UnauthorizedException::forInvalidApiKey($key);
             }
 
@@ -497,13 +496,16 @@ class RestServer extends ResourceController
                     }
 
                     if (!$found_address) {
+                        $this->authorized = false;
                         throw UnauthorizedException::forIpDenied();
                     }
                 } else {
+                    $this->authorized = false;
                     throw UnauthorizedException::forIpDenied();
                 }
             }
         } else {
+            $this->authorized = false;
             throw UnauthorizedException::forInvalidApiKey($key);
         }
     }
@@ -546,11 +548,30 @@ class RestServer extends ResourceController
     }
 
     /**
+     * Check if the requests exceed a limit attempts
+     * 
+     */
+    private function _checkAttempt()
+    {
+        $return = true;
+        $attemptModel = new \Daycry\RestServer\Models\AttemptModel();
+        $attempt = $attemptModel->where('ip_address', $this->request->getIPAddress())->first();
+
+        if( $attempt && $attempt->attempts >= $this->_restConfig->restMaxAttempts )
+        {
+            if( $attempt->hour_started <= ( time() - $this->_restConfig->restTimeBlocked ) )
+            {
+                $attemptModel->delete( $attempt->id, true );
+            }else{
+                $return = false;
+            }
+        }
+
+        return $return;
+    }
+
+    /**
      * Check if the requests to a controller method exceed a limit.
-     *
-     * @param string $controller_method The method being called
-     *
-     * @return bool TRUE the call limit is below the threshold; otherwise, FALSE
      */
     private function _checkLimit()
     {
@@ -703,7 +724,14 @@ class RestServer extends ResourceController
                 throw ForbiddenException::forUnsupportedProtocol();
             }
 
+            if( $this->_restConfig->restEnableInvalidAttempts === true && !$this->_checkAttempt())
+            {
+                $this->authorized = false;
+                throw UnauthorizedException::forApiKeyLimit();
+            }
+
             if ($this->request->isAJAX() === false && $this->_restConfig->restAjaxOnly) {
+                $this->authorized = false;
                 throw ForbiddenException::forOnlyAjax();
             }
 
@@ -739,6 +767,7 @@ class RestServer extends ResourceController
 
             // Check to see if this key has access to the requested controller
             if ($this->_restConfig->restEnableKeys && empty($this->key) === false && $this->_checkAccess() === false) {
+                $this->authorized = false;
                 throw UnauthorizedException::forApiKeyUnauthorized();
             }
 
@@ -754,6 +783,7 @@ class RestServer extends ResourceController
             if ($this->_restConfig->restEnableKeys && empty($this->key) === false) {
                 // Check the limit
                 if ($this->_restConfig->restEnableLimits && $this->_checkLimit() === false) {
+                    $this->authorized = false;
                     throw UnauthorizedException::forApiKeyLimit();
                 }
 
@@ -765,21 +795,23 @@ class RestServer extends ResourceController
 
                 if ($authorized === false) {
                     // They don't have good enough perms
+                    $this->authorized = false;
                     throw UnauthorizedException::forApiKeyPermissions();
                 }
             }
             //check request limit by ip without login
             elseif ($this->_restConfig->restLimitsMethod == 'IP_ADDRESS' && $this->_restConfig->restEnableLimits && $this->_checkLimit() === false) {
+                $this->authorized = false;
                 throw UnauthorizedException::forIpAddressTimeLimit();
             }
 
             return \call_user_func_array([ $this, $this->router->methodName() ], $params);
         } catch (\Daycry\RestServer\Interfaces\UnauthorizedInterface $ex) {
-            return $this->failUnauthorized($ex->getMessage());
+            return $this->failUnauthorized($ex->getMessage(), $ex->getCode());
         } catch (\Daycry\RestServer\Interfaces\ForbiddenInterface $ex) {
-            return $this->failForbidden($ex->getMessage());
+            return $this->failForbidden($ex->getMessage(), $ex->getCode());
         } catch (\Daycry\RestServer\Interfaces\ValidationInterface $ex) {
-            return $this->fail($this->validator->getErrors());
+            return $this->fail($this->validator->getErrors(), $ex->getCode());
         } catch (\Exception $ex) {
             if ($ex->getCode()) {
                 return $this->fail($ex->getMessage(), $ex->getCode());
@@ -849,9 +881,30 @@ class RestServer extends ResourceController
         // Log the loading time to the log table
         if ($this->_isLogAuthorized === true) {
             $this->_benchmark->stop('petition');
-            $authorized = ($this->authMethodclass && $this->authMethodclass->getIsValidRequest()) ? $this->authMethodclass->getIsValidRequest() : true;
-            $this->_logRequest($authorized);
+            $this->_logRequest($this->authorized);
         }
+
+        if( $this->_restConfig->restEnableInvalidAttempts === true )
+            {
+                $attemptModel = new \Daycry\RestServer\Models\AttemptModel();
+                $attempt = $attemptModel->where('ip_address', $this->request->getIPAddress())->first();
+                if( $this->authorized === false )
+                {
+                    if ($attempt === null) {
+                        $attempt = [
+                            'ip_address' => $this->request->getIPAddress(),
+                            'attempts'      => 1,
+                            'hour_started' => time(),
+                        ];
+
+                        $attemptModel->save($attempt);
+                    }else{
+                        $attempt->attempts = $attempt->attempts + 1;
+                        $attempt->hour_started = time();
+                        $attemptModel->save($attempt);
+                    }
+                }
+            }
 
         //reset previous validation at end
         if ($this->validator) {
