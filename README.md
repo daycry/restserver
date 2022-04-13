@@ -155,6 +155,57 @@ Example:
     public $userModelClass = \Daycry\RestServer\Models\UserModel::class; //user model Class
     public $userKeyColumn = 'key_id'; // column that associates the key 
 ```
+
+## Exceptions & block Invalid Attempts
+
+If you want to use some custom exception to use it as a failed request attempt and allow the blocking of that IP, you have to create the static method **getAuthorized**.
+
+If **authorized** is **false** the system increases by 1 the failed attempts by that IP.
+Example:
+
+```php
+<?php
+
+    namespace App\Exceptions;
+
+    use CodeIgniter\Exceptions\FrameworkException;
+
+    class SecretException extends FrameworkException
+    {
+        protected $code = 401;
+
+        protected static $authorized = true;
+
+        public static function getAuthorized()
+        {
+            return self::$authorized;
+        }
+
+        public static function forInvalidPassphrase()
+        {
+            self::$authorized = false;
+            return new self(lang('Secret.invalidPassphrase'));
+        }
+
+        public static function forInvalidToken()
+        {
+            self::$authorized = false;
+            return new self(lang('Secret.invalidToken'));
+        }
+
+        public static function forExpiredToken()
+        {
+            self::$authorized = false;
+            return new self(lang('Secret.tokenExpired'));
+        }
+
+        public static function forTokenReaded()
+        {
+            self::$authorized = false;
+            return new self(lang('Secret.readed'));
+        }
+    }
+```
 _________________________________________________________________________________________
 
 ## VERSION 2

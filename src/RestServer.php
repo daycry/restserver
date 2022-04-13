@@ -805,15 +805,19 @@ class RestServer extends ResourceController
             }
 
             return \call_user_func_array([ $this, $this->router->methodName() ], $params);
-            } catch (\Daycry\RestServer\Interfaces\UnauthorizedInterface $ex) {
-                return $this->failUnauthorized($ex->getMessage(), $ex->getCode());
-            } catch (\Daycry\RestServer\Interfaces\FailTooManyRequestsInterface $ex) {
-                return $this->failTooManyRequests($ex->getMessage(), $ex->getCode());
-            } catch (\Daycry\RestServer\Interfaces\ForbiddenInterface $ex) {
-                return $this->failForbidden($ex->getMessage(), $ex->getCode());
+        } catch (\Daycry\RestServer\Interfaces\UnauthorizedInterface $ex) {
+            return $this->failUnauthorized($ex->getMessage(), $ex->getCode());
+        } catch (\Daycry\RestServer\Interfaces\FailTooManyRequestsInterface $ex) {
+            return $this->failTooManyRequests($ex->getMessage(), $ex->getCode());
+        } catch (\Daycry\RestServer\Interfaces\ForbiddenInterface $ex) {
+            return $this->failForbidden($ex->getMessage(), $ex->getCode());
         } catch (\Daycry\RestServer\Interfaces\ValidationInterface $ex) {
             return $this->fail($this->validator->getErrors(), $ex->getCode());
         } catch (\Exception $ex) {
+            if (method_exists($ex, 'getAuthorized')) {
+                $this->authorized = $ex::getAuthorized();
+            }
+
             if ($ex->getCode()) {
                 return $this->fail($ex->getMessage(), $ex->getCode());
             } else {
