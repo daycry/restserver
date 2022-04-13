@@ -13,7 +13,7 @@ class CreateAttemptTable extends Migration
         $config = $this->_getConfig();
 
         $this->DBGroup = $config->restDatabaseGroup;
-        
+
         /*
          * Petitions
          */

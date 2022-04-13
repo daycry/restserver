@@ -550,7 +550,7 @@ class RestServer extends ResourceController
 
     /**
      * Check if the requests exceed a limit attempts
-     * 
+     *
      */
     private function _checkAttempt()
     {
@@ -558,13 +558,11 @@ class RestServer extends ResourceController
         $attemptModel = new \Daycry\RestServer\Models\AttemptModel();
         $attempt = $attemptModel->where('ip_address', $this->request->getIPAddress())->first();
 
-        if( $attempt && $attempt->attempts >= $this->_restConfig->restMaxAttempts )
-        {
-            if( $attempt->hour_started <= ( time() - $this->_restConfig->restTimeBlocked ) )
-            {
-                $attemptModel->delete( $attempt->id, true );
-            }else{
-                $return = date('Y-m-d H:i:s', $attempt->hour_started + $this->_restConfig->restTimeBlocked );
+        if ($attempt && $attempt->attempts >= $this->_restConfig->restMaxAttempts) {
+            if ($attempt->hour_started <= (time() - $this->_restConfig->restTimeBlocked)) {
+                $attemptModel->delete($attempt->id, true);
+            } else {
+                $return = date('Y-m-d H:i:s', $attempt->hour_started + $this->_restConfig->restTimeBlocked);
             }
         }
 
@@ -726,10 +724,9 @@ class RestServer extends ResourceController
             }
 
             $attempt = $this->_checkAttempt();
-            if( $this->_restConfig->restEnableInvalidAttempts === true && $attempt !== true)
-            {
+            if ($this->_restConfig->restEnableInvalidAttempts === true && $attempt !== true) {
                 $this->authorized = false;
-                throw FailTooManyRequestsException::forInvalidAttemptsLimit( $this->request->getIPAddress(), $attempt );
+                throw FailTooManyRequestsException::forInvalidAttemptsLimit($this->request->getIPAddress(), $attempt);
             }
 
             if ($this->request->isAJAX() === false && $this->_restConfig->restAjaxOnly) {
@@ -786,7 +783,7 @@ class RestServer extends ResourceController
                 // Check the limit
                 if ($this->_restConfig->restEnableLimits && $this->_checkLimit() === false) {
                     $this->authorized = false;
-                    throw FailTooManyRequestsException::forApiKeyLimit( $this->key );
+                    throw FailTooManyRequestsException::forApiKeyLimit($this->key);
                 }
 
                 // If no level is set use 0, they probably aren't using permissions
@@ -808,12 +805,12 @@ class RestServer extends ResourceController
             }
 
             return \call_user_func_array([ $this, $this->router->methodName() ], $params);
-        /*} catch (\Daycry\RestServer\Interfaces\UnauthorizedInterface $ex) {
-            return $this->failUnauthorized($ex->getMessage(), $ex->getCode());
-        } catch (\Daycry\RestServer\Interfaces\FailTooManyRequestsInterface $ex) {
-            return $this->failTooManyRequests($ex->getMessage(), $ex->getCode());
-        } catch (\Daycry\RestServer\Interfaces\ForbiddenInterface $ex) {
-            return $this->failForbidden($ex->getMessage(), $ex->getCode());*/
+            /*} catch (\Daycry\RestServer\Interfaces\UnauthorizedInterface $ex) {
+                return $this->failUnauthorized($ex->getMessage(), $ex->getCode());
+            } catch (\Daycry\RestServer\Interfaces\FailTooManyRequestsInterface $ex) {
+                return $this->failTooManyRequests($ex->getMessage(), $ex->getCode());
+            } catch (\Daycry\RestServer\Interfaces\ForbiddenInterface $ex) {
+                return $this->failForbidden($ex->getMessage(), $ex->getCode());*/
         } catch (\Daycry\RestServer\Interfaces\ValidationInterface $ex) {
             return $this->fail($this->validator->getErrors(), $ex->getCode());
         } catch (\Exception $ex) {
@@ -888,34 +885,31 @@ class RestServer extends ResourceController
             $this->_logRequest($this->authorized);
         }
 
-        if( $this->_restConfig->restEnableInvalidAttempts === true )
-            {
-                $attemptModel = new \Daycry\RestServer\Models\AttemptModel();
-                $attempt = $attemptModel->where('ip_address', $this->request->getIPAddress())->first();
-                if( $this->authorized === false )
-                {
-                    if ($attempt === null) {
-                        $attempt = [
+        if ($this->_restConfig->restEnableInvalidAttempts === true) {
+            $attemptModel = new \Daycry\RestServer\Models\AttemptModel();
+            $attempt = $attemptModel->where('ip_address', $this->request->getIPAddress())->first();
+            if ($this->authorized === false) {
+                if ($attempt === null) {
+                    $attempt = [
                             'ip_address' => $this->request->getIPAddress(),
                             'attempts'      => 1,
                             'hour_started' => time(),
                         ];
 
+                    $attemptModel->save($attempt);
+                } else {
+                    if ($attempt->attempts < $this->_restConfig->restMaxAttempts) {
+                        $attempt->attempts = $attempt->attempts + 1;
+                        $attempt->hour_started = time();
                         $attemptModel->save($attempt);
-                    }else{
-                        if( $attempt->attempts < $this->_restConfig->restMaxAttempts )
-                        {
-                            $attempt->attempts = $attempt->attempts + 1;
-                            $attempt->hour_started = time();
-                            $attemptModel->save($attempt);
-                        }
-                    }
-                }else{
-                    if ($attempt) {
-                        $attemptModel->delete( $attempt->id, true );
                     }
                 }
+            } else {
+                if ($attempt) {
+                    $attemptModel->delete($attempt->id, true);
+                }
             }
+        }
 
         //reset previous validation at end
         if ($this->validator) {
