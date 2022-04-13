@@ -10,6 +10,7 @@ use Psr\Log\LoggerInterface;
 use Daycry\RestServer\Exceptions\UnauthorizedException;
 use Daycry\RestServer\Exceptions\ValidationException;
 use Daycry\RestServer\Exceptions\ForbiddenException;
+use Daycry\RestServer\Exceptions\FailTooManyRequestsException;
 
 use Daycry\RestServer\Libraries\User\UserAbstract;
 
@@ -563,7 +564,7 @@ class RestServer extends ResourceController
             {
                 $attemptModel->delete( $attempt->id, true );
             }else{
-                $return = false;
+                $return = date('Y-m-d H:i:s', $attempt->hour_started + $this->_restConfig->restTimeBlocked );
             }
         }
 
@@ -724,10 +725,11 @@ class RestServer extends ResourceController
                 throw ForbiddenException::forUnsupportedProtocol();
             }
 
-            if( $this->_restConfig->restEnableInvalidAttempts === true && !$this->_checkAttempt())
+            $attempt = $this->_checkAttempt();
+            if( $this->_restConfig->restEnableInvalidAttempts === true && $attempt !== true)
             {
                 $this->authorized = false;
-                throw UnauthorizedException::forApiKeyLimit();
+                throw FailTooManyRequestsException::forInvalidAttemptsLimit( $this->request->getIPAddress(), $attempt );
             }
 
             if ($this->request->isAJAX() === false && $this->_restConfig->restAjaxOnly) {
@@ -784,7 +786,7 @@ class RestServer extends ResourceController
                 // Check the limit
                 if ($this->_restConfig->restEnableLimits && $this->_checkLimit() === false) {
                     $this->authorized = false;
-                    throw UnauthorizedException::forApiKeyLimit();
+                    throw FailTooManyRequestsException::forApiKeyLimit( $this->key );
                 }
 
                 // If no level is set use 0, they probably aren't using permissions
@@ -808,6 +810,8 @@ class RestServer extends ResourceController
             return \call_user_func_array([ $this, $this->router->methodName() ], $params);
         } catch (\Daycry\RestServer\Interfaces\UnauthorizedInterface $ex) {
             return $this->failUnauthorized($ex->getMessage(), $ex->getCode());
+        } catch (\Daycry\RestServer\Interfaces\FailTooManyRequestsInterface $ex) {
+            return $this->failTooManyRequests($ex->getMessage(), $ex->getCode());
         } catch (\Daycry\RestServer\Interfaces\ForbiddenInterface $ex) {
             return $this->failForbidden($ex->getMessage(), $ex->getCode());
         } catch (\Daycry\RestServer\Interfaces\ValidationInterface $ex) {
@@ -899,9 +903,12 @@ class RestServer extends ResourceController
 
                         $attemptModel->save($attempt);
                     }else{
-                        $attempt->attempts = $attempt->attempts + 1;
-                        $attempt->hour_started = time();
-                        $attemptModel->save($attempt);
+                        if( $attempt->attempts < $this->_restConfig->restMaxAttempts )
+                        {
+                            $attempt->attempts = $attempt->attempts + 1;
+                            $attempt->hour_started = time();
+                            $attemptModel->save($attempt);
+                        }
                     }
                 }
             }

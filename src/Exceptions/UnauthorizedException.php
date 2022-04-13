@@ -44,11 +44,6 @@ class UnauthorizedException extends \RuntimeException implements \Daycry\RestSer
         return new self(lang('Rest.ipDenied'));
     }
 
-    public static function forApiKeyLimit()
-    {
-        return new self(lang('Rest.textRestApiKeyTimeLimit'));
-    }
-
     public static function forApiKeyPermissions()
     {
         return new self(lang('Rest.textRestApiKeyPermissions'));

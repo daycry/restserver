@@ -2,20 +2,21 @@
 
 return [
     'textRestUnsupported' => 'Unsupported protocol',
-    'textRestInvalidApiKey' => 'Invalid API key {key}',
+    'textRestInvalidApiKey' => 'Invalid API key \'{key}\'',
     'textRestInvalidCredentials' => 'Invalid credentials',
     'textRestInvalidToken' => 'Invalid Token',
     'tokenExpired'        => 'The token has expired',
     'tokenUnauthorized'        => 'Invalid Auth token',
     'ipDenied'        => 'IP denied',
     'textUnauthorized' => 'Unauthorized',
-    'textRestApiKeyTimeLimit' => 'This API key has reached the time limit for this method',
+    'textRestApiKeyTimeLimit' => 'This API key \'{key}\' has reached the time limit for this method',
+    'textRestInvalidAttemptsLimit' => 'This IP \'{ip}\' has reached the maximum of invalid requests, it will have access from: \'{date}\'',
     'textRestApiKeyPermissions' => 'This API key does not have enough permissions',
     'textRestIpAddressTimeLimit' => 'This IP Address has reached the time limit for this method',
     'textRestApiKeyUnauthorized' => 'This API key does not have access to the requested controller',
     'textInvalidUserClassConfiguration' => 'Invalid user class configuration, extends( \Daycry\RestServer\Libraries\User\UserAbstract )',
     'textRestAjaxOnly' => 'Only AJAX requests are allowed',
-    'textInvalidMethodParams' => 'Invalid params for this method: {param}'
+    'textInvalidMethodParams' => 'Invalid params for this method: \'{param}\''
 ];
 
 /*
