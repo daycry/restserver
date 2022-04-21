@@ -804,6 +804,10 @@ class RestServer extends ResourceController
                 throw UnauthorizedException::forIpAddressTimeLimit();
             }
 
+            if (!method_exists($this, $this->router->methodName())) {
+                throw ForbiddenException::forInvalidMethod( $this->router->methodName() );
+            }
+            
             return \call_user_func_array([ $this, $this->router->methodName() ], $params);
         } catch (\Daycry\RestServer\Interfaces\UnauthorizedInterface $ex) {
             return $this->failUnauthorized($ex->getMessage(), $ex->getCode());

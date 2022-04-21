@@ -21,4 +21,10 @@ class ForbiddenException extends \RuntimeException implements \Daycry\RestServer
         $parser = \Config\Services::parser();
         return new self($parser->setData(array( 'param' => $param ))->renderString(lang('Rest.textInvalidMethodParams')));
     }
+
+    public static function forInvalidMethod($method)
+    {
+        $parser = \Config\Services::parser();
+        return new self($parser->setData(array( 'method' => $method ))->renderString(lang('Rest.textInvalidMethod')));
+    }
 }

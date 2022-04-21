@@ -16,7 +16,8 @@ return [
     'textRestApiKeyUnauthorized' => 'This API key does not have access to the requested controller',
     'textInvalidUserClassConfiguration' => 'Invalid user class configuration, extends( \Daycry\RestServer\Libraries\User\UserAbstract )',
     'textRestAjaxOnly' => 'Only AJAX requests are allowed',
-    'textInvalidMethodParams' => 'Invalid params for this method: \'{param}\''
+    'textInvalidMethodParams' => 'Invalid params for this method: \'{param}\'',
+    'textInvalidMethod' => 'Invalid method: \'{method}\''
 ];
 
 /*
