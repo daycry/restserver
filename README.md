@@ -4,13 +4,6 @@
 
 Rest Server with Doctrine for Codeigniter 4
 
-## UPDATE AVAILABLE V3
-
-This update is not compatible with the previous version and greatly improves error handling.
-
-[Readme](https://github.com/daycry/restserver/blob/master/UPDATE-v3.md)
-
-
 ## Installation via composer
 
 Use the package with composer install
@@ -50,8 +43,6 @@ If you want load and Example Seed you can use this command.
     >php spark db:seed Daycry\RestServer\Database\Seeds\ExampleSeeder
 
 More information about install doctrine: https://github.com/daycry/doctrine
-
-## VERSION 3
 
 ## Usage Loading Library
 
@@ -206,63 +197,6 @@ Example:
         }
     }
 ```
-_________________________________________________________________________________________
-
-## VERSION 2
-
-## Usage Loading Library
-
-```php
-<?php namespace App\Controllers;
-
-class Center extends \Daycry\RestServer\RestServer
-{
-    public function index()
-    {
-        try
-		{
-            $validation = $this->checkRequest( null );
-            //if( $validation !== true ){ return $validation; }
-
-            return $this->respond( $this->content );
-
-        }catch ( \Exception $e )
-		{
-            return $this->fail( $e->getMessage() );
-        }
-    }
-
-    public function encrypt( $id = null, $petitionId = null )
-    {
-        try
-		{
-            $validation = $this->checkRequest( null );
-            if( $validation !== true ){ return $validation; }
-
-            return $this->respond( $this->encryption->encrypt('data') );
-
-        }catch ( \Exception $e )
-		{
-            return $this->fail( $e->getMessage() );
-        }
-    }
-}
-
-```
-You can pass validation group rules in `checkRequest` function as a string.
-
-In `app/Config/Validation.php`
-```php
-	public $requiredLogin = [
-		'username'		=> 'required',
-		'password'		=> 'required',
-		//'fields'		=> 'required'
-	];
-```
-```
-$validation = $this->checkRequest( 'requiredLogin' );
-```
-____________________________________________________________________________________________
 
 ## OPTIONS
 
