@@ -3,10 +3,11 @@
 namespace Daycry\RestServer\Models;
 
 use Daycry\RestServer\Libraries\User\UserAbstract;
-use Daycry\RestServer\Interfaces\UserInterface;
 
 class UserModel extends UserAbstract
 {
+    use \Tatter\Relations\Traits\ModelTrait;
+
     protected $DBGroup = 'default';
 
     protected $table      = 'users';

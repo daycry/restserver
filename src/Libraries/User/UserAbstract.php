@@ -48,14 +48,4 @@ abstract class UserAbstract extends Model
 
         parent::__construct($db, $validation);
     }
-
-    /*public function setTableName( $tableName, $columnKey )
-    {
-        $this->table = $tableName;
-
-        if( !in_array( $columnKey, $this->allowedFields) )
-        {
-            array_push( $this->allowedFields, $columnKey );
-        }
-    }*/
 }

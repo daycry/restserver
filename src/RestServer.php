@@ -446,15 +446,15 @@ class RestServer extends ResourceController
         $key = null;
         if (($key = isset($this->args[ $this->_restConfig->restKeyName ]) ? $this->args[ $this->_restConfig->restKeyName ] : $this->request->getHeaderLine($this->_restConfig->restKeyName))) {
             $keyModel = new \Daycry\RestServer\Models\KeyModel();
-            //$keyModel->setTableName( $this->_restConfig->restKeysTable );
-            //$keyModel->setKeyName( $this->_restConfig->restKeyColumn );
 
-            if (!($row = $keyModel->where($this->_restConfig->restKeyColumn, $key)->first())) {
+            if (!($row = $keyModel->with($this->_restConfig->restUsersTable)->where($this->_restConfig->restKeyColumn, $key)->first())) {
                 $this->authorized = false;
                 throw UnauthorizedException::forInvalidApiKey($key);
             }
 
-            $this->key = $row->{ $this->_restConfig->restKeyColumn };
+            $row = \Daycry\RestServer\Libraries\Utils::modelAliases($row, $this->_restConfig->restUsersTable, 'user' );
+
+            /*$this->key = $row->{ $this->_restConfig->restKeyColumn };
 
             if ($this->_restConfig->userModelClass) {
                 //Get User Model Information
@@ -465,12 +465,10 @@ class RestServer extends ResourceController
                 }
 
                 //$userModel->setTableName( $this->_restConfig->restUsersTable, $this->_restConfig->userKeyColumn );
-                $user = $userModel->where($this->_restConfig->userKeyColumn, $row->id)->first();
+                $user = $userModel->with($this->_restConfig->restKeysTable)->where($this->_restConfig->userKeyColumn, $row->id)->first();
 
                 $row->user = $user;
-            }
-
-            $this->apiUser = $row;
+            }*/
 
             /*
              * If "is private key" is enabled, compare the ip address with the list
@@ -505,6 +503,8 @@ class RestServer extends ResourceController
                     throw UnauthorizedException::forIpDenied();
                 }
             }
+
+            $this->apiUser = $row;
         } else {
             $this->authorized = false;
             throw UnauthorizedException::forInvalidApiKey($key);

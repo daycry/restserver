@@ -15,7 +15,9 @@
       "php": ">=7.2 || ^8.0",
         "daycry/encryption": "^2.0",
         "lcobucci/jwt": "^4.1",
-        "daycry/settings": "^1.0"
+        "daycry/settings": "^1.0",
+        "daycry/class-finder": "^1.0",
+        "tatter/relations": "^2.0"
     },
     "require-dev":
     {

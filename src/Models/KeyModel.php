@@ -9,6 +9,8 @@ use Config\Database;
 
 class KeyModel extends Model
 {
+    use \Tatter\Relations\Traits\ModelTrait;
+
     protected $DBGroup = 'default';
 
     protected $table      = 'keys';
@@ -39,6 +41,7 @@ class KeyModel extends Model
         }
 
         $this->table = config('RestServer')->restKeysTable;
+        //array_push($this->with, config('RestServer')->restUsersTable );
         $this->allowedFields = [ config('RestServer')->restKeyColumn, 'level', 'ignore_limits', 'is_private_key' ];
 
         parent::__construct($db, $validation);
