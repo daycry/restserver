@@ -452,7 +452,7 @@ class RestServer extends ResourceController
                 throw UnauthorizedException::forInvalidApiKey($key);
             }
 
-            $row = \Daycry\RestServer\Libraries\Utils::modelAliases($row, $this->_restConfig->restUsersTable, 'user' );
+            $row = \Daycry\RestServer\Libraries\Utils::modelAliases($row, $this->_restConfig->restUsersTable, 'user');
 
             /*$this->key = $row->{ $this->_restConfig->restKeyColumn };
 
@@ -805,9 +805,9 @@ class RestServer extends ResourceController
             }
 
             if (!method_exists($this, $this->router->methodName())) {
-                throw ForbiddenException::forInvalidMethod( $this->router->methodName() );
+                throw ForbiddenException::forInvalidMethod($this->router->methodName());
             }
-            
+
             return \call_user_func_array([ $this, $this->router->methodName() ], $params);
         } catch (\Daycry\RestServer\Interfaces\UnauthorizedInterface $ex) {
             return $this->failUnauthorized($ex->getMessage(), $ex->getCode());
