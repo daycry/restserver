@@ -241,12 +241,12 @@ Content-Type: application/xml
 
 You can sent `api rest token` like this.
 ```
-X-API-KEY: application/json
+X-API-KEY: TOKEN
 ```
 
 ## LANGUAGE
 
-You can sent `api rest token` like this.
+You can sent `language` like this.
 ```
 Accept-Language: en
 ```
