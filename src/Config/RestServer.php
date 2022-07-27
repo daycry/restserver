@@ -8,17 +8,6 @@ class RestServer extends BaseConfig
 {
     /*
     |--------------------------------------------------------------------------
-    | HTTP protocol
-    |--------------------------------------------------------------------------
-    |
-    | Set to force the use of HTTPS for REST API calls
-    |
-    | @deprecated you can must forceGlobalSecureRequests in App.php
-    */
-    public $forceHttps = true;
-
-    /*
-    |--------------------------------------------------------------------------
     | REST Realm
     |--------------------------------------------------------------------------
     |

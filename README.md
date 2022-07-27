@@ -84,6 +84,9 @@ class Center extends \Daycry\RestServer\RestServer
 }
 ```
 
+**$this->content** contains a body content in the request.
+**$this->args** contains all params, get, post, headers,... but you can use the object **$this->request** for get this params if you want.
+
 ```php
 <?php namespace App\Controllers;
 
@@ -149,7 +152,7 @@ Example:
 
 ## Exceptions & block Invalid Attempts
 
-If you want to use some custom exception to use it as a failed request attempt and allow the blocking of that IP, you have to create the static method **getAuthorized**.
+If you want to use some custom exception to use it as a failed request attempt and allow the blocking of that IP, you have to create the static attribute **authorized**.
 
 If **authorized** is **false** the system increases by 1 the failed attempts by that IP.
 Example:
@@ -165,12 +168,7 @@ Example:
     {
         protected $code = 401;
 
-        protected static $authorized = true;
-
-        public static function getAuthorized()
-        {
-            return self::$authorized;
-        }
+        public static $authorized = true;
 
         public static function forInvalidPassphrase()
         {
@@ -210,7 +208,7 @@ Fiels | Value | Options | Desctiption
 `auth`| `bearer` | `false`,`basic`,`digest`,`bearer` | Use this field to configure the autentication method
 `log`| `null` | `null`,`1`,`0` | Use this field if you want log the petition
 `limit`| `null` | `null`,`1`,`15` | Use this field if you want to set a request limit, this value must be an integer
-`time`| `null` | `null`,`1`,`15` | This field is used to know how often the request limit is reset
+`time`| `null` | `null`,`1`,`15` | This field is used to know how often the request limit is reset ( Time in seconds Example: 3600 -> In this case you can do {limit} request in 3600 seconds)
 `level`| `null` | `null`,`1`,`10` | Use this field to indicate the level of permissions in the request, if the token has level 1 and the request has level 3, you will not be able to make the request
 
 ## RESPONSE

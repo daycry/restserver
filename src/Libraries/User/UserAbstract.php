@@ -36,6 +36,7 @@ abstract class UserAbstract extends Model
     {
         if ($db === null) {
             $db = Database::connect(config('RestServer')->restDatabaseGroup);
+            $this->DBGroup = config('RestServer')->restDatabaseGroup;
         }
 
         $this->table = config('RestServer')->restUsersTable;

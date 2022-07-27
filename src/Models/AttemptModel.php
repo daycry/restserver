@@ -9,6 +9,8 @@ use Config\Database;
 
 class AttemptModel extends Model
 {
+    use \Tatter\Relations\Traits\ModelTrait;
+
     protected $DBGroup = 'default';
 
     protected $table      = 'attempts';
@@ -36,6 +38,7 @@ class AttemptModel extends Model
     {
         if ($db === null) {
             $db = Database::connect(config('RestServer')->restDatabaseGroup);
+            $this->DBGroup = config('RestServer')->restDatabaseGroup;
         }
 
         $this->table = config('RestServer')->restInvalidAttemptsTable;

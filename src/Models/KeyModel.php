@@ -38,10 +38,10 @@ class KeyModel extends Model
     {
         if ($db === null) {
             $db = Database::connect(config('RestServer')->restDatabaseGroup);
+            $this->DBGroup = config('RestServer')->restDatabaseGroup;
         }
 
         $this->table = config('RestServer')->restKeysTable;
-        //array_push($this->with, config('RestServer')->restUsersTable );
         $this->allowedFields = [ config('RestServer')->restKeyColumn, 'level', 'ignore_limits', 'is_private_key' ];
 
         parent::__construct($db, $validation);

@@ -7,8 +7,6 @@ use Daycry\RestServer\Exceptions\UnauthorizedException;
 
 abstract class BaseAuth
 {
-    protected $isValidRequest = true;
-
     protected $restConfig = null;
 
     protected $ipAllow = true;
@@ -26,11 +24,6 @@ abstract class BaseAuth
     public function getIpAllow()
     {
         return $this->ipAllow;
-    }
-
-    public function getIsValidRequest()
-    {
-        return $this->isValidRequest;
     }
 
     /**
@@ -61,8 +54,7 @@ abstract class BaseAuth
             $claims = $jwtLibrary->decode($username);
 
             if (!$claims) {
-                $this->isValidRequest = false;
-                return false;
+                throw \Daycry\RestServer\Exceptions\UnauthorizedException::forInvalidCredentials();
             }
 
             return $claims;
@@ -83,8 +75,7 @@ abstract class BaseAuth
         }
 
         if ($valid_logins[ $username ] !== $password) {
-            $this->isValidRequest = false;
-            return false;
+            throw \Daycry\RestServer\Exceptions\UnauthorizedException::forInvalidCredentials();
         }
 
         return $username;
@@ -115,10 +106,8 @@ abstract class BaseAuth
         }
 
         if ($this->restConfig->strictApiAndAuth === true) {
-            $this->isValidRequest = false;
+            throw \Daycry\RestServer\Exceptions\UnauthorizedException::forInvalidCredentials();
         }
-
-        //throw UnauthorizedException::forUnauthorized();
     }
 
     protected function _performLibraryAuth($username = '', $password = null)
