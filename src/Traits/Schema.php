@@ -8,8 +8,15 @@ trait Schema
 {
     public static function getSchema()
     {
-        $configSchema = config('Schemas');
-        $handler = new DatabaseHandler($configSchema, config('RestServer')->restDatabaseGroup);
-        return $handler->draft();
+        $cache = \Config\Services::cache();
+
+        if( !$schema = $cache->get('database-schema-' . config('RestServer')->restDatabaseGroup) ) {
+            $configSchema = config('Schemas');
+            $handler = new DatabaseHandler($configSchema, config('RestServer')->restDatabaseGroup);
+            $schema = $handler->draft();
+            $cache->save('database-schema-' . config('RestServer')->restDatabaseGroup, $schema);
+        }
+
+        return $schema;
     }
 }
