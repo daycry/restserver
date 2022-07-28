@@ -10,7 +10,7 @@ trait Schema
     {
         $cache = \Config\Services::cache();
 
-        if( !$schema = $cache->get('database-schema-' . config('RestServer')->restDatabaseGroup) ) {
+        if (!$schema = $cache->get('database-schema-' . config('RestServer')->restDatabaseGroup)) {
             $configSchema = config('Schemas');
             $handler = new DatabaseHandler($configSchema, config('RestServer')->restDatabaseGroup);
             $schema = $handler->draft();
