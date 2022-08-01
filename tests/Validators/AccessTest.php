@@ -44,7 +44,7 @@ class AccessTest extends CIUnitTestCase
     {
         $this->withHeaders([
             'Origin' => 'https://test-cors.local',
-            'X-API-KEY' => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg'
+            'X-API-KEY' => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123'
         ]);
 
         $result = $this->withBody(

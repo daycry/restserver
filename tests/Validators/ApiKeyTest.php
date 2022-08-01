@@ -1,6 +1,6 @@
 <?php
 
-namespace Daycry\RestServer\Tests;
+namespace Daycry\RestServer\Tests\Validators;
 
 use CodeIgniter\Config\Factories;
 use CodeIgniter\HTTP\Request;
@@ -11,7 +11,7 @@ use CodeIgniter\Test\DatabaseTestTrait;
 
 use Daycry\RestServer\Database\Seeds\ExampleSeeder;
 
-class RestServerTest extends CIUnitTestCase
+class ApiKeyTest extends CIUnitTestCase
 {
     use DatabaseTestTrait, FeatureTestTrait;
 
@@ -56,7 +56,8 @@ class RestServerTest extends CIUnitTestCase
     {
         $this->withHeaders([
             'Origin' => 'https://test-cors.local',
-            'X-API-KEY' => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggo12'
+            'X-API-KEY' => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggo12',
+            'Content-Type' => 'application/json'
         ]);
 
         $result = $this->withBody(

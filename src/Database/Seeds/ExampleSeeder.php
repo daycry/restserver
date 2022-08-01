@@ -53,14 +53,41 @@ class ExampleSeeder extends Seeder
         $this->db->table($config->configRestPetitionsTable)->insertBatch($petition);
 
         $key = [
-            $config->restKeyColumn  => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',
-            'level'                 => '10',
-            'is_private_key'        => 1,
-            'ip_addresses'          => '127.0.0.1,10.1.133.13,10.222.180.0/255.252.0'
+            [
+                $config->restKeyColumn  => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',
+                'level'                 => '10',
+                'is_private_key'        => 1,
+                'ip_addresses'          => '0.0.0.0,127.0.0.1,10.1.133.13,10.222.180.0/255.252.0'
+            ],
+            [
+                $config->restKeyColumn  => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
+                'level'                 => '10',
+                'is_private_key'        => 1,
+                'ip_addresses'          => '127.0.0.1,10.1.133.13,10.222.180.0/255.252.0'
+            ]
         ];
 
         // Using Query Builder
-        $this->db->table($config->restKeysTable)->insert($key);
+        $this->db->table($config->restKeysTable)->insertBatch($key);
+
+
+        $user = [
+            'name'      => 'userSample',
+            $config->userKeyColumn    => '1'
+        ];
+
+        // Using Query Builder
+        $this->db->table($config->restUsersTable)->insert($user);
+
+
+        $attempt = [
+            'ip_address'     => '0.0.0.0',
+            'attempts'       => '1000',
+            'hour_started'    => 1459363874
+        ];
+
+        // Using Query Builder
+        $this->db->table($config->restInvalidAttemptsTable)->insert($attempt);
 
         $access = [
             [

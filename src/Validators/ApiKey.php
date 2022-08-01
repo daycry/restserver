@@ -27,7 +27,6 @@ class ApiKey
                 if (!($row = $keyModel->setSchema(self::getSchema())->with(config('RestServer')->restUsersTable)->where(config('RestServer')->restKeyColumn, $key)->first())) {
                     $authorized = false;
                     throw UnauthorizedException::forInvalidApiKey($key);
-                    return false;
                 }
 
                 $row = \Daycry\RestServer\Libraries\Utils::modelAliases($row, config('RestServer')->restUsersTable, 'user');

@@ -254,7 +254,7 @@ class RestServer extends ResourceController
             'uri'        => $this->request->uri,
             'method'     => $this->request->getMethod(),
             'params'     => $params,
-            'api_key'    => isset($this->key) ? $this->key : '',
+            'api_key'    => isset($this->apiUser) ? $this->apiUser->key : '',
             'ip_address' => $this->request->getIPAddress(),
             'duration'   => $this->_benchmark->getElapsedTime('petition'),
             'response_code' => $this->response->getStatusCode(),
