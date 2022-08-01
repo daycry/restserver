@@ -11,12 +11,12 @@ class Access
     {
         $return = true;
 
-        if (config('RestServer')->restEnableAccess === true) {
+        if (config('RestServer')->restEnableAccess == true) {
+            $return = false;
             $accessModel = new \Daycry\RestServer\Models\AccessModel();
             $results = $accessModel->where('api_key', $apiUser->key)->where('controller', $router->controllerName())->findAll();
 
             if (!empty($results)) {
-                $return = false;
                 foreach ($results as $result) {
                     if ($result->all_access) {
                         $return = true;

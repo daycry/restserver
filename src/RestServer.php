@@ -131,18 +131,18 @@ class RestServer extends ResourceController
 
         // Rest server config
         $this->_restConfig = config('RestServer');
-
+        
         $this->lang = $this->request->getLocale();
 
         //set override Petition
-        if ($this->_restConfig->restEnableOverridePetition === true) {
+        if ($this->_restConfig->restEnableOverridePetition == true) {
             $this->_petition = \Daycry\RestServer\Validators\Override::check($this->request, $this->router);
         }
 
         // Log the loading time to the log table
         if (
-            (is_null($this->_petition) && $this->_restConfig->restEnableLogging === true) ||
-            ($this->_restConfig->restEnableLogging === true && (!is_null($this->_petition) && is_null($this->_petition->log))) ||
+            (is_null($this->_petition) && $this->_restConfig->restEnableLogging == true) ||
+            ($this->_restConfig->restEnableLogging == true && (!is_null($this->_petition) && is_null($this->_petition->log))) ||
             (!is_null($this->_petition) && $this->_petition->log)
         ) {
             $this->_isLogAuthorized = true;
@@ -247,8 +247,8 @@ class RestServer extends ResourceController
         $logModel = new \Daycry\RestServer\Models\LogModel();
         //$logModel->setTableName( $this->_restConfig->configRestLogsTable );
 
-        $params = $this->args ? ($this->_restConfig->restLogsJsonParams === true ? \json_encode($this->args) : \serialize($this->args)) : null;
-        $params = ($params != null && $this->_restConfig->restEncryptLogParams === true) ? $this->encryption->encrypt($params) : $params;
+        $params = $this->args ? ($this->_restConfig->restLogsJsonParams == true ? \json_encode($this->args) : \serialize($this->args)) : null;
+        $params = ($params != null && $this->_restConfig->restEncryptLogParams == true) ? $this->encryption->encrypt($params) : $params;
 
         $data = [
             'uri'        => $this->request->uri,
@@ -295,25 +295,25 @@ class RestServer extends ResourceController
                 throw ForbiddenException::forOnlyAjax();
             }
 
-            if ($this->_restConfig->checkCors === true) {
+            if ($this->_restConfig->checkCors == true) {
                 \Daycry\RestServer\Validators\Cors::check($this->request, $this->router, $this->response);
             }
 
             $attempt = \Daycry\RestServer\Validators\Attemp::check($this->request);
 
-            if ($this->_restConfig->restEnableInvalidAttempts === true && $attempt !== true) {
+            if ($this->_restConfig->restEnableInvalidAttempts == true && $attempt !== true) {
                 $this->authorized = false;
                 throw FailTooManyRequestsException::forInvalidAttemptsLimit($this->request->getIPAddress(), $attempt);
             }
 
-            if ($this->_restConfig->restIpBlacklistEnabled === true) {
+            if ($this->_restConfig->restIpBlacklistEnabled == true) {
                 if (!\Daycry\RestServer\Validators\BlackList::check($this->request)) {
                     $this->authorized = false;
                     throw UnauthorizedException::forIpDenied();
                 }
             }
 
-            if ($this->_restConfig->restIpWhitelistEnabled === true) {
+            if ($this->_restConfig->restIpWhitelistEnabled == true) {
                 if (!\Daycry\RestServer\Validators\WhiteList::check($this->request)) {
                     $this->authorized = false;
                     throw UnauthorizedException::forIpDenied();
@@ -418,7 +418,7 @@ class RestServer extends ResourceController
             $this->_logRequest($this->authorized);
         }
 
-        if ($this->_restConfig->restEnableInvalidAttempts === true) {
+        if ($this->_restConfig->restEnableInvalidAttempts == true) {
             $attemptModel = new \Daycry\RestServer\Models\AttemptModel();
             $attempt = $attemptModel->where('ip_address', $this->request->getIPAddress())->first();
             if ($this->authorized === false) {

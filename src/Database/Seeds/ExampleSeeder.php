@@ -11,16 +11,42 @@ class ExampleSeeder extends Seeder
         $config = $this->_getConfig();
 
         $petition = [
-            'controller'=> '\App\Controllers\Login',
-            'method'    => 'doLogin',
-            'http'      => 'POST',
-            'limit'     => 100,
-            'time'      => 15,
-            'level'     => 10
+            [
+                'controller'=> '\App\Controllers\Login',
+                'method'    => 'doLogin',
+                'http'      => 'POST',
+                'limit'     => 100,
+                'time'      => 1800,
+                'level'     => 10
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\Hello',
+                'method'    => 'index',
+                'http'      => 'GET',
+                'limit'     => 100,
+                'time'      => 3600,
+                'level'     => 10
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\NoHello',
+                'method'    => 'index',
+                'http'      => 'GET',
+                'limit'     => 1,
+                'time'      => 3600,
+                'level'     => 10
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\NoAccess',
+                'method'    => 'index',
+                'http'      => 'GET',
+                'limit'     => 1,
+                'time'      => 3600,
+                'level'     => 10
+            ]
         ];
 
         // Using Query Builder
-        $this->db->table($config->configRestPetitionsTable)->insert($petition);
+        $this->db->table($config->configRestPetitionsTable)->insertBatch($petition);
 
         $key = [
             $config->restKeyColumn  => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',
@@ -33,14 +59,22 @@ class ExampleSeeder extends Seeder
         $this->db->table($config->restKeysTable)->insert($key);
 
         $access = [
-            'api_key'       => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',
-            'all_access'    => 0,
-            'controller'    => '\App\Controllers\Login',
-            'method'        => 'doLogin'
+            [
+                'api_key'       => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',
+                'all_access'    => 0,
+                'controller'    => '\Tests\Support\Controllers\Hello',
+                'method'        => 'index'
+            ],
+            [
+                'api_key'       => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',
+                'all_access'    => 0,
+                'controller'    => '\Tests\Support\Controllers\NoHello',
+                'method'        => 'index'
+            ]
         ];
 
         // Using Query Builder
-        $this->db->table($config->restAccessTable)->insert($access);
+        $this->db->table($config->restAccessTable)->insertBatch($access);
     }
 
     private function _getConfig()

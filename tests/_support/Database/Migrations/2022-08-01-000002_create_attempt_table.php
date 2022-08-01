@@ -1,18 +1,16 @@
 <?php
 
-namespace Daycry\RestServer\Database\Migrations;
+namespace Tests\Support\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateAttemptTable extends Migration
+class CreateAttemptTableTest extends Migration
 {
-    protected $DBGroup = 'default';
+    protected $DBGroup = 'tests';
 
     public function up()
     {
         $config = $this->_getConfig();
-
-        $this->DBGroup = $config->restDatabaseGroup;
 
         /*
          * Petitions

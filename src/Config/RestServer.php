@@ -377,7 +377,7 @@ class RestServer extends BaseConfig
     | public $restLimitsMethod = 'ROUTED_URL';  // Put a limit on the routed URL
     |
     */
-    public $restLimitsMethod = 'API_KEY';
+    public $restLimitsMethod = 'METHOD_NAME';
 
     /*
     |--------------------------------------------------------------------------
@@ -496,10 +496,11 @@ class RestServer extends BaseConfig
     | Used if $config['check_cors'] is set to TRUE and $config['allow_any_cors_domain']
     | is set to FALSE. Set all the allowable domains within the array
     |
-    | e.g. $config['allowed_origins'] = ['http://www.example.com', 'https://spa.example.com']
+    | e.g. $allowedCorsOrigins = ['http://www.example.com', 'https://spa.example.com']
+    | e.g. $allowedCorsOrigins = 'http://www.example.com'
     |
     */
-    public $allowedCorsOrigins = [];
+    public $allowedCorsOrigins = '';
 
     /*
     |--------------------------------------------------------------------------
@@ -520,5 +521,5 @@ class RestServer extends BaseConfig
     | http://docs.sencha.com/extjs/6.5.2/classic/Ext.data.proxy.Rest.html#cfg-withCredentials
     |
     */
-    public $forcedCorsHeaders = [];
+    public $forcedCorsHeaders = [ 'Access-Control-Allow-Credentials' => true ];
 }

@@ -17,15 +17,21 @@ class Cors
 
         if (self::_isCorsRequest($request)) {
             // If we want to allow any domain to access the API
-            if (config('RestServer')->allowAnyCorsDomain === true) {
+            if (config('RestServer')->allowAnyCorsDomain == true) {
                 $response->setHeader('Access-Control-Allow-Origin', '*');
                 $response->setHeader('Access-Control-Allow-Headers', $allowed_headers);
                 $response->setHeader('Access-Control-Allow-Methods', $allowed_methods);
             } else {
                 $origin = $request->getHeaderLine('origin');
 
+                $allowedCorsOrigins = config('RestServer')->allowedCorsOrigins;
+                if( !is_array($allowedCorsOrigins) )
+                {
+                    $allowedCorsOrigins = [$allowedCorsOrigins];
+                }
+
                 // If the origin domain is in the allowed_cors_origins list, then add the Access Control headers
-                if (in_array($origin, config('RestServer')->allowedCorsOrigins)) {
+                if (in_array($origin, $allowedCorsOrigins)) {
                     $response->setHeader('Access-Control-Allow-Origin', $origin);
                     $response->setHeader('Access-Control-Allow-Headers', $allowed_headers);
                     $response->setHeader('Access-Control-Allow-Methods', $allowed_methods);
