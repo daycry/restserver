@@ -16,7 +16,7 @@ class BearerAuth extends BaseAuth implements AuthInterface
     public function validate()
     {
         // Returns HTTP_AUTHENTICATION don't exist
-        $http_auth = $this->request->getServer('HTTP_AUTHENTICATION') ?: $this->request->getServer('HTTP_AUTHORIZATION');
+        $http_auth = $this->request->getHeaderLine('authentication') ?: $this->request->getHeaderLine('authorization');
 
         $username = null;
         if ($http_auth !== null) {

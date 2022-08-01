@@ -14,3 +14,4 @@ namespace Tests\Support\Config;
 $routes->get('hello', 'Tests\Support\Controllers\Hello');
 $routes->get('nohello', 'Tests\Support\Controllers\NoHello');
 $routes->get('noaccess', 'Tests\Support\Controllers\NoAccess');
+$routes->get('hellobauthbasic', 'Tests\Support\Controllers\HelloAuthBasic');

@@ -16,7 +16,8 @@ class BasicAuth extends BaseAuth implements AuthInterface
     public function validate()
     {
         $username = $this->request->getServer('PHP_AUTH_USER');
-        $http_auth = $this->request->getServer('HTTP_AUTHENTICATION') ?: $this->request->getServer('HTTP_AUTHORIZATION');
+        //$http_auth = $this->request->getServer('HTTP_AUTHENTICATION') ?: $this->request->getServer('HTTP_AUTHORIZATION');
+        $http_auth = $this->request->getHeaderLine('authentication') ?: $this->request->getHeaderLine('authorization');
 
         $password = null;
         if ($username !== null) {
@@ -26,7 +27,7 @@ class BasicAuth extends BaseAuth implements AuthInterface
             // HTTP_AUTHORIZATION e.g. my_username:my_password. This is passed in the .htaccess file
             if (strpos(strtolower($http_auth), 'basic') === 0) {
                 // Search online for HTTP_AUTHORIZATION workaround to explain what this is doing
-                list($username, $password) = explode(':', base64_decode(substr($this->request->getServer('HTTP_AUTHORIZATION'), 6)));
+                list($username, $password) = explode(':', base64_decode(substr($this->request->getHeaderLine('authorization'), 6)));
             }
         }
 

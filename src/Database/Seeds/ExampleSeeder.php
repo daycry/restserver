@@ -15,6 +15,7 @@ class ExampleSeeder extends Seeder
                 'controller'=> '\App\Controllers\Login',
                 'method'    => 'doLogin',
                 'http'      => 'POST',
+                'auth'      => null,
                 'key'       => 1,
                 'limit'     => 100,
                 'time'      => 1800,
@@ -24,6 +25,7 @@ class ExampleSeeder extends Seeder
                 'controller'=> '\Tests\Support\Controllers\Hello',
                 'method'    => 'index',
                 'http'      => null,
+                'auth'      => null,
                 'key'       => null,
                 'limit'     => 100,
                 'time'      => 3600,
@@ -33,6 +35,7 @@ class ExampleSeeder extends Seeder
                 'controller'=> '\Tests\Support\Controllers\NoHello',
                 'method'    => null,
                 'http'      => null,
+                'auth'      => null,
                 'key'       => 1,
                 'limit'     => 1,
                 'time'      => 3600,
@@ -42,8 +45,19 @@ class ExampleSeeder extends Seeder
                 'controller'=> '\Tests\Support\Controllers\NoAccess',
                 'method'    => 'index',
                 'http'      => 'GET',
+                'auth'      => null,
                 'key'       => 1,
                 'limit'     => 1,
+                'time'      => 3600,
+                'level'     => 10
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\HelloAuthBasic',
+                'method'    => 'index',
+                'http'      => 'GET',
+                'auth'      => 'basic',
+                'key'       => 1,
+                'limit'     => null,
                 'time'      => 3600,
                 'level'     => 10
             ]
@@ -100,6 +114,12 @@ class ExampleSeeder extends Seeder
                 'api_key'       => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',
                 'all_access'    => 0,
                 'controller'    => '\Tests\Support\Controllers\NoHello',
+                'method'        => 'index'
+            ],
+            [
+                'api_key'       => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
+                'all_access'    => 0,
+                'controller'    => '\Tests\Support\Controllers\HelloAuthBasic',
                 'method'        => 'index'
             ]
         ];

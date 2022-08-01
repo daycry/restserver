@@ -17,7 +17,7 @@ class DigestAuth extends BaseAuth implements AuthInterface
     {
         $digest_string = $this->request->getServer('PHP_AUTH_DIGEST');
         if ($digest_string === null) {
-            $digest_string = $this->request->getServer('HTTP_AUTHORIZATION');
+            $digest_string = $this->request->getHeaderLine('authorization');
         }
 
         $unique_id = uniqid();
