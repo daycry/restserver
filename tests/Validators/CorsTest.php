@@ -1,6 +1,6 @@
 <?php
 
-namespace Daycry\RestServer\Tests;
+namespace Daycry\RestServer\Tests\Validators;
 
 use CodeIgniter\Config\Factories;
 use CodeIgniter\HTTP\Request;
@@ -11,7 +11,7 @@ use CodeIgniter\Test\DatabaseTestTrait;
 
 use Daycry\RestServer\Database\Seeds\ExampleSeeder;
 
-class LimitTest extends CIUnitTestCase
+class CorsTest extends CIUnitTestCase
 {
     use DatabaseTestTrait, FeatureTestTrait;
 
@@ -26,7 +26,7 @@ class LimitTest extends CIUnitTestCase
     protected function setUp(): void
     {
         $this->resetServices();
-        
+
         parent::setUp();
 
         $routes = [
@@ -39,7 +39,22 @@ class LimitTest extends CIUnitTestCase
         $this->config = config('RestServer');
     }
 
-    public function testLimitSuccess()
+    public function testCorsError()
+    {
+        $this->withHeaders([
+            'Origin' => 'https://test-failed.local',
+            'X-API-KEY' => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg'
+        ]);
+
+        $result = $this->withBody(
+            json_encode(['test' => 'hello'])
+        )->call('get', 'hello');
+
+        $result->assertHeaderMissing('Access-Control-Allow-Origin');
+        $result->assertHeader('Access-Control-Allow-Credentials');
+    }
+
+    public function testCorsSuccess()
     {
         $this->withHeaders([
             'Origin' => 'https://test-cors.local',
@@ -53,28 +68,6 @@ class LimitTest extends CIUnitTestCase
         $result->assertHeader('Access-Control-Allow-Origin');
         $result->assertHeader('Access-Control-Allow-Headers', implode(", ", $this->config->allowedCorsHeaders));
         $result->assertHeader('Access-Control-Allow-Credentials');
-    }
-
-    public function testLimitError()
-    {
-        $this->withHeaders([
-            'Origin' => 'https://test-cors.local',
-            'X-API-KEY' => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg'
-        ]);
-
-        $result = $this->withBody(
-            json_encode(['test' => 'nohello'])
-        )->call('get', 'nohello');
-
-        $result2 = $this->withBody(
-            json_encode(['test' => 'nohello'])
-        )->call('get', 'nohello');
-
-        $content = \json_decode( $result2->getJson() );
-
-        $result->assertStatus(429);
-        $this->assertObjectHasAttribute("error", $content->messages);
-        $this->assertMatchesRegularExpression("/has reached the time limit for this method/i", $content->messages->error);
     }
 
     protected function tearDown(): void

@@ -57,6 +57,7 @@
 		<env name="database.tests.DBPrefix" value="" force="true"/>
 
 		<env name="curlrequest.shareOptions" value="false" force="true"/>
+		<env name="encryption.key" value="123456789" force="true"/>
 
 		<!-- RestServer configuration -->
 		<env name="restserver.restEnableKeys" value="true" force="true"/>
@@ -65,6 +66,9 @@
 		<env name="restserver.restEnableOverridePetition" value="true" force="true"/>
 		<env name="restserver.restEnableLimits" value="true" force="true"/>
 		<env name="restserver.restEnableAccess" value="true" force="true"/>
+		<env name="restserver.restIpWhitelistEnabled" value="true" force="true"/>
+		<env name="restserver.restIpBlacklistEnabled" value="true" force="true"/>
+		<env name="restserver.restEnableLogging" value="true" force="true"/>
 		<env name="restserver.allowedCorsOrigins" value="https://test-cors.local" force="true"/>
 	</php>
 </phpunit>

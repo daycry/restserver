@@ -1,6 +1,6 @@
 <?php
 
-namespace Daycry\RestServer\Tests;
+namespace Daycry\RestServer\Tests\Validators;
 
 use CodeIgniter\Config\Factories;
 use CodeIgniter\HTTP\Request;
@@ -11,7 +11,7 @@ use CodeIgniter\Test\DatabaseTestTrait;
 
 use Daycry\RestServer\Database\Seeds\ExampleSeeder;
 
-class AccessTest extends CIUnitTestCase
+class LimitTest extends CIUnitTestCase
 {
     use DatabaseTestTrait, FeatureTestTrait;
 
@@ -26,13 +26,12 @@ class AccessTest extends CIUnitTestCase
     protected function setUp(): void
     {
         $this->resetServices();
-
+        
         parent::setUp();
 
         $routes = [
             ['get', 'hello', '\Tests\Support\Controllers\Hello::index'],
-            ['get', 'nohello', '\Tests\Support\Controllers\NoHello::index'],
-            ['get', 'noaccess', '\Tests\Support\Controllers\NoAccess::index']
+            ['get', 'nohello', '\Tests\Support\Controllers\NoHello::index']
         ];
         
         $this->withRoutes($routes);
@@ -40,7 +39,7 @@ class AccessTest extends CIUnitTestCase
         $this->config = config('RestServer');
     }
 
-    public function testAccessError()
+    public function testLimitSuccess()
     {
         $this->withHeaders([
             'Origin' => 'https://test-cors.local',
@@ -48,15 +47,34 @@ class AccessTest extends CIUnitTestCase
         ]);
 
         $result = $this->withBody(
-            json_encode(['test' => 'noaccess'])
-        )->call('get', 'noaccess');
+            json_encode(['test' => 'hello'])
+        )->call('get', 'hello');
 
+        $result->assertHeader('Access-Control-Allow-Origin');
+        $result->assertHeader('Access-Control-Allow-Headers', implode(", ", $this->config->allowedCorsHeaders));
+        $result->assertHeader('Access-Control-Allow-Credentials');
+    }
 
-        $content = \json_decode( $result->getJson() );
+    public function testLimitError()
+    {
+        $this->withHeaders([
+            'Origin' => 'https://test-cors.local',
+            'X-API-KEY' => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg'
+        ]);
 
-        $result->assertStatus(401);
+        $result = $this->withBody(
+            json_encode(['test' => 'nohello'])
+        )->call('get', 'nohello');
+
+        $result2 = $this->withBody(
+            json_encode(['test' => 'nohello'])
+        )->call('get', 'nohello');
+
+        $content = \json_decode( $result2->getJson() );
+
+        $result->assertStatus(429);
         $this->assertObjectHasAttribute("error", $content->messages);
-        $this->assertMatchesRegularExpression("/does not have access to the requested controller/i", $content->messages->error);
+        $this->assertMatchesRegularExpression("/has reached the time limit for this method/i", $content->messages->error);
     }
 
     protected function tearDown(): void

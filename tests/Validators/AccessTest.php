@@ -1,6 +1,6 @@
 <?php
 
-namespace Daycry\RestServer\Tests;
+namespace Daycry\RestServer\Tests\Validators;
 
 use CodeIgniter\Config\Factories;
 use CodeIgniter\HTTP\Request;
@@ -11,7 +11,7 @@ use CodeIgniter\Test\DatabaseTestTrait;
 
 use Daycry\RestServer\Database\Seeds\ExampleSeeder;
 
-class CorsTest extends CIUnitTestCase
+class AccessTest extends CIUnitTestCase
 {
     use DatabaseTestTrait, FeatureTestTrait;
 
@@ -31,7 +31,8 @@ class CorsTest extends CIUnitTestCase
 
         $routes = [
             ['get', 'hello', '\Tests\Support\Controllers\Hello::index'],
-            ['get', 'nohello', '\Tests\Support\Controllers\NoHello::index']
+            ['get', 'nohello', '\Tests\Support\Controllers\NoHello::index'],
+            ['get', 'noaccess', '\Tests\Support\Controllers\NoAccess::index']
         ];
         
         $this->withRoutes($routes);
@@ -39,22 +40,7 @@ class CorsTest extends CIUnitTestCase
         $this->config = config('RestServer');
     }
 
-    public function testCorsError()
-    {
-        $this->withHeaders([
-            'Origin' => 'https://test-failed.local',
-            'X-API-KEY' => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg'
-        ]);
-
-        $result = $this->withBody(
-            json_encode(['test' => 'hello'])
-        )->call('get', 'hello');
-
-        $result->assertHeaderMissing('Access-Control-Allow-Origin');
-        $result->assertHeader('Access-Control-Allow-Credentials');
-    }
-
-    public function testCorsSuccess()
+    public function testAccessError()
     {
         $this->withHeaders([
             'Origin' => 'https://test-cors.local',
@@ -62,12 +48,15 @@ class CorsTest extends CIUnitTestCase
         ]);
 
         $result = $this->withBody(
-            json_encode(['test' => 'hello'])
-        )->call('get', 'hello');
+            json_encode(['test' => 'noaccess'])
+        )->call('get', 'noaccess');
 
-        $result->assertHeader('Access-Control-Allow-Origin');
-        $result->assertHeader('Access-Control-Allow-Headers', implode(", ", $this->config->allowedCorsHeaders));
-        $result->assertHeader('Access-Control-Allow-Credentials');
+
+        $content = \json_decode( $result->getJson() );
+
+        $result->assertStatus(401);
+        $this->assertObjectHasAttribute("error", $content->messages);
+        $this->assertMatchesRegularExpression("/does not have access to the requested controller/i", $content->messages->error);
     }
 
     protected function tearDown(): void

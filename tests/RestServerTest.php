@@ -26,7 +26,7 @@ class RestServerTest extends CIUnitTestCase
     protected function setUp(): void
     {
         $this->resetServices();
-        
+
         parent::setUp();
 
         $routes = [
@@ -39,8 +39,26 @@ class RestServerTest extends CIUnitTestCase
         $this->config = config('RestServer');
     }
 
-    public function testApiKeyRequestError()
+    public function testWithoutApiKeyRequest()
     {
+        $result = $this->withBody(
+            json_encode(['test' => 'hello'])
+        )->call('get', 'hello');
+
+        $content = \json_decode($result->getJson());
+
+        $result->assertStatus(401);
+        $this->assertObjectHasAttribute("error", $content->messages);
+        $this->assertStringStartsWith("Invalid API key", $content->messages->error);
+    }
+
+    public function testInvalidApiKeyRequest()
+    {
+        $this->withHeaders([
+            'Origin' => 'https://test-cors.local',
+            'X-API-KEY' => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggo12'
+        ]);
+
         $result = $this->withBody(
             json_encode(['test' => 'hello'])
         )->call('get', 'hello');

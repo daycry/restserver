@@ -15,6 +15,7 @@ class ExampleSeeder extends Seeder
                 'controller'=> '\App\Controllers\Login',
                 'method'    => 'doLogin',
                 'http'      => 'POST',
+                'key'       => 1,
                 'limit'     => 100,
                 'time'      => 1800,
                 'level'     => 10
@@ -22,15 +23,17 @@ class ExampleSeeder extends Seeder
             [
                 'controller'=> '\Tests\Support\Controllers\Hello',
                 'method'    => 'index',
-                'http'      => 'GET',
+                'http'      => null,
+                'key'       => null,
                 'limit'     => 100,
                 'time'      => 3600,
                 'level'     => 10
             ],
             [
                 'controller'=> '\Tests\Support\Controllers\NoHello',
-                'method'    => 'index',
-                'http'      => 'GET',
+                'method'    => null,
+                'http'      => null,
+                'key'       => 1,
                 'limit'     => 1,
                 'time'      => 3600,
                 'level'     => 10
@@ -39,6 +42,7 @@ class ExampleSeeder extends Seeder
                 'controller'=> '\Tests\Support\Controllers\NoAccess',
                 'method'    => 'index',
                 'http'      => 'GET',
+                'key'       => 1,
                 'limit'     => 1,
                 'time'      => 3600,
                 'level'     => 10
@@ -61,9 +65,9 @@ class ExampleSeeder extends Seeder
         $access = [
             [
                 'api_key'       => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',
-                'all_access'    => 0,
+                'all_access'    => 1,
                 'controller'    => '\Tests\Support\Controllers\Hello',
-                'method'        => 'index'
+                'method'        => null
             ],
             [
                 'api_key'       => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',

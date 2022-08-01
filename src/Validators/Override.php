@@ -14,7 +14,7 @@ class Override
         $petition = $petitionModel->where('controller', $router->controllerName())->where('method', $router->methodName())->where('http', $request->getMethod())->first();
 
         if (!$petition) {
-            $petition = $petitionModel->where('controller', $router->controllerName())->where('method', $router->methodName())->where('http', '*')->first();
+            $petition = $petitionModel->where('controller', $router->controllerName())->where('method', $router->methodName())->where('http', null)->first();
             if (!$petition) {
                 $petition = $petitionModel->where('controller', $router->controllerName())->where('method', null)->where('http', $request->getMethod())->first();
                 if (!$petition) {
