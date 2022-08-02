@@ -48,7 +48,7 @@ class BasicTest extends CIUnitTestCase
 
         $result = $this->withBody(
             json_encode(['test' => 'helloauthbasic'])
-        )->call('get', 'helloauthbasic');
+        )->call('get', 'helloauthbasic?format=json');
 
         $content = \json_decode( $result->getJson() );
 
@@ -67,7 +67,7 @@ class BasicTest extends CIUnitTestCase
 
         $result = $this->withBody(
             json_encode(['test' => 'helloauthbasic'])
-        )->call('get', 'helloauthbasic');
+        )->call('get', 'helloauthbasic?format=json1');
 
         $content = \json_decode( $result->getJson() );
 

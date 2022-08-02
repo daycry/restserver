@@ -150,17 +150,6 @@ class RestServer extends ResourceController
             $this->_benchmark->start('petition');
         }
 
-        // Try to find a format for the request (means we have a request body)
-        $this->inputFormat = \Daycry\RestServer\Formats\Input::check($this->request);
-        $ft = explode('/', $this->inputFormat);
-        $this->setFormat(end($ft));
-
-        // Try to find a format for the response
-        $this->responseFormat = \Daycry\RestServer\Formats\Output::check($this->request);
-        $ft = explode('/', $this->responseFormat);
-        $this->setResponseFormat(end($ft));
-        $formatter = $this->format(); //call this function for force output format
-
         // Set up the query parameters
         $this->_queryArgs = $this->request->getGet();
         $this->_queryArgs = array_merge($this->_queryArgs, $this->request->uri->getSegments());
@@ -176,6 +165,17 @@ class RestServer extends ResourceController
         );
 
         $this->args = array_merge($this->_queryArgs, $this->_headArgs, $this->_postArgs);
+
+        // Try to find a format for the request (means we have a request body)
+        $this->inputFormat = \Daycry\RestServer\Formats\Input::check($this->request);
+        $ft = explode('/', $this->inputFormat);
+        $this->setFormat(end($ft));
+
+        // Try to find a format for the response
+        $this->responseFormat = \Daycry\RestServer\Formats\Output::check($this->request, $this->args);
+        $ft = explode('/', $this->responseFormat);
+        $this->setResponseFormat(end($ft));
+        $formatter = $this->format(); //call this function for force output format
 
         // Extend this function to apply additional checking early on in the process
         $this->earlyChecks();

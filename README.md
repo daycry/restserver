@@ -225,7 +225,7 @@ Accept: application/xml
 
 ## INPUT BODY
 
-The body of petition is `json` by defult, but you can change it.
+The body of petition is `json` by default, but you can change it.
 
 ```
 Content-Type: application/json
@@ -233,6 +233,23 @@ Content-Type: application/json
 or
 ```
 Content-Type: application/xml
+```
+
+## OUTPUT BODY
+
+The body of petition is `json` by default, but you can change it.
+
+```
+Accept: application/json
+```
+or
+```
+Accept: application/xml
+```
+or you can set format in GET variable
+```
+http://example.com?format=json
+http://example.com?format=xml
 ```
 
 ## API TOKEN
