@@ -212,6 +212,8 @@ class RestServer extends ResourceController
             }
         }
 
+        $this->user = null;
+        
         return true;
     }
 
@@ -322,11 +324,10 @@ class RestServer extends ResourceController
 
             $this->apiUser = \Daycry\RestServer\Validators\ApiKey::check($this->request, $this->_petition, $this->args, $this->authorized);
 
-            if ($this->_petition) {
-                if (!$this->_authOverrideCheck()) {
-                    $this->user = $this->_getAuthMethod($this->_restConfig->restAuth);
-                }
+            if (!$override = $this->_authOverrideCheck()) {
+                    $this->_getAuthMethod($this->_restConfig->restAuth);
             }
+
 
             // Check to see if this key has access to the requested controller
             if ($this->_restConfig->restEnableKeys && empty($this->apiUser) === false && \Daycry\RestServer\Validators\Access::check($this->request, $this->router, $this->apiUser) === false) {

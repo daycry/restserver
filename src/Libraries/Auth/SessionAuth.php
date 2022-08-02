@@ -20,7 +20,8 @@ class SessionAuth extends BaseAuth implements AuthInterface
 
         // If false, then the user isn't logged in
         if (!$session->get($this->restConfig->authSource)) {
-            throw UnauthorizedException::forUnauthorized();
+            //throw UnauthorizedException::forUnauthorized();
+            throw UnauthorizedException::forInvalidCredentials();
         }
 
         return $session->get($this->restConfig->authSource);

@@ -29,26 +29,29 @@ class DigestAuth extends BaseAuth implements AuthInterface
             $this->forceLogin($unique_id);
         }
 
-        $matches = [];
+        /*$matches = [];
         preg_match_all('@(username|nonce|uri|nc|cnonce|qop|response)=[\'"]?([^\'",]+)@', $digest_string, $matches);
         $digest = (empty($matches[1]) || empty($matches[2])) ? [] : array_combine($matches[1], $matches[2]);
 
         $username = $nonce = $nc = $cnonce = $qop = $username = $uri = $response = null;
         foreach ($digest as $key => $value) {
             ${ $key } = $value;
-        }
+        }*/
+        $matches = [];
+        preg_match_all('@(username|nonce|uri|nc|cnonce|qop|response)=[\'"]?([^\'",]+)@', $digest_string, $matches);
+        $digest = (empty($matches[1]) || empty($matches[2])) ? [] : array_combine($matches[1], $matches[2]);
 
         // For digest authentication the library function should return already stored md5(username:restrealm:password) for that username see rest.php::auth_library_function config
-        $usernameMD5 = $this->checkLogin($username, true);
+        $username = $this->checkLogin($digest['username'], true);
 
-        if ($username === false || $usernameMD5 === false) {
+        if (isset($digest['username']) === false || $username === false) {
             $this->forceLogin($unique_id);
         }
 
-        $md5 = md5(strtoupper($this->request->getMethod()) . ':' . $uri);
-        $valid_response = md5($usernameMD5 . ':' . $nonce . ':' . $nc . ':' . $cnonce . ':'. $qop . ':' . $md5);
+        $md5 = md5(strtoupper($this->request->getMethod()) . ':' . $digest['uri']);
+        $valid_response = md5($username.':'.$digest['nonce'].':'.$digest['nc'].':'.$digest['cnonce'].':'.$digest['qop'].':'.$md5);
 
-        if (strcasecmp($response . '', $valid_response . '') !== 0) {
+        if (strcasecmp($digest['response'] . '', $valid_response . '') !== 0) {
             throw UnauthorizedException::forInvalidCredentials();
         }
 

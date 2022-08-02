@@ -30,7 +30,7 @@ class BearerAuth extends BaseAuth implements AuthInterface
 
         if ($username === false) {
             $this->forceLogin();
-            throw UnauthorizedException::forInvalidCredentials();
+            //throw UnauthorizedException::forInvalidCredentials();
         }
 
         return $username;

@@ -11,7 +11,7 @@ use CodeIgniter\Test\DatabaseTestTrait;
 
 use Daycry\RestServer\Database\Seeds\ExampleSeeder;
 
-class BasicTest extends CIUnitTestCase
+class BearerTest extends CIUnitTestCase
 {
     use DatabaseTestTrait, FeatureTestTrait;
 
@@ -30,7 +30,7 @@ class BasicTest extends CIUnitTestCase
         parent::setUp();
 
         $routes = [
-            ['get', 'helloauthbasic', '\Tests\Support\Controllers\HelloAuthBasic::index']
+            ['get', 'helloauthbearer', '\Tests\Support\Controllers\HelloAuthBearer::index']
         ];
         
         $this->withRoutes($routes);
@@ -38,17 +38,20 @@ class BasicTest extends CIUnitTestCase
         $this->config = config('RestServer');
     }
 
-    public function testBasicError()
+    public function testBearerError()
     {
+        $bearer = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsInR5cGUiOiJCZWFyZXIifQ.eyJkYXRhIjoiYWRtaW4xIiwiaXNzIjoiaHR0cDovL2V4YW1wbGUubG9jYWwiLCJhdWQiOiJodHRwOi8vZXhhbXBsZS5sb2NhbCIsImp0aSI6IjRmMWcyM2ExMmFhIiwiaWF0IjoxNjU5NDMzNzM1LjcwNDYyMSwibmJmIjoxNjU5NDMzNzM1LjcwNDYyMSwiZXhwIjoxNjU5NTIwMTM1LjcwNDYyMX0.QUH-wuRJPCi4ha-_JjCUoPepulslqR11l6VbSNR_IcE';
+
         $this->withHeaders([
             'Origin' => 'https://test-cors.local',
             'X-API-KEY' => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
-            'Authorization' => 'Basic ' . \base64_encode('admin:12345')
+            'Authorization' => 'Bearer ' . $bearer
         ]);
 
         $result = $this->withBody(
-            json_encode(['test' => 'helloauthbasic'])
-        )->call('get', 'helloauthbasic');
+            json_encode(['test' => 'helloauthbearer'])
+        )->call('get', 'helloauthbearer');
+
 
         $content = \json_decode( $result->getJson() );
 
@@ -57,56 +60,42 @@ class BasicTest extends CIUnitTestCase
         $this->AssertSame("Invalid credentials", $content->messages->error);
     }
 
-    public function testBasicErrorNoUsername()
+    public function testBearerErrorNoBearer()
     {
+        $bearer = '';
+
         $this->withHeaders([
             'Origin' => 'https://test-cors.local',
             'X-API-KEY' => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
-            'Authorization' => 'Basic ' . \base64_encode(':12345')
+            'Authorization' => 'Bearer ' . $bearer
         ]);
 
         $result = $this->withBody(
-            json_encode(['test' => 'helloauthbasic'])
-        )->call('get', 'helloauthbasic');
+            json_encode(['test' => 'helloauthbearer'])
+        )->call('get', 'helloauthbearer');
+
 
         $content = \json_decode( $result->getJson() );
 
-        $result->assertStatus(400);
+        $result->assertStatus(401);
         $this->assertObjectHasAttribute("error", $content->messages);
-        $this->assertStringStartsWith("Cannot modify header", $content->messages->error);
+        $this->AssertSame("Invalid credentials", $content->messages->error);
     }
 
-    public function testBasicErrorNoPassword()
+    public function testBearerSuccess()
     {
+        $jwtLibrary = new \Daycry\RestServer\Libraries\JWT();
+        $bearer = $jwtLibrary->encode('admin');
+
         $this->withHeaders([
             'Origin' => 'https://test-cors.local',
             'X-API-KEY' => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
-            'Authorization' => 'Basic ' . \base64_encode('admin:')
+            'Authorization' => 'Bearer ' . $bearer
         ]);
 
         $result = $this->withBody(
-            json_encode(['test' => 'helloauthbasic'])
-        )->call('get', 'helloauthbasic');
-
-        $content = \json_decode( $result->getJson() );
-
-        $result->assertStatus(400);
-        $this->assertObjectHasAttribute("error", $content->messages);
-        $this->assertStringStartsWith("Cannot modify header", $content->messages->error);
-    }
-
-    public function testBasicSuccess()
-    {
-        $this->withHeaders([
-            'Origin' => 'https://test-cors.local',
-            'X-API-KEY' => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
-            'Authorization' => 'Basic ' . \base64_encode('admin:1234')
-        ]);
-
-        $result = $this->withBody(
-            json_encode(['test' => 'helloauthbasic'])
-        )->call('get', 'helloauthbasic');
-
+            json_encode(['test' => 'helloauthbearer'])
+        )->call('get', 'helloauthbearer');
 
         $content = \json_decode( $result->getJson() );
 
@@ -114,7 +103,7 @@ class BasicTest extends CIUnitTestCase
         $this->assertObjectHasAttribute("test", $content);
         $this->assertObjectHasAttribute("auth", $content);
         $this->assertObjectHasAttribute("key", $content);
-        $this->AssertSame("helloauthbasic", $content->test);
+        $this->AssertSame("helloauthbearer", $content->test);
         $this->AssertSame("admin", $content->auth);
         $this->AssertSame("1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123", $content->key);
     }

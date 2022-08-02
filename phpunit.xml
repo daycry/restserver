@@ -22,7 +22,7 @@
 			<directory suffix=".php">./src/Database</directory>
 			<directory suffix=".php">./src/Libraries/User</directory>
 			<directory suffix=".php">./src/Interfaces</directory>
-			<file>./app/Config/Routes.php</file>
+			<file>./src/Libraries/CheckIp.php</file>
 		</exclude>
 		<report>
 			<clover outputFile="build/logs/clover.xml"/>
@@ -70,6 +70,7 @@
 		<env name="restserver.restIpWhitelistEnabled" value="true" force="true"/>
 		<env name="restserver.restIpBlacklistEnabled" value="true" force="true"/>
 		<env name="restserver.restEnableLogging" value="true" force="true"/>
+		<env name="restserver.authSource" value="sessionTest" force="true"/>
 		<env name="restserver.allowedCorsOrigins" value="https://test-cors.local" force="true"/>
 	</php>
 </phpunit>

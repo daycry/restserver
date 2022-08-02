@@ -120,11 +120,6 @@ class JWT
             new \Lcobucci\JWT\Validation\Constraint\PermittedFor($this->JWTConfig->audience)
         ];
 
-        /*if( !$this->configuration->validator()->validate( $token, ...$constraints ) )
-        {
-            throw new \RuntimeException('No way!');
-        }*/
-
         try {
             $this->configuration->validator()->assert($token, ...$constraints);
         } catch (RequiredConstraintsViolated  $e) {

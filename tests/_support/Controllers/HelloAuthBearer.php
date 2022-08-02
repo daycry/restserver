@@ -13,7 +13,7 @@ namespace Tests\Support\Controllers;
 
 use Daycry\RestServer\RestServer;
 
-class HelloAuthBasic extends RestServer
+class HelloAuthBearer extends RestServer
 {
     public function index()
     {

@@ -31,12 +31,13 @@ class BasicAuth extends BaseAuth implements AuthInterface
             }
         }
 
+        $password = ($password) ? $password : false;
         // Check if the user is logged into the system
         $username = $this->checkLogin($username, $password);
 
         if ($username === false) {
             $this->forceLogin();
-            throw UnauthorizedException::forInvalidCredentials();
+            //throw UnauthorizedException::forInvalidCredentials();
         }
 
         return $username;

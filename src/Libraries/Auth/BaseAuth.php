@@ -44,20 +44,20 @@ abstract class BaseAuth
         $rest_auth = \strtolower($this->method);
         $valid_logins = $this->restConfig->restValidLogins;
 
-        if (!$this->restConfig->authSource && $rest_auth === 'digest') {
+        if ($auth_source !== 'library' && $rest_auth === 'digest') {
             // For digest we do not have a password passed as argument
             return md5($username . ':' . $this->restConfig->restRealm . ':' . (isset($valid_logins[ $username ]) ? $valid_logins[ $username ] : ''));
         }
 
-        if (!$auth_source && $rest_auth === 'bearer') {
+        if ($auth_source !== 'library' && $rest_auth === 'bearer') {
             $jwtLibrary = new \Daycry\RestServer\Libraries\JWT();
             $claims = $jwtLibrary->decode($username);
 
-            if (!$claims) {
+            if (!$claims || !isset( $valid_logins[ $claims->get('data') ] )) {
                 throw \Daycry\RestServer\Exceptions\UnauthorizedException::forInvalidCredentials();
             }
 
-            return $claims;
+            return $claims->get('data');
         }
 
         if ($password === false) {
