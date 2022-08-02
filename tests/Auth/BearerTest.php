@@ -103,7 +103,11 @@ class BearerTest extends CIUnitTestCase
         $this->assertObjectHasAttribute("test", $content);
         $this->assertObjectHasAttribute("auth", $content);
         $this->assertObjectHasAttribute("key", $content);
+        $this->assertObjectHasAttribute("user", $content);
+        $this->assertIsArray($content->user);
+        $this->assertObjectHasAttribute('name', $content->user[0]);
         $this->AssertSame("helloauthbearer", $content->test);
+        $this->AssertSame("userSample2", $content->user[0]->name);
         $this->AssertSame("admin", $content->auth);
         $this->AssertSame("1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123", $content->key);
     }

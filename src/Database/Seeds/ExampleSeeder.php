@@ -80,6 +80,26 @@ class ExampleSeeder extends Seeder
                 'limit'     => null,
                 'time'      => 3600,
                 'level'     => 10
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\HelloAuthDigest',
+                'method'    => 'index',
+                'http'      => 'GET',
+                'auth'      => 'digest',
+                'key'       => 1,
+                'limit'     => null,
+                'time'      => 3600,
+                'level'     => 10
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\HelloAuthLibrary',
+                'method'    => 'index',
+                'http'      => 'GET',
+                'auth'      => 'basic',
+                'key'       => 1,
+                'limit'     => null,
+                'time'      => 3600,
+                'level'     => 10
             ]
         ];
 
@@ -106,12 +126,18 @@ class ExampleSeeder extends Seeder
 
 
         $user = [
-            'name'      => 'userSample',
-            $config->userKeyColumn    => '1'
+            [
+                'name'      => 'userSample',
+                $config->userKeyColumn    => '1'
+            ],
+            [
+                'name'      => 'userSample2',
+                $config->userKeyColumn    => '2'
+            ]
         ];
 
         // Using Query Builder
-        $this->db->table($config->restUsersTable)->insert($user);
+        $this->db->table($config->restUsersTable)->insertBatch($user);
 
 
         $attempt = [
@@ -152,6 +178,18 @@ class ExampleSeeder extends Seeder
                 'api_key'       => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
                 'all_access'    => 0,
                 'controller'    => '\Tests\Support\Controllers\HelloAuthSession',
+                'method'        => 'index'
+            ],
+            [
+                'api_key'       => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
+                'all_access'    => 0,
+                'controller'    => '\Tests\Support\Controllers\HelloAuthDigest',
+                'method'        => 'index'
+            ],
+            [
+                'api_key'       => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
+                'all_access'    => 0,
+                'controller'    => '\Tests\Support\Controllers\HelloAuthLibrary',
                 'method'        => 'index'
             ]
         ];

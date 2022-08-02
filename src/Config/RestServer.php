@@ -92,16 +92,14 @@ class RestServer extends BaseConfig
 
         class CheckAuth implements LibraryAuthInterface
         {
-            public function __construct( BaseConfig $config = null )
-            {
-            }
-
             public function validate( $username, $password = true )
             {
-                if( $username != 'admin )
+                if( $username != 'admin' )
                 {
                     throw \Daycry\RestServer\Exceptions\UnauthorizedException::forInvalidCredentials();
                 }
+
+                return $username;
             }
         }
     */

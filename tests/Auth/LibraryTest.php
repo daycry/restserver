@@ -11,7 +11,7 @@ use CodeIgniter\Test\DatabaseTestTrait;
 
 use Daycry\RestServer\Database\Seeds\ExampleSeeder;
 
-class BasicTest extends CIUnitTestCase
+class LibraryTest extends CIUnitTestCase
 {
     use DatabaseTestTrait, FeatureTestTrait;
 
@@ -30,7 +30,7 @@ class BasicTest extends CIUnitTestCase
         parent::setUp();
 
         $routes = [
-            ['get', 'helloauthbasic', '\Tests\Support\Controllers\HelloAuthBasic::index']
+            ['get', 'helloauthlibrary', '\Tests\Support\Controllers\HelloAuthLibrary::index']
         ];
         
         $this->withRoutes($routes);
@@ -38,17 +38,17 @@ class BasicTest extends CIUnitTestCase
         $this->config = config('RestServer');
     }
 
-    public function testBasicError()
+    public function testLibraryError()
     {
         $this->withHeaders([
             'Origin' => 'https://test-cors.local',
             'X-API-KEY' => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
-            'Authorization' => 'Basic ' . \base64_encode('admin:12345')
+            'Authorization' => 'Basic ' . \base64_encode('admin1:1234')
         ]);
 
         $result = $this->withBody(
-            json_encode(['test' => 'helloauthbasic'])
-        )->call('get', 'helloauthbasic?format=json');
+            json_encode(['test' => 'helloauthlibrary'])
+        )->call('get', 'helloauthlibrary?format=json');
 
         $content = \json_decode( $result->getJson() );
 
@@ -57,7 +57,7 @@ class BasicTest extends CIUnitTestCase
         $this->AssertSame("Invalid credentials", $content->messages->error);
     }
 
-    public function testBasicErrorNoUsername()
+    public function testLibraryErrorNoUsername()
     {
         $this->withHeaders([
             'Origin' => 'https://test-cors.local',
@@ -66,8 +66,8 @@ class BasicTest extends CIUnitTestCase
         ]);
 
         $result = $this->withBody(
-            json_encode(['test' => 'helloauthbasic'])
-        )->call('get', 'helloauthbasic?format=json1');
+            json_encode(['test' => 'helloauthlibrary'])
+        )->call('get', 'helloauthlibrary?format=json1');
 
         $content = \json_decode( $result->getJson() );
 
@@ -76,7 +76,7 @@ class BasicTest extends CIUnitTestCase
         $this->assertStringStartsWith("Cannot modify header", $content->messages->error);
     }
 
-    public function testBasicErrorNoPassword()
+    public function testLibraryErrorNoPassword()
     {
         $this->withHeaders([
             'Origin' => 'https://test-cors.local',
@@ -85,8 +85,8 @@ class BasicTest extends CIUnitTestCase
         ]);
 
         $result = $this->withBody(
-            json_encode(['test' => 'helloauthbasic'])
-        )->call('get', 'helloauthbasic');
+            json_encode(['test' => 'helloauthlibrary'])
+        )->call('get', 'helloauthlibrary');
 
         $content = \json_decode( $result->getJson() );
 
@@ -95,7 +95,7 @@ class BasicTest extends CIUnitTestCase
         $this->assertStringStartsWith("Cannot modify header", $content->messages->error);
     }
 
-    public function testBasicSuccess()
+    public function testLibrarySuccess()
     {
         $this->withHeaders([
             'Origin' => 'https://test-cors.local',
@@ -104,8 +104,8 @@ class BasicTest extends CIUnitTestCase
         ]);
 
         $result = $this->withBody(
-            json_encode(['test' => 'helloauthbasic'])
-        )->call('get', 'helloauthbasic');
+            json_encode(['test' => 'helloauthlibrary'])
+        )->call('get', 'helloauthlibrary');
 
 
         $content = \json_decode( $result->getJson() );
@@ -117,7 +117,7 @@ class BasicTest extends CIUnitTestCase
         $this->assertObjectHasAttribute("user", $content);
         $this->assertIsArray($content->user);
         $this->assertObjectHasAttribute('name', $content->user[0]);
-        $this->AssertSame("helloauthbasic", $content->test);
+        $this->AssertSame("helloauthlibrary", $content->test);
         $this->AssertSame("userSample2", $content->user[0]->name);
         $this->AssertSame("admin", $content->auth);
         $this->AssertSame("1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123", $content->key);

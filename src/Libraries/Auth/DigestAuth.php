@@ -42,6 +42,7 @@ class DigestAuth extends BaseAuth implements AuthInterface
         $digest = (empty($matches[1]) || empty($matches[2])) ? [] : array_combine($matches[1], $matches[2]);
 
         // For digest authentication the library function should return already stored md5(username:restrealm:password) for that username see rest.php::auth_library_function config
+        $digest['username'] = isset( $digest['username'] ) ? $digest['username'] : null;
         $username = $this->checkLogin($digest['username'], true);
 
         if (isset($digest['username']) === false || $username === false) {
@@ -51,7 +52,7 @@ class DigestAuth extends BaseAuth implements AuthInterface
         $md5 = md5(strtoupper($this->request->getMethod()) . ':' . $digest['uri']);
         $valid_response = md5($username.':'.$digest['nonce'].':'.$digest['nc'].':'.$digest['cnonce'].':'.$digest['qop'].':'.$md5);
 
-        if (strcasecmp($digest['response'] . '', $valid_response . '') !== 0) {
+        if (strcasecmp($digest['response'], $valid_response) !== 0) {
             throw UnauthorizedException::forInvalidCredentials();
         }
 

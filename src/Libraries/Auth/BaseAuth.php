@@ -112,11 +112,6 @@ abstract class BaseAuth
 
     protected function _performLibraryAuth($username = '', $password = null)
     {
-        if (empty($username)) {
-            log_message('critical', 'Library Auth: Failure, empty username');
-            return false;
-        }
-
         $authLibraryClass = $this->restConfig->authLibraryClass;
 
         if (!isset($authLibraryClass[ $this->method ]) || !\class_exists($authLibraryClass[ $this->method ])) {

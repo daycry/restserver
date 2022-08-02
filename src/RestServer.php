@@ -51,7 +51,7 @@ class RestServer extends ResourceController
      *
      * @var object
      */
-    private BaseConfig $_restConfig;
+    protected BaseConfig $_restConfig;
 
     /**
      * The authorization log
@@ -130,8 +130,10 @@ class RestServer extends ResourceController
         }
 
         // Rest server config
-        $this->_restConfig = config('RestServer');
-        
+        if(!isset($this->_restConfig)){
+            $this->_restConfig = config('RestServer');
+        }
+
         $this->lang = $this->request->getLocale();
 
         //set override Petition

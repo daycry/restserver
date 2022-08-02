@@ -11,7 +11,7 @@ use CodeIgniter\Test\DatabaseTestTrait;
 
 use Daycry\RestServer\Database\Seeds\ExampleSeeder;
 
-class BasicTest extends CIUnitTestCase
+class DigestTest extends CIUnitTestCase
 {
     use DatabaseTestTrait, FeatureTestTrait;
 
@@ -30,7 +30,7 @@ class BasicTest extends CIUnitTestCase
         parent::setUp();
 
         $routes = [
-            ['get', 'helloauthbasic', '\Tests\Support\Controllers\HelloAuthBasic::index']
+            ['get', 'helloauthdigest', '\Tests\Support\Controllers\HelloAuthDigest::index']
         ];
         
         $this->withRoutes($routes);
@@ -38,17 +38,17 @@ class BasicTest extends CIUnitTestCase
         $this->config = config('RestServer');
     }
 
-    public function testBasicError()
+    public function testDigestError()
     {
         $this->withHeaders([
             'Origin' => 'https://test-cors.local',
             'X-API-KEY' => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
-            'Authorization' => 'Basic ' . \base64_encode('admin:12345')
+            'Authorization' => 'Digest username="admin1", nonce="62e93c9a89415", uri="/helloauthdigest", response="01c565231b4572c6608aa5e0857877bd", qop="auth", nc="00000002", cnonce="264e5043000b4bda"'
         ]);
 
         $result = $this->withBody(
-            json_encode(['test' => 'helloauthbasic'])
-        )->call('get', 'helloauthbasic?format=json');
+            json_encode(['test' => 'helloauthdigest'])
+        )->call('get', 'helloauthdigest?format=json');
 
         $content = \json_decode( $result->getJson() );
 
@@ -57,55 +57,35 @@ class BasicTest extends CIUnitTestCase
         $this->AssertSame("Invalid credentials", $content->messages->error);
     }
 
-    public function testBasicErrorNoUsername()
+    public function testDigestErrorNoUsername()
     {
         $this->withHeaders([
             'Origin' => 'https://test-cors.local',
             'X-API-KEY' => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
-            'Authorization' => 'Basic ' . \base64_encode(':12345')
+            'Authorization' => 'Digest username="", nonce="", uri="/helloauthdigest", response="", qop="auth", nc="", cnonce=""'
         ]);
 
         $result = $this->withBody(
-            json_encode(['test' => 'helloauthbasic'])
-        )->call('get', 'helloauthbasic?format=json1');
+            json_encode(['test' => 'helloauthdigest'])
+        )->call('get', 'helloauthdigest?format=json');
 
         $content = \json_decode( $result->getJson() );
 
         $result->assertStatus(400);
         $this->assertObjectHasAttribute("error", $content->messages);
-        $this->assertStringStartsWith("Cannot modify header", $content->messages->error);
     }
 
-    public function testBasicErrorNoPassword()
+    public function testDigestSuccess()
     {
         $this->withHeaders([
             'Origin' => 'https://test-cors.local',
             'X-API-KEY' => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
-            'Authorization' => 'Basic ' . \base64_encode('admin:')
+            'Authorization' => 'Digest username="admin", nonce="62e93c9a89415", uri="/helloauthdigest", response="01c565231b4572c6608aa5e0857877bd", qop="auth", nc="00000002", cnonce="264e5043000b4bda"'
         ]);
 
         $result = $this->withBody(
-            json_encode(['test' => 'helloauthbasic'])
-        )->call('get', 'helloauthbasic');
-
-        $content = \json_decode( $result->getJson() );
-
-        $result->assertStatus(400);
-        $this->assertObjectHasAttribute("error", $content->messages);
-        $this->assertStringStartsWith("Cannot modify header", $content->messages->error);
-    }
-
-    public function testBasicSuccess()
-    {
-        $this->withHeaders([
-            'Origin' => 'https://test-cors.local',
-            'X-API-KEY' => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
-            'Authorization' => 'Basic ' . \base64_encode('admin:1234')
-        ]);
-
-        $result = $this->withBody(
-            json_encode(['test' => 'helloauthbasic'])
-        )->call('get', 'helloauthbasic');
+            json_encode(['test' => 'helloauthdigest'])
+        )->call('get', 'helloauthdigest');
 
 
         $content = \json_decode( $result->getJson() );
@@ -117,9 +97,9 @@ class BasicTest extends CIUnitTestCase
         $this->assertObjectHasAttribute("user", $content);
         $this->assertIsArray($content->user);
         $this->assertObjectHasAttribute('name', $content->user[0]);
-        $this->AssertSame("helloauthbasic", $content->test);
+        $this->AssertSame("helloauthdigest", $content->test);
         $this->AssertSame("userSample2", $content->user[0]->name);
-        $this->AssertSame("admin", $content->auth);
+        $this->AssertSame(md5("admin:" . $this->config->restRealm . ':1234'), $content->auth);
         $this->AssertSame("1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123", $content->key);
     }
 
