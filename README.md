@@ -243,9 +243,12 @@ Content-Type: application/xml
 
 ## API TOKEN
 
-You can sent `api rest token` like this.
+You can sent `api rest token` in headers, GET or POST variable like this.
 ```
 X-API-KEY: TOKEN
+```
+```
+http://example.com?X-API-KEY=key
 ```
 
 ## LANGUAGE
