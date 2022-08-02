@@ -222,6 +222,11 @@ or
 ```
 Accept: application/xml
 ```
+or you can set format in GET variable
+```
+http://example.com?format=json
+http://example.com?format=xml
+```
 
 ## INPUT BODY
 
@@ -235,22 +240,6 @@ or
 Content-Type: application/xml
 ```
 
-## OUTPUT BODY
-
-The body of petition is `json` by default, but you can change it.
-
-```
-Accept: application/json
-```
-or
-```
-Accept: application/xml
-```
-or you can set format in GET variable
-```
-http://example.com?format=json
-http://example.com?format=xml
-```
 
 ## API TOKEN
 
