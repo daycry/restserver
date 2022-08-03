@@ -32,7 +32,9 @@ class LimitTest extends CIUnitTestCase
         $routes = [
             ['get', 'hello', '\Tests\Support\Controllers\Hello::index'],
             ['get', 'nohello', '\Tests\Support\Controllers\NoHello::index'],
-            ['get', 'helloipaddresslimitnoapi', '\Tests\Support\Controllers\HelloIpAddressLimitNoApi::index']
+            ['get', 'helloipaddresslimitnoapi', '\Tests\Support\Controllers\HelloIpAddressLimitNoApi::index'],
+            ['get', 'hellolimitapikey', '\Tests\Support\Controllers\HelloLimitApiKey::index'],
+            ['get', 'hellolimitroutedurl', '\Tests\Support\Controllers\HelloLimitRoutedUrl::index']
         ];
         
         $this->withRoutes($routes);
@@ -68,6 +70,48 @@ class LimitTest extends CIUnitTestCase
         $this->assertObjectHasAttribute("test", $content);
         $this->assertObjectHasAttribute("auth", $content);
         $this->AssertSame("helloipaddresslimitnoapi", $content->test);
+        $this->AssertNull($content->auth);
+    }
+
+    public function testLimitApiKeySuccess()
+    {
+        $this->withHeaders([
+            'Origin' => 'https://test-cors.local',
+            'X-API-KEY' => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg'
+        ]);
+
+        $result = $this->withBody(
+            json_encode(['test' => 'hellolimitapikey'])
+        )->call('get', 'hellolimitapikey');
+
+        $result = $this->call('get', 'hellolimitapikey');
+
+        $content = \json_decode( $result->getJson() );
+
+        $result->assertStatus(200);
+        $this->assertObjectHasAttribute("test", $content);
+        $this->assertObjectHasAttribute("auth", $content);
+        $this->AssertSame("hellolimitapikey", $content->test);
+        $this->AssertNull($content->auth);
+    }
+
+    public function testLimitRoutedSuccess()
+    {
+        $this->withHeaders([
+            'Origin' => 'https://test-cors.local',
+            'X-API-KEY' => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg'
+        ]);
+
+        $result = $this->withBody(
+            json_encode(['test' => 'hellolimitroutedurl'])
+        )->call('get', 'hellolimitroutedurl');
+
+        $content = \json_decode( $result->getJson() );
+
+        $result->assertStatus(200);
+        $this->assertObjectHasAttribute("test", $content);
+        $this->assertObjectHasAttribute("auth", $content);
+        $this->AssertSame("hellolimitroutedurl", $content->test);
         $this->AssertNull($content->auth);
     }
 

@@ -102,6 +102,26 @@ class ExampleSeeder extends Seeder
                 'level'     => 10
             ],
             [
+                'controller'=> '\Tests\Support\Controllers\HelloLimitApiKey',
+                'method'    => 'index',
+                'http'      => 'GET',
+                'auth'      => null,
+                'key'       => 1,
+                'limit'     => 5,
+                'time'      => 3600,
+                'level'     => 10
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\HelloLimitRoutedUrl',
+                'method'    => 'index',
+                'http'      => 'GET',
+                'auth'      => null,
+                'key'       => 1,
+                'limit'     => null,
+                'time'      => 3600,
+                'level'     => 10
+            ],
+            [
                 'controller'=> '\Tests\Support\Controllers\HelloAuthBasicAjax',
                 'method'    => 'index',
                 'http'      => 'GET',
@@ -179,13 +199,15 @@ class ExampleSeeder extends Seeder
         $key = [
             [
                 $config->restKeyColumn  => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',
-                'level'                 => '10',
+                'level'                 => 10,
+                'ignore_limits'         => 0,
                 'is_private_key'        => 1,
                 'ip_addresses'          => '0.0.0.0,127.0.0.1,10.1.133.13,10.222.180.0/255.252.0'
             ],
             [
                 $config->restKeyColumn  => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
                 'level'                 => '10',
+                'ignore_limits'         => 1,
                 'is_private_key'        => 1,
                 'ip_addresses'          => '127.0.0.1,10.1.133.13,10.222.180.0/255.252.0'
             ]
@@ -193,6 +215,7 @@ class ExampleSeeder extends Seeder
             [
                 $config->restKeyColumn  => '4568go0csckk8cckgw4kk40g4c4s0ckkcscgg456',
                 'level'                 => '1',
+                'ignore_limits'         => 0,
                 'is_private_key'        => 1,
                 'ip_addresses'          => '127.0.0.1,10.1.133.13,10.222.180.0/255.252.0'
             ]
@@ -201,6 +224,17 @@ class ExampleSeeder extends Seeder
         // Using Query Builder
         $this->db->table($config->restKeysTable)->insertBatch($key);
 
+        $limits = [
+            [
+                'uri'  => 'api-key:wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',
+                'count'                 => '10',
+                'hour_started'        => 1459537345,
+                'api_key'          => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg'
+            ]
+        ];
+
+        // Using Query Builder
+        $this->db->table($config->restLimitsTable)->insertBatch($limits);
 
         $user = [
             [
@@ -243,6 +277,18 @@ class ExampleSeeder extends Seeder
                 'api_key'       => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',
                 'all_access'    => 1,
                 'controller'    => '\Tests\Support\Controllers\HelloBlackListIp',
+                'method'        => null
+            ],
+            [
+                'api_key'       => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',
+                'all_access'    => 1,
+                'controller'    => '\Tests\Support\Controllers\HelloLimitApiKey',
+                'method'        => null
+            ],
+            [
+                'api_key'       => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',
+                'all_access'    => 1,
+                'controller'    => '\Tests\Support\Controllers\HelloLimitRoutedUrl',
                 'method'        => null
             ],
             [

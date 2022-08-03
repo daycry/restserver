@@ -38,7 +38,7 @@ class Limit
                     break;
             }
 
-            if (boolval($petition->limit) === false) {
+            if (is_numeric($petition->limit) === false) {
                 // Everything is fine
                 return true;
             }
