@@ -72,6 +72,16 @@ class ExampleSeeder extends Seeder
                 'level'     => 10
             ],
             [
+                'controller'=> '\Tests\Support\Controllers\HelloAuthCustomBearer',
+                'method'    => 'index',
+                'http'      => 'GET',
+                'auth'      => 'bearer',
+                'key'       => 1,
+                'limit'     => null,
+                'time'      => 3600,
+                'level'     => 10
+            ],
+            [
                 'controller'=> '\Tests\Support\Controllers\HelloAuthSession',
                 'method'    => 'index',
                 'http'      => 'GET',
@@ -93,6 +103,16 @@ class ExampleSeeder extends Seeder
             ],
             [
                 'controller'=> '\Tests\Support\Controllers\HelloAuthLibrary',
+                'method'    => 'index',
+                'http'      => 'GET',
+                'auth'      => 'basic',
+                'key'       => 1,
+                'limit'     => null,
+                'time'      => 3600,
+                'level'     => 10
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\HelloAuthLibraryError',
                 'method'    => 'index',
                 'http'      => 'GET',
                 'auth'      => 'basic',
@@ -177,6 +197,12 @@ class ExampleSeeder extends Seeder
             [
                 'api_key'       => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
                 'all_access'    => 0,
+                'controller'    => '\Tests\Support\Controllers\HelloAuthCustomBearer',
+                'method'        => 'index'
+            ],
+            [
+                'api_key'       => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
+                'all_access'    => 0,
                 'controller'    => '\Tests\Support\Controllers\HelloAuthSession',
                 'method'        => 'index'
             ],
@@ -190,6 +216,12 @@ class ExampleSeeder extends Seeder
                 'api_key'       => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
                 'all_access'    => 0,
                 'controller'    => '\Tests\Support\Controllers\HelloAuthLibrary',
+                'method'        => 'index'
+            ],
+            [
+                'api_key'       => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
+                'all_access'    => 0,
+                'controller'    => '\Tests\Support\Controllers\HelloAuthLibraryError',
                 'method'        => 'index'
             ]
         ];

@@ -4,7 +4,7 @@ namespace Tests\Support\Controllers;
 
 use Daycry\RestServer\RestServer;
 
-class HelloAuthLibrary extends RestServer
+class HelloAuthLibraryError extends RestServer
 {
     public function __construct()
     {
@@ -13,7 +13,7 @@ class HelloAuthLibrary extends RestServer
          * Override value
          */
         $this->_restConfig->authSource = 'library';
-        $this->_restConfig->authLibraryClass['basic'] = \Tests\Support\Libraries\LibraryBasicAuth::class;
+        $this->_restConfig->authLibraryClass['basic'] = \Tests\Support\Libraries\LibraryBasicAuthError::class;
     }
     
     public function index()

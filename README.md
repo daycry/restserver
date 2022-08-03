@@ -58,6 +58,26 @@ class Center extends \Daycry\RestServer\RestServer
 }
 
 ```
+If you want change attributes before controller call:
+
+```php
+<?php namespace App\Controllers;
+
+class Center extends \Daycry\RestServer\RestServer
+{
+    public function __construct()
+    {
+        $this->_restConfig = config('RestServer');
+        $this->_restConfig->restAjaxOnly = true;
+    }
+
+    public function index()
+    {
+        return $this->respond( $this->content );
+    }
+}
+
+```
 
 If you need to validate the data, you can call `validation` method passing the string rules and Validation Config file y you need.
 
@@ -94,11 +114,20 @@ class Center extends \Daycry\RestServer\RestServer
 {
     public function index()
     {
-        $this->validation( 'requiredLogin', config( Example\\Validation ) );
+        $this->validation( 'requiredLogin', config( Example\\Validation ), true, true );
         return $this->respond( $this->content );
     }
 }
 ```
+Validation function parameters
+
+Fiels | Value | Options | Desctiption
+-------- | ------------- | ------- | -----------
+rule | Name of rule
+namespace| Namespace that contains the rule
+getShared | **true** or **false**
+filter | If you want to limit the content of the body, exclusively to the parameters of the rule.
+
 
 ## User Model Class
 

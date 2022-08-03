@@ -30,7 +30,8 @@ class LibraryTest extends CIUnitTestCase
         parent::setUp();
 
         $routes = [
-            ['get', 'helloauthlibrary', '\Tests\Support\Controllers\HelloAuthLibrary::index']
+            ['get', 'helloauthlibrary', '\Tests\Support\Controllers\HelloAuthLibrary::index'],
+            ['get', 'helloauthlibraryerror', '\Tests\Support\Controllers\HelloAuthLibraryError::index']
         ];
         
         $this->withRoutes($routes);
@@ -43,18 +44,18 @@ class LibraryTest extends CIUnitTestCase
         $this->withHeaders([
             'Origin' => 'https://test-cors.local',
             'X-API-KEY' => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
-            'Authorization' => 'Basic ' . \base64_encode('admin1:1234')
+            'Authorization' => 'Basic ' . \base64_encode('admin:1234')
         ]);
 
         $result = $this->withBody(
-            json_encode(['test' => 'helloauthlibrary'])
-        )->call('get', 'helloauthlibrary?format=json');
+            json_encode(['test' => 'helloauthlibraryerror'])
+        )->call('get', 'helloauthlibraryerror?format=json');
 
         $content = \json_decode( $result->getJson() );
 
-        $result->assertStatus(401);
+        $result->assertStatus(403);
         $this->assertObjectHasAttribute("error", $content->messages);
-        $this->AssertSame("Invalid credentials", $content->messages->error);
+        $this->AssertSame("Invalid library implementation", $content->messages->error);
     }
 
     public function testLibraryErrorNoUsername()

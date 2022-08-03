@@ -30,7 +30,8 @@ class BearerTest extends CIUnitTestCase
         parent::setUp();
 
         $routes = [
-            ['get', 'helloauthbearer', '\Tests\Support\Controllers\HelloAuthBearer::index']
+            ['get', 'helloauthbearer', '\Tests\Support\Controllers\HelloAuthBearer::index'],
+            ['get', 'helloauthcustombearer', '\Tests\Support\Controllers\HelloAuthCustomBearer::index']
         ];
         
         $this->withRoutes($routes);
@@ -109,6 +110,95 @@ class BearerTest extends CIUnitTestCase
         $this->AssertSame("helloauthbearer", $content->test);
         $this->AssertSame("userSample2", $content->user[0]->name);
         $this->AssertSame("admin", $content->auth);
+        $this->AssertSame("1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123", $content->key);
+    }
+
+    public function testBearerWrongError()
+    {
+        $config = new \Daycry\RestServer\Config\JWT();
+        $config->identifier = '12345';
+        $jwtLibrary = new \Daycry\RestServer\Libraries\JWT($config);
+        $jwtLibrary->setParamData('data');
+        $bearer = $jwtLibrary->encode('admin', 'uid');
+
+        $this->withHeaders([
+            'Origin' => 'https://test-cors.local',
+            'X-API-KEY' => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
+            'Authorization' => 'Bearer ' . $bearer
+        ]);
+
+        $result = $this->withBody(
+            json_encode(['test' => 'helloauthbearer'])
+        )->call('get', 'helloauthbearer');
+
+        $content = \json_decode( $result->getJson() );
+
+        $result->assertStatus(401);
+        $this->assertObjectHasAttribute("error", $content->messages);
+        $this->AssertSame("Invalid credentials", $content->messages->error);
+    }
+
+    public function testBearerSetParamSuccess()
+    {
+        $jwtLibrary = new \Daycry\RestServer\Libraries\JWT();
+        $jwtLibrary->setParamData('data');
+        $bearer = $jwtLibrary->encode('admin', 'uid');
+
+        $this->withHeaders([
+            'Origin' => 'https://test-cors.local',
+            'X-API-KEY' => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
+            'Authorization' => 'Bearer ' . $bearer
+        ]);
+
+        $result = $this->withBody(
+            json_encode(['test' => 'helloauthbearer'])
+        )->call('get', 'helloauthbearer');
+
+        $content = \json_decode( $result->getJson() );
+
+        $result->assertStatus(200);
+        $this->assertObjectHasAttribute("test", $content);
+        $this->assertObjectHasAttribute("auth", $content);
+        $this->assertObjectHasAttribute("key", $content);
+        $this->assertObjectHasAttribute("user", $content);
+        $this->assertIsArray($content->user);
+        $this->assertObjectHasAttribute('name', $content->user[0]);
+        $this->AssertSame("helloauthbearer", $content->test);
+        $this->AssertSame("userSample2", $content->user[0]->name);
+        $this->AssertSame("admin", $content->auth);
+        $this->AssertSame("1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123", $content->key);
+    }
+
+    public function testBearerSplitDataSuccess()
+    {
+        $jwtLibrary = new \Daycry\RestServer\Libraries\JWT();
+        $jwtLibrary->setSplitData(true);
+        $data = array('username' => 'admin', 'split' => true);
+        $bearer = $jwtLibrary->encode($data);
+
+        $this->withHeaders([
+            'Origin' => 'https://test-cors.local',
+            'X-API-KEY' => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
+            'Authorization' => 'Bearer ' . $bearer
+        ]);
+
+        $result = $this->withBody(
+            json_encode(['test' => 'helloauthcustombearer'])
+        )->call('get', 'helloauthcustombearer');
+
+        $content = \json_decode( $result->getJson() );
+
+        $result->assertStatus(200);
+        $this->assertObjectHasAttribute("test", $content);
+        $this->assertObjectHasAttribute("auth", $content);
+        $this->assertObjectHasAttribute("key", $content);
+        $this->assertObjectHasAttribute("user", $content);
+        $this->assertIsArray($content->user);
+        $this->assertObjectHasAttribute('name', $content->user[0]);
+        $this->AssertSame("helloauthcustombearer", $content->test);
+        $this->AssertSame("userSample2", $content->user[0]->name);
+        $this->AssertSame("admin", $content->auth->username);
+        $this->AssertTrue($content->auth->split);
         $this->AssertSame("1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123", $content->key);
     }
 

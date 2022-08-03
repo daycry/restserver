@@ -17,7 +17,8 @@ return [
     'textInvalidUserClassConfiguration' => 'Invalid user class configuration, extends( \Daycry\RestServer\Libraries\User\UserAbstract )',
     'textRestAjaxOnly' => 'Only AJAX requests are allowed',
     'textInvalidMethodParams' => 'Invalid params for this method: \'{param}\'',
-    'textInvalidMethod' => 'Invalid method: \'{method}\''
+    'textInvalidMethod' => 'Invalid method: \'{method}\'',
+    'textInvalidLibraryImplementation' => 'Invalid library implementation'
 ];
 
 /*

@@ -3,7 +3,7 @@
 namespace Daycry\RestServer\Libraries\Auth;
 
 use Daycry\RestServer\Interfaces\LibraryAuthInterface;
-use Daycry\RestServer\Exceptions\UnauthorizedException;
+use Daycry\RestServer\Exceptions\ForbiddenException;
 
 abstract class BaseAuth
 {
@@ -21,6 +21,9 @@ abstract class BaseAuth
         $this->request = service('request');
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function getIpAllow()
     {
         return $this->ipAllow;
@@ -114,29 +117,28 @@ abstract class BaseAuth
     {
         $authLibraryClass = $this->restConfig->authLibraryClass;
 
+        // @codeCoverageIgnoreStart
         if (!isset($authLibraryClass[ $this->method ]) || !\class_exists($authLibraryClass[ $this->method ])) {
-            log_message('critical', 'Library Auth: Failure, ' . $this->method . ' does not exist');
-            return false;
+            throw ForbiddenException::forInvalidMethod($this->method);
         }
+        // @codeCoverageIgnoreEnd
 
         $authLibraryFunction = $this->restConfig->authLibraryFunction;
 
         $authLibraryClass = new $authLibraryClass[ $this->method ]();
 
-        if (empty($authLibraryClass) || ($authLibraryClass instanceof LibraryAuthInterface === false)) {
-            log_message('critical', 'Library Auth: Failure, empty authLibraryClass');
-            return false;
+        if (empty($authLibraryClass) || (!$authLibraryClass instanceof LibraryAuthInterface)) {
+            throw ForbiddenException::forInvalidLibraryImplementation();
         }
 
+        // @codeCoverageIgnoreStart
         if (empty($authLibraryFunction)) {
-            log_message('critical', 'Library Auth: Failure, empty authLibraryFunction');
-            return false;
+            throw ForbiddenException::forInvalidLibraryImplementation();
         }
+        // @codeCoverageIgnoreEnd
 
         if (\is_callable([ $authLibraryClass, $authLibraryFunction ])) {
             return $authLibraryClass->{$authLibraryFunction}($username, $password);
         }
-
-        return false;
     }
 }
