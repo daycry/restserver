@@ -48,7 +48,9 @@ class Cors
 
         // If the request HTTP method is 'OPTIONS', kill the response and send it to the client
         if ($request->getMethod() === 'options') {
+            // @codeCoverageIgnoreStart
             exit;
+            // @codeCoverageIgnoreEnd
         }
     }
 

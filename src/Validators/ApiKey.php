@@ -56,11 +56,15 @@ class ApiKey
                         }
 
                         if (!$found_address) {
+                            // @codeCoverageIgnoreStart
                             $authorized = false;
+                            // @codeCoverageIgnoreEnd
                             throw UnauthorizedException::forIpDenied();
                         }
                     } else {
+                        // @codeCoverageIgnoreStart
                         $authorized = false;
+                        // @codeCoverageIgnoreEnd
                         throw UnauthorizedException::forIpDenied();
                     }
                 }

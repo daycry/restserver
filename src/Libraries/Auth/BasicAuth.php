@@ -21,7 +21,9 @@ class BasicAuth extends BaseAuth implements AuthInterface
 
         $password = null;
         if ($username !== null) {
+            // @codeCoverageIgnoreStart
             $password = $this->request->getServer('PHP_AUTH_PW');
+            // @codeCoverageIgnoreEnd
         } elseif ($http_auth !== null) {
             // If the authentication header is set as basic, then extract the username and password from
             // HTTP_AUTHORIZATION e.g. my_username:my_password. This is passed in the .htaccess file

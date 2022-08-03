@@ -31,6 +31,8 @@ class CorsTest extends CIUnitTestCase
 
         $routes = [
             ['get', 'hello', '\Tests\Support\Controllers\Hello::index'],
+            ['get', 'helloallcors', '\Tests\Support\Controllers\HelloAllCors::index'],
+            ['options', 'helloallcors', '\Tests\Support\Controllers\HelloAllCors::index'],
             ['get', 'nohello', '\Tests\Support\Controllers\NoHello::index']
         ];
         
@@ -51,6 +53,22 @@ class CorsTest extends CIUnitTestCase
         )->call('get', 'hello');
 
         $result->assertHeaderMissing('Access-Control-Allow-Origin');
+        $result->assertHeader('Access-Control-Allow-Credentials');
+    }
+
+    public function testCorsAllCors()
+    {
+        $this->withHeaders([
+            'Origin' => 'https://test-failed.local',
+            'X-API-KEY' => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg'
+        ]);
+
+        $result = $this->withBody(
+            json_encode(['test' => 'helloallcors'])
+        )->call('get', 'helloallcors');
+
+        $result->assertHeader('Access-Control-Allow-Origin');
+        $result->assertHeader('Access-Control-Allow-Headers', implode(", ", $this->config->allowedCorsHeaders));
         $result->assertHeader('Access-Control-Allow-Credentials');
     }
 

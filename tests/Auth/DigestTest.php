@@ -103,6 +103,24 @@ class DigestTest extends CIUnitTestCase
         $this->AssertSame("1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123", $content->key);
     }
 
+    public function testDigestEmptyUsername()
+    {
+        $this->withHeaders([
+            'Origin' => 'https://test-cors.local',
+            'X-API-KEY' => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
+            'Authorization' => ''
+        ]);
+
+        $result = $this->withBody(
+            json_encode(['test' => 'helloauthdigest'])
+        )->call('get', 'helloauthdigest');
+
+        $content = \json_decode( $result->getJson() );
+
+        $result->assertStatus(400);
+        $this->assertObjectHasAttribute("error", $content->messages);
+    }
+
     protected function tearDown(): void
     {
         parent::tearDown();
