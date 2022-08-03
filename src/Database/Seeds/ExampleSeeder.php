@@ -53,6 +53,26 @@ class ExampleSeeder extends Seeder
             ],
             [
                 'controller'=> '\Tests\Support\Controllers\HelloAuthBasic',
+                'method'    => 'validateParams',
+                'http'      => 'GET',
+                'auth'      => 'basic',
+                'key'       => 1,
+                'limit'     => null,
+                'time'      => 3600,
+                'level'     => 10
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\HelloAuthBasic',
+                'method'    => 'index',
+                'http'      => 'GET',
+                'auth'      => 'basic',
+                'key'       => 1,
+                'limit'     => null,
+                'time'      => 3600,
+                'level'     => 10
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\HelloAuthBasicAjax',
                 'method'    => 'index',
                 'http'      => 'GET',
                 'auth'      => 'basic',
@@ -187,6 +207,24 @@ class ExampleSeeder extends Seeder
                 'all_access'    => 0,
                 'controller'    => '\Tests\Support\Controllers\HelloAuthBasic',
                 'method'        => 'index'
+            ],
+            [
+                'api_key'       => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
+                'all_access'    => 0,
+                'controller'    => '\Tests\Support\Controllers\HelloAuthBasic',
+                'method'        => 'validateParams'
+            ],
+            [
+                'api_key'       => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
+                'all_access'    => 0,
+                'controller'    => '\Tests\Support\Controllers\HelloAuthBasicAjax',
+                'method'        => 'index'
+            ],
+            [
+                'api_key'       => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
+                'all_access'    => 0,
+                'controller'    => '\Tests\Support\Controllers\HelloAuthBasic',
+                'method'        => 'invalid'
             ],
             [
                 'api_key'       => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',

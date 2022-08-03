@@ -8,6 +8,9 @@ class ForbiddenException extends \RuntimeException implements \Daycry\RestServer
 
     public static $authorized = true;
 
+    /**
+     * @codeCoverageIgnore
+     */
     public static function forUnsupportedProtocol()
     {
         self::$authorized = false;

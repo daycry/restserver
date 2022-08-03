@@ -291,7 +291,9 @@ class RestServer extends ResourceController
 
         try {
             if (config('App')->forceGlobalSecureRequests && $this->request->isSecure() === false) {
+                // @codeCoverageIgnoreStart
                 throw ForbiddenException::forUnsupportedProtocol();
+                // @codeCoverageIgnoreEnd
             }
 
             if ($this->request->isAJAX() === false && $this->_restConfig->restAjaxOnly) {

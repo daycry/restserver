@@ -15,6 +15,7 @@ $routes->get('hello', 'Tests\Support\Controllers\Hello');
 $routes->get('nohello', 'Tests\Support\Controllers\NoHello');
 $routes->get('noaccess', 'Tests\Support\Controllers\NoAccess');
 $routes->get('hellobauthbasic', 'Tests\Support\Controllers\HelloAuthBasic');
+$routes->get('hellobauthbasicajax', 'Tests\Support\Controllers\HelloAuthBasicAjax');
 $routes->get('hellobauthbearer', 'Tests\Support\Controllers\HelloAuthBearer');
 $routes->get('hellobauthcustombearer', 'Tests\Support\Controllers\HelloAuthCustomBearer');
 $routes->get('hellobauthsession', 'Tests\Support\Controllers\HelloAuthSession');

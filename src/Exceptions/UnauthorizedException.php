@@ -10,12 +10,18 @@ class UnauthorizedException extends \RuntimeException implements \Daycry\RestSer
 
     public static $authorized = true;
 
+    /**
+     * @codeCoverageIgnore
+     */
     public static function forTokenExpired()
     {
         self::$authorized = false;
         return new self(lang('Rest.tokenExpired'));
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public static function forTokenUnauthorized()
     {
         self::$authorized = false;
