@@ -47,6 +47,9 @@ class UnauthorizedException extends \RuntimeException implements \Daycry\RestSer
         return new self(lang('Rest.textRestInvalidCredentials'));
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public static function forUnauthorized()
     {
         self::$authorized = false;
@@ -63,11 +66,5 @@ class UnauthorizedException extends \RuntimeException implements \Daycry\RestSer
     {
         self::$authorized = false;
         return new self(lang('Rest.textRestApiKeyPermissions'));
-    }
-
-    public static function forIpAddressTimeLimit()
-    {
-        self::$authorized = false;
-        return new self(lang('Rest.textRestIpAddressTimeLimit'));
     }
 }

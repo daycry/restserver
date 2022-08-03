@@ -70,6 +70,25 @@ class ApiKeyTest extends CIUnitTestCase
         $this->assertObjectHasAttribute("error", $content->messages);
         $this->assertStringStartsWith("Invalid API key", $content->messages->error);
     }
+
+    public function testInvalidApiKeyPermissions()
+    {
+        $this->withHeaders([
+            'Origin' => 'https://test-cors.local',
+            'X-API-KEY' => '4568go0csckk8cckgw4kk40g4c4s0ckkcscgg456',
+            'Content-Type' => 'application/json'
+        ]);
+
+        $result = $this->withBody(
+            json_encode(['test' => 'hello'])
+        )->call('get', 'hello');
+
+        $content = \json_decode($result->getJson());
+
+        $result->assertStatus(401);
+        $this->assertObjectHasAttribute("error", $content->messages);
+        $this->assertSame("This API key does not have enough permissions", $content->messages->error);
+    }
     
     protected function tearDown(): void
     {

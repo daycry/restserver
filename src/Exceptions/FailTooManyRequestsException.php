@@ -21,4 +21,10 @@ class FailTooManyRequestsException extends \RuntimeException implements \Daycry\
         $parser = \Config\Services::parser();
         return new self($parser->setData(array( 'ip' => $ip, 'date' => $date ))->renderString(lang('Rest.textRestInvalidAttemptsLimit')));
     }
+
+    public static function forIpAddressTimeLimit()
+    {
+        self::$authorized = false;
+        return new self(lang('Rest.textRestIpAddressTimeLimit'));
+    }
 }

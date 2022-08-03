@@ -18,7 +18,9 @@ class WhiteList
         }
 
         if (in_array($request->getIPAddress(), $whitelist) === false) {
+            // @codeCoverageIgnoreStart
             $response = false;
+            // @codeCoverageIgnoreEnd
         }
 
         return $response;

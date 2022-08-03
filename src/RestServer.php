@@ -321,8 +321,10 @@ class RestServer extends ResourceController
 
             if ($this->_restConfig->restIpWhitelistEnabled == true) {
                 if (!\Daycry\RestServer\Validators\WhiteList::check($this->request)) {
+                    // @codeCoverageIgnoreStart
                     $this->authorized = false;
                     throw UnauthorizedException::forIpDenied();
+                    // @codeCoverageIgnoreEnd
                 }
             }
 
@@ -352,7 +354,7 @@ class RestServer extends ResourceController
                 $level = ($this->_petition && !empty($this->_petition->level)) ? $this->_petition->level : 0;
 
                 // If no level is set, or it is lower than/equal to the key's level
-                if (!$level > $this->apiUser->level) {
+                if ($level > $this->apiUser->level) {
                     // They don't have good enough perms
                     $this->authorized = false;
                     throw UnauthorizedException::forApiKeyPermissions();
@@ -361,7 +363,7 @@ class RestServer extends ResourceController
             //check request limit by ip without login
             elseif ($this->_restConfig->restLimitsMethod == 'IP_ADDRESS' && $this->_restConfig->restEnableLimits && \Daycry\RestServer\Validators\Limit::check($this->request, $this->router, $this->apiUser, $this->_petition) === false) {
                 $this->authorized = false;
-                throw UnauthorizedException::forIpAddressTimeLimit();
+                throw FailTooManyRequestsException::forIpAddressTimeLimit();
             }
 
             if ($this->inputFormat == 'application/json') {

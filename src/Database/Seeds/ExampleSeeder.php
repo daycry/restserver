@@ -32,6 +32,16 @@ class ExampleSeeder extends Seeder
                 'level'     => 10
             ],
             [
+                'controller'=> '\Tests\Support\Controllers\HelloBlackListIp',
+                'method'    => 'index',
+                'http'      => null,
+                'auth'      => null,
+                'key'       => null,
+                'limit'     => 100,
+                'time'      => 3600,
+                'level'     => 10
+            ],
+            [
                 'controller'=> '\Tests\Support\Controllers\NoHello',
                 'method'    => null,
                 'http'      => null,
@@ -159,6 +169,13 @@ class ExampleSeeder extends Seeder
                 'is_private_key'        => 1,
                 'ip_addresses'          => '127.0.0.1,10.1.133.13,10.222.180.0/255.252.0'
             ]
+            ,
+            [
+                $config->restKeyColumn  => '4568go0csckk8cckgw4kk40g4c4s0ckkcscgg456',
+                'level'                 => '1',
+                'is_private_key'        => 1,
+                'ip_addresses'          => '127.0.0.1,10.1.133.13,10.222.180.0/255.252.0'
+            ]
         ];
 
         // Using Query Builder
@@ -188,12 +205,24 @@ class ExampleSeeder extends Seeder
 
         // Using Query Builder
         $this->db->table($config->restInvalidAttemptsTable)->insert($attempt);
-
+        
         $access = [
             [
                 'api_key'       => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',
                 'all_access'    => 1,
                 'controller'    => '\Tests\Support\Controllers\Hello',
+                'method'        => null
+            ],
+            [
+                'api_key'       => '4568go0csckk8cckgw4kk40g4c4s0ckkcscgg456',
+                'all_access'    => 1,
+                'controller'    => '\Tests\Support\Controllers\Hello',
+                'method'        => null
+            ],
+            [
+                'api_key'       => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',
+                'all_access'    => 1,
+                'controller'    => '\Tests\Support\Controllers\HelloBlackListIp',
                 'method'        => null
             ],
             [
