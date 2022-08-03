@@ -126,7 +126,9 @@ class RestServer extends ResourceController
         $this->router = service('router');
 
         if (class_exists('\Daycry\Doctrine\Doctrine')) {
+            // @codeCoverageIgnoreStart
             $this->doctrine = \Config\Services::doctrine();
+            // @codeCoverageIgnoreEnd
         }
 
         // Rest server config
