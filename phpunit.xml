@@ -65,12 +65,12 @@
 		<env name="restserver.restDatabaseGroup" value="tests" force="true"/>
 		<env name="restserver.checkCors" value="true" force="true"/>
 		<env name="restserver.restEnableOverridePetition" value="true" force="true"/>
+		<env name="restserver.restEnableInvalidAttempts" value="true" force="true"/>
 		<env name="restserver.restEnableLimits" value="true" force="true"/>
 		<env name="restserver.restEnableAccess" value="true" force="true"/>
 		<env name="restserver.restIpWhitelistEnabled" value="true" force="true"/>
 		<env name="restserver.restIpBlacklistEnabled" value="true" force="true"/>
 		<env name="restserver.restEnableLogging" value="true" force="true"/>
-		<env name="restserver.authSource" value="sessionTest" force="true"/>
 		<env name="restserver.allowedCorsOrigins" value="https://test-cors.local" force="true"/>
 	</php>
 </phpunit>

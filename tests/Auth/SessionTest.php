@@ -59,7 +59,7 @@ class SessionTest extends CIUnitTestCase
     public function testSessionSuccess()
     {
         $values = [
-            $this->config->authSource => 'admin',
+            'sessionTest' => 'admin',
         ];
         
         $this->withSession($values);

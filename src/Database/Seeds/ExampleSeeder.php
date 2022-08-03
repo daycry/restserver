@@ -32,6 +32,16 @@ class ExampleSeeder extends Seeder
                 'level'     => 10
             ],
             [
+                'controller'=> '\Tests\Support\Controllers\HelloIpAddressLimitNoApi',
+                'method'    => 'index',
+                'http'      => null,
+                'auth'      => null,
+                'key'       => 0,
+                'limit'     => 1,
+                'time'      => 3600,
+                'level'     => 10
+            ],
+            [
                 'controller'=> '\Tests\Support\Controllers\HelloBlackListIp',
                 'method'    => 'index',
                 'http'      => null,

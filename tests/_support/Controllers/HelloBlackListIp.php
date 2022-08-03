@@ -15,6 +15,7 @@ class HelloBlackListIp extends RestServer
 
     public function index()
     {
-        return $this->respond($this->content);
+        $content = array_merge((array)$this->content, array( 'auth' => $this->user ), (array)$this->apiUser);
+        return $this->respond($content);
     }
 }

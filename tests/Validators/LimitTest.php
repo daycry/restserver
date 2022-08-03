@@ -31,7 +31,8 @@ class LimitTest extends CIUnitTestCase
 
         $routes = [
             ['get', 'hello', '\Tests\Support\Controllers\Hello::index'],
-            ['get', 'nohello', '\Tests\Support\Controllers\NoHello::index']
+            ['get', 'nohello', '\Tests\Support\Controllers\NoHello::index'],
+            ['get', 'helloipaddresslimitnoapi', '\Tests\Support\Controllers\HelloIpAddressLimitNoApi::index']
         ];
         
         $this->withRoutes($routes);
@@ -53,6 +54,36 @@ class LimitTest extends CIUnitTestCase
         $result->assertHeader('Access-Control-Allow-Origin');
         $result->assertHeader('Access-Control-Allow-Headers', implode(", ", $this->config->allowedCorsHeaders));
         $result->assertHeader('Access-Control-Allow-Credentials');
+    }
+
+    public function testLimitIpAddressSuccess()
+    {
+        $result = $this->withBody(
+            json_encode(['test' => 'helloipaddresslimitnoapi'])
+        )->call('get', 'helloipaddresslimitnoapi');
+
+        $content = \json_decode( $result->getJson() );
+
+        $result->assertStatus(200);
+        $this->assertObjectHasAttribute("test", $content);
+        $this->assertObjectHasAttribute("auth", $content);
+        $this->AssertSame("helloipaddresslimitnoapi", $content->test);
+        $this->AssertNull($content->auth);
+    }
+
+    public function testLimitIpAddressError()
+    {
+        $result = $this->withBody(
+            json_encode(['test' => 'helloipaddresslimitnoapi'])
+        )->call('get', 'helloipaddresslimitnoapi');
+
+        $result2 = $this->call('get', 'helloipaddresslimitnoapi');
+
+        $content = \json_decode( $result2->getJson() );
+
+        $result->assertStatus(429);
+        $this->assertObjectHasAttribute("error", $content->messages);
+        $this->assertSame("This IP Address has reached the time limit for this method", $content->messages->error);
     }
 
     public function testLimitError()

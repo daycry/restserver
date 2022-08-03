@@ -307,9 +307,12 @@ class RestServer extends ResourceController
 
             $attempt = \Daycry\RestServer\Validators\Attemp::check($this->request);
 
-            if ($this->_restConfig->restEnableInvalidAttempts == true && $attempt !== true) {
-                $this->authorized = false;
-                throw FailTooManyRequestsException::forInvalidAttemptsLimit($this->request->getIPAddress(), $attempt);
+            if ($this->_restConfig->restEnableInvalidAttempts == true) {
+                $attemp = \Daycry\RestServer\Validators\Attemp::check($this->request);
+                if( $attemp !== true ){
+                    $this->authorized = false;
+                    throw FailTooManyRequestsException::forInvalidAttemptsLimit($this->request->getIPAddress(), $attemp);
+                }
             }
 
             if ($this->_restConfig->restIpBlacklistEnabled == true) {
@@ -419,34 +422,37 @@ class RestServer extends ResourceController
      */
     public function __destruct()
     {
-        // Log the loading time to the log table
-        if ($this->_isLogAuthorized === true) {
-            $this->_benchmark->stop('petition');
-            $this->_logRequest($this->authorized);
-        }
+        if($this->request && $this->_restConfig)
+        {
+            // Log the loading time to the log table
+            if ($this->_isLogAuthorized === true) {
+                $this->_benchmark->stop('petition');
+                $this->_logRequest($this->authorized);
+            }
 
-        if ($this->_restConfig->restEnableInvalidAttempts == true) {
-            $attemptModel = new \Daycry\RestServer\Models\AttemptModel();
-            $attempt = $attemptModel->where('ip_address', $this->request->getIPAddress())->first();
-            if ($this->authorized === false) {
-                if ($attempt === null) {
-                    $attempt = [
-                            'ip_address' => $this->request->getIPAddress(),
-                            'attempts'      => 1,
-                            'hour_started' => time(),
-                        ];
+            if ($this->_restConfig->restEnableInvalidAttempts == true) {
+                $attemptModel = new \Daycry\RestServer\Models\AttemptModel();
+                $attempt = $attemptModel->where('ip_address', $this->request->getIPAddress())->first();
+                if ($this->authorized === false) {
+                    if ($attempt === null) {
+                        $attempt = [
+                                'ip_address' => $this->request->getIPAddress(),
+                                'attempts'      => 1,
+                                'hour_started' => time(),
+                            ];
 
-                    $attemptModel->save($attempt);
-                } else {
-                    if ($attempt->attempts < $this->_restConfig->restMaxAttempts) {
-                        $attempt->attempts = $attempt->attempts + 1;
-                        $attempt->hour_started = time();
                         $attemptModel->save($attempt);
+                    } else {
+                        if ($attempt->attempts < $this->_restConfig->restMaxAttempts) {
+                            $attempt->attempts = $attempt->attempts + 1;
+                            $attempt->hour_started = time();
+                            $attemptModel->save($attempt);
+                        }
                     }
-                }
-            } else {
-                if ($attempt) {
-                    $attemptModel->delete($attempt->id, true);
+                } else {
+                    if ($attempt) {
+                        $attemptModel->delete($attempt->id, true);
+                    }
                 }
             }
         }
