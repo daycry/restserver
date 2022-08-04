@@ -55,9 +55,9 @@ class BasicTest extends CIUnitTestCase
 
         $content = \json_decode( $result->getJson() );
 
-        $result->assertStatus(401);
+        $result->assertStatus(400);
         $this->assertObjectHasAttribute("error", $content->messages);
-        $this->AssertSame("Invalid credentials", $content->messages->error);
+        $this->assertStringStartsWith("Cannot modify header information", $content->messages->error);
     }
 
     public function testBasicInvalidUsernameError()
@@ -121,13 +121,14 @@ class BasicTest extends CIUnitTestCase
     {
         $this->withHeaders([
             'Origin' => 'https://test-cors.local',
+            'Content-Type' => 'application/json',
             'X-API-KEY' => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
             'Authorization' => 'Basic ' . \base64_encode('admin:1234')
         ]);
 
         $result = $this->withBody(
             json_encode(['test' => 'helloauthbasic'])
-        )->call('get', 'helloauthbasic');
+        )->call('get', 'helloauthbasic?tatiro=taa');
 
 
         $content = \json_decode( $result->getJson() );

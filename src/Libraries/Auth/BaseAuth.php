@@ -57,7 +57,8 @@ abstract class BaseAuth
             $claims = $jwtLibrary->decode($username);
 
             if (!$claims || !isset( $valid_logins[ $claims->get('data') ] )) {
-                throw \Daycry\RestServer\Exceptions\UnauthorizedException::forInvalidCredentials();
+                return false;
+                //throw \Daycry\RestServer\Exceptions\UnauthorizedException::forInvalidCredentials();
             }
 
             return $claims->get('data');
@@ -78,7 +79,8 @@ abstract class BaseAuth
         }
 
         if ($valid_logins[ $username ] !== $password) {
-            throw \Daycry\RestServer\Exceptions\UnauthorizedException::forInvalidCredentials();
+            return false;
+            //throw \Daycry\RestServer\Exceptions\UnauthorizedException::forInvalidCredentials();
         }
 
         return $username;
@@ -96,21 +98,25 @@ abstract class BaseAuth
         $rest_auth = \strtolower($this->method);
         $rest_realm = $this->restConfig->restRealm;
 
-        if (strtolower($rest_auth) === 'basic') {
-            // See http://tools.ietf.org/html/rfc2617#page-5
-            header('WWW-Authenticate: Basic realm="' . $rest_realm . '"');
-        } elseif (strtolower($rest_auth) === 'digest') {
-            // See http://tools.ietf.org/html/rfc2617#page-18
-            header(
-                'WWW-Authenticate: Digest realm="' . $rest_realm
-                . '", qop="auth", nonce="' . $nonce
-                . '", opaque="' . md5($rest_realm) . '"'
-            );
-        }
-
         if ($this->restConfig->strictApiAndAuth === true) {
+            if (strtolower($rest_auth) === 'basic') {
+                // See http://tools.ietf.org/html/rfc2617#page-5
+                header('WWW-Authenticate: Basic realm="' . $rest_realm . '"');
+            } elseif (strtolower($rest_auth) === 'digest') {
+                // See http://tools.ietf.org/html/rfc2617#page-18
+                header(
+                    'WWW-Authenticate: Digest realm="' . $rest_realm
+                    . '", qop="auth", nonce="' . $nonce
+                    . '", opaque="' . md5($rest_realm) . '"'
+                );
+            }
+
             throw \Daycry\RestServer\Exceptions\UnauthorizedException::forInvalidCredentials();
         }
+
+        /*if ($this->restConfig->strictApiAndAuth === true) {
+            throw \Daycry\RestServer\Exceptions\UnauthorizedException::forInvalidCredentials();
+        }*/
     }
 
     protected function _performLibraryAuth($username = '', $password = null)

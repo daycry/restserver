@@ -39,7 +39,6 @@ class BasicAuth extends BaseAuth implements AuthInterface
 
         if ($username === false) {
             $this->forceLogin();
-            //throw UnauthorizedException::forInvalidCredentials();
         }
 
         return $username;

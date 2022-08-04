@@ -101,6 +101,13 @@ class RestServer extends ResourceController
     private array $_postArgs = [];
 
     /**
+     * The arguments for the query parameters.
+     *
+     * @var array
+     */
+    private array $_headArgs = [];
+
+    /**
      * Information about the current API user.
      *
      * @var object
@@ -156,6 +163,8 @@ class RestServer extends ResourceController
 
         // Set up the query parameters
         $this->_queryArgs = $this->request->getGet();
+        \parse_str($this->request->uri->getQuery(), $args);
+        $this->_queryArgs = array_merge($this->_queryArgs, $args);
         $this->_queryArgs = array_merge($this->_queryArgs, $this->request->uri->getSegments());
 
         $this->_postArgs = $this->request->getPost();
@@ -173,7 +182,7 @@ class RestServer extends ResourceController
         // Try to find a format for the request (means we have a request body)
         $this->inputFormat = \Daycry\RestServer\Formats\Input::check($this->request);
         $ft = explode('/', $this->inputFormat);
-        $this->setFormat(end($ft));
+        //$this->setFormat(end($ft));
 
         // Try to find a format for the response
         $this->responseFormat = \Daycry\RestServer\Formats\Output::check($this->request, $this->args);
@@ -374,7 +383,9 @@ class RestServer extends ResourceController
             if ($this->inputFormat == 'application/json') {
                 $this->content = $this->request->getJSON();
             } else {
-                $this->content = (object)$this->request->getRawInput();
+                // @codeCoverageIgnoreStart
+                $this->content = $this->request->getRawInput();
+                // @codeCoverageIgnoreEnd
             }
 
             $this->args = array_merge($this->args, (array)$this->content);
@@ -384,37 +395,25 @@ class RestServer extends ResourceController
             }
 
             return \call_user_func_array([ $this, $this->router->methodName() ], $params);
-        } catch (\Daycry\RestServer\Interfaces\UnauthorizedInterface $ex) {
-            if (property_exists($ex, 'authorized')) {
-                $this->authorized = $ex::$authorized;
-            }
 
-            return $this->failUnauthorized($ex->getMessage(), $ex->getCode());
-        } catch (\Daycry\RestServer\Interfaces\FailTooManyRequestsInterface $ex) {
-            if (property_exists($ex, 'authorized')) {
-                $this->authorized = $ex::$authorized;
-            }
-
-            return $this->failTooManyRequests($ex->getMessage(), $ex->getCode());
-        } catch (\Daycry\RestServer\Interfaces\ForbiddenInterface $ex) {
-            if (property_exists($ex, 'authorized')) {
-                $this->authorized = $ex::$authorized;
-            }
-
-            return $this->failForbidden($ex->getMessage(), $ex->getCode());
-        } catch (\Daycry\RestServer\Interfaces\ValidationInterface $ex) {
-            return $this->fail($this->validator->getErrors(), $ex->getCode());
         } catch (\Exception $ex) {
             if (property_exists($ex, 'authorized')) {
                 $this->authorized = $ex::$authorized;
             }
 
+            $message = (isset($this->validator) && $this->validator->getErrors()) ? $this->validator->getErrors():$ex->getMessage();
+
             if ($ex->getCode()) {
-                return $this->fail($ex->getMessage(), $ex->getCode());
+                return $this->fail($message, $ex->getCode());
             } else {
-                return $this->fail($ex->getMessage());
+                return $this->fail($message);
             }
         }
+    }
+
+    public function getVar($index = null, $filter = null, $flags = null)
+    {
+        return $this->request->getVar($index, $filter, $flags);
     }
 
     /**
@@ -435,6 +434,7 @@ class RestServer extends ResourceController
             if ($this->_restConfig->restEnableInvalidAttempts == true) {
                 $attemptModel = new \Daycry\RestServer\Models\AttemptModel();
                 $attempt = $attemptModel->where('ip_address', $this->request->getIPAddress())->first();
+
                 if ($this->authorized === false) {
                     if ($attempt === null) {
                         $attempt = [
@@ -450,10 +450,6 @@ class RestServer extends ResourceController
                             $attempt->hour_started = time();
                             $attemptModel->save($attempt);
                         }
-                    }
-                } else {
-                    if ($attempt) {
-                        $attemptModel->delete($attempt->id, true);
                     }
                 }
             }

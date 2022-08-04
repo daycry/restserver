@@ -29,14 +29,6 @@ class DigestAuth extends BaseAuth implements AuthInterface
             $this->forceLogin($unique_id);
         }
 
-        /*$matches = [];
-        preg_match_all('@(username|nonce|uri|nc|cnonce|qop|response)=[\'"]?([^\'",]+)@', $digest_string, $matches);
-        $digest = (empty($matches[1]) || empty($matches[2])) ? [] : array_combine($matches[1], $matches[2]);
-
-        $username = $nonce = $nc = $cnonce = $qop = $username = $uri = $response = null;
-        foreach ($digest as $key => $value) {
-            ${ $key } = $value;
-        }*/
         $matches = [];
         preg_match_all('@(username|nonce|uri|nc|cnonce|qop|response)=[\'"]?([^\'",]+)@', $digest_string, $matches);
         $digest = (empty($matches[1]) || empty($matches[2])) ? [] : array_combine($matches[1], $matches[2]);

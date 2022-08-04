@@ -23,6 +23,7 @@
 			<directory suffix=".php">./src/Libraries/User</directory>
 			<directory suffix=".php">./src/Interfaces</directory>
 			<file>./src/Libraries/CheckIp.php</file>
+			<file>./src/Exceptions/UserException.php</file>
 		</exclude>
 		<report>
 			<clover outputFile="build/logs/clover.xml"/>
