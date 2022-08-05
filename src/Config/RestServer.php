@@ -211,7 +211,7 @@ class RestServer extends BaseConfig
     | The table name in your database that stores API keys
     |
     */
-    public $restUsersTable = 'restserver_user';
+    public $restUsersTable = 'ws_user';
 
 
     /**
@@ -232,7 +232,7 @@ class RestServer extends BaseConfig
     | The table name in your database that stores API keys
     |
     */
-    public $restKeysTable = 'restserver_key';
+    public $restKeysTable = 'ws_key';
     public $restEnableKeys = false;
 
     /*
@@ -292,7 +292,7 @@ class RestServer extends BaseConfig
     | table name to match e.g. my_operations
     |
     */
-    public $configRestPetitionsTable = 'restserver_petition';
+    public $configRestPetitionsTable = 'ws_request';
 
     /*
     |--------------------------------------------------------------------------
@@ -315,7 +315,7 @@ class RestServer extends BaseConfig
     | table name to match e.g. my_logs
     |
     */
-    public $configRestLogsTable = 'restserver_log';
+    public $configRestLogsTable = 'ws_log';
 
     /*
     |--------------------------------------------------------------------------
@@ -359,7 +359,7 @@ class RestServer extends BaseConfig
     | table name to match e.g. my_limits
     |
     */
-    public $restLimitsTable = 'resetserver_limit';
+    public $restLimitsTable = 'ws_limit';
 
     /*
     |--------------------------------------------------------------------------
@@ -398,7 +398,7 @@ class RestServer extends BaseConfig
     | table name to match e.g. my_access
     |
     */
-    public $restAccessTable = 'restserver_access';
+    public $restAccessTable = 'ws_access';
 
     /*
     |--------------------------------------------------------------------------
@@ -409,7 +409,7 @@ class RestServer extends BaseConfig
     |
     */
     public $restEnableInvalidAttempts = true;
-    public $restInvalidAttemptsTable = 'restserver_attempts';
+    public $restInvalidAttemptsTable = 'ws_attempt';
     public $restMaxAttempts = 3;
     public $restTimeBlocked = 3600;
 
