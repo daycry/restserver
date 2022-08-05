@@ -115,6 +115,13 @@ class RestServer extends ResourceController
     protected ?object $apiUser = null;
 
     /**
+     * Information about the current AUTH user.
+     *
+     * @var object
+     */
+    protected $user = null;
+
+    /**
      * Extend this function to apply additional checking early on in the process.
      *
      * @return void
