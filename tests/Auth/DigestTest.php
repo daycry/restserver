@@ -13,7 +13,8 @@ use Daycry\RestServer\Database\Seeds\ExampleSeeder;
 
 class DigestTest extends CIUnitTestCase
 {
-    use DatabaseTestTrait, FeatureTestTrait;
+    use DatabaseTestTrait;
+    use FeatureTestTrait;
 
     protected $migrate     = true;
     protected $migrateOnce = false;
@@ -32,7 +33,7 @@ class DigestTest extends CIUnitTestCase
         $routes = [
             ['get', 'helloauthdigest', '\Tests\Support\Controllers\HelloAuthDigest::index']
         ];
-        
+
         $this->withRoutes($routes);
 
         $this->config = config('RestServer');
@@ -50,7 +51,7 @@ class DigestTest extends CIUnitTestCase
             json_encode(['test' => 'helloauthdigest'])
         )->call('get', 'helloauthdigest?format=json');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(401);
         $this->assertObjectHasAttribute("error", $content->messages);
@@ -69,7 +70,7 @@ class DigestTest extends CIUnitTestCase
             json_encode(['test' => 'helloauthdigest'])
         )->call('get', 'helloauthdigest?format=json');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(400);
         $this->assertObjectHasAttribute("error", $content->messages);
@@ -88,7 +89,7 @@ class DigestTest extends CIUnitTestCase
         )->call('get', 'helloauthdigest');
 
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(200);
         $this->assertObjectHasAttribute("test", $content);
@@ -115,7 +116,7 @@ class DigestTest extends CIUnitTestCase
             json_encode(['test' => 'helloauthdigest'])
         )->call('get', 'helloauthdigest');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(400);
         $this->assertObjectHasAttribute("error", $content->messages);

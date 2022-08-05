@@ -44,6 +44,7 @@
 	</logging>
 	<php>
 		<server name="app.baseURL" value="http://example.com/"/>
+		<env name="app.appTimezone" value="Europe/Madrid" force="true"/>
 		<!-- Directory containing phpunit.xml -->
 		<const name="HOMEPATH" value="./"/>
 		<!-- Directory containing the Paths config file -->

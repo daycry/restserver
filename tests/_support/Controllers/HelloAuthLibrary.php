@@ -15,7 +15,7 @@ class HelloAuthLibrary extends RestServer
         $this->_restConfig->authSource = 'library';
         $this->_restConfig->authLibraryClass['basic'] = \Tests\Support\Libraries\LibraryBasicAuth::class;
     }
-    
+
     public function index()
     {
         $content = array_merge((array)$this->content, array( 'auth' => $this->user ), (array)$this->apiUser);

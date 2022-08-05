@@ -259,7 +259,7 @@ class ExampleSeeder extends Seeder
 
         // Using Query Builder
         $this->db->table($config->restInvalidAttemptsTable)->insert($attempt);
-        
+
         $access = [
             [
                 'api_key'       => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',

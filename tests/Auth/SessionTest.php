@@ -13,7 +13,8 @@ use Daycry\RestServer\Database\Seeds\ExampleSeeder;
 
 class SessionTest extends CIUnitTestCase
 {
-    use DatabaseTestTrait, FeatureTestTrait;
+    use DatabaseTestTrait;
+    use FeatureTestTrait;
 
     protected $migrate     = true;
     protected $migrateOnce = false;
@@ -32,7 +33,7 @@ class SessionTest extends CIUnitTestCase
         $routes = [
             ['get', 'helloauthsession', '\Tests\Support\Controllers\HelloAuthSession::index']
         ];
-        
+
         $this->withRoutes($routes);
 
         $this->config = config('RestServer');
@@ -49,7 +50,7 @@ class SessionTest extends CIUnitTestCase
         )->call('get', 'helloauthsession');
 
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(401);
         $this->assertObjectHasAttribute("error", $content->messages);
@@ -61,9 +62,9 @@ class SessionTest extends CIUnitTestCase
         $values = [
             'sessionTest' => 'admin',
         ];
-        
+
         $this->withSession($values);
-        
+
 
         $this->withHeaders([
             'X-API-KEY' => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123'
@@ -73,7 +74,7 @@ class SessionTest extends CIUnitTestCase
             json_encode(['test' => 'helloauthsession'])
         )->call('get', 'helloauthsession');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(200);
         $this->assertObjectHasAttribute("test", $content);

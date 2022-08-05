@@ -13,7 +13,8 @@ use Daycry\RestServer\Database\Seeds\ExampleSeeder;
 
 class LimitTest extends CIUnitTestCase
 {
-    use DatabaseTestTrait, FeatureTestTrait;
+    use DatabaseTestTrait;
+    use FeatureTestTrait;
 
     protected $migrate     = true;
     protected $migrateOnce = false;
@@ -26,7 +27,7 @@ class LimitTest extends CIUnitTestCase
     protected function setUp(): void
     {
         $this->resetServices();
-        
+
         parent::setUp();
 
         $routes = [
@@ -36,7 +37,7 @@ class LimitTest extends CIUnitTestCase
             ['get', 'hellolimitapikey', '\Tests\Support\Controllers\HelloLimitApiKey::index'],
             ['get', 'hellolimitroutedurl', '\Tests\Support\Controllers\HelloLimitRoutedUrl::index']
         ];
-        
+
         $this->withRoutes($routes);
 
         $this->config = config('RestServer');
@@ -64,7 +65,7 @@ class LimitTest extends CIUnitTestCase
             json_encode(['test' => 'helloipaddresslimitnoapi'])
         )->call('get', 'helloipaddresslimitnoapi');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(200);
         $this->assertObjectHasAttribute("test", $content);
@@ -86,7 +87,7 @@ class LimitTest extends CIUnitTestCase
 
         $result = $this->call('get', 'hellolimitapikey');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(200);
         $this->assertObjectHasAttribute("test", $content);
@@ -106,7 +107,7 @@ class LimitTest extends CIUnitTestCase
             json_encode(['test' => 'hellolimitroutedurl'])
         )->call('get', 'hellolimitroutedurl');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(200);
         $this->assertObjectHasAttribute("test", $content);
@@ -123,7 +124,7 @@ class LimitTest extends CIUnitTestCase
 
         $result2 = $this->call('get', 'helloipaddresslimitnoapi');
 
-        $content = \json_decode( $result2->getJson() );
+        $content = \json_decode($result2->getJson());
 
         $result->assertStatus(429);
         $this->assertObjectHasAttribute("error", $content->messages);
@@ -145,7 +146,7 @@ class LimitTest extends CIUnitTestCase
             json_encode(['test' => 'nohello'])
         )->call('get', 'nohello');
 
-        $content = \json_decode( $result2->getJson() );
+        $content = \json_decode($result2->getJson());
 
         $result->assertStatus(429);
         $this->assertObjectHasAttribute("error", $content->messages);

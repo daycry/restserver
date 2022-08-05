@@ -123,7 +123,6 @@ class JWT
         try {
             $this->configuration->validator()->assert($token, ...$constraints);
         } catch (RequiredConstraintsViolated  $e) {
-            log_message('critical', $e->getMessage());
             return null;
         }
 

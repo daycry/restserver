@@ -9,7 +9,7 @@ class ApiKey
 {
     use \Daycry\RestServer\Traits\Schema;
 
-    public static function check(RequestInterface $request, object $petition = null, array $args, bool &$authorized): ?object
+    public static function check(RequestInterface $request, object $petition = null, array $args): ?object
     {
         $row = null;
         $usekey = config('RestServer')->restEnableKeys;
@@ -25,8 +25,8 @@ class ApiKey
                 $keyModel = new \Daycry\RestServer\Models\KeyModel();
 
                 if (!($row = $keyModel->setSchema(self::getSchema())->with(config('RestServer')->restUsersTable)->where(config('RestServer')->restKeyColumn, $key)->first())) {
-                    $authorized = false;
-                    throw UnauthorizedException::forInvalidApiKey($key);
+                    //$authorized = false;
+                    return UnauthorizedException::forInvalidApiKey($key);
                 }
 
                 $row = \Daycry\RestServer\Libraries\Utils::modelAliases($row, config('RestServer')->restUsersTable, 'user');
@@ -57,20 +57,20 @@ class ApiKey
 
                         if (!$found_address) {
                             // @codeCoverageIgnoreStart
-                            $authorized = false;
+                            //$authorized = false;
                             // @codeCoverageIgnoreEnd
-                            throw UnauthorizedException::forIpDenied();
+                            return UnauthorizedException::forIpDenied();
                         }
                     } else {
                         // @codeCoverageIgnoreStart
-                        $authorized = false;
+                        //$authorized = false;
                         // @codeCoverageIgnoreEnd
-                        throw UnauthorizedException::forIpDenied();
+                        return UnauthorizedException::forIpDenied();
                     }
                 }
             } else {
-                $authorized = false;
-                throw UnauthorizedException::forInvalidApiKey($key);
+                //$authorized = false;
+                return UnauthorizedException::forInvalidApiKey($key);
             }
         }
 

@@ -13,7 +13,8 @@ use Daycry\RestServer\Database\Seeds\ExampleSeeder;
 
 class AttempTest extends CIUnitTestCase
 {
-    use DatabaseTestTrait, FeatureTestTrait;
+    use DatabaseTestTrait;
+    use FeatureTestTrait;
 
     protected $migrate     = true;
     protected $migrateOnce = false;
@@ -26,20 +27,27 @@ class AttempTest extends CIUnitTestCase
     protected function setUp(): void
     {
         $this->resetServices();
-        
+        $this->resetFactories();
+
         parent::setUp();
 
         $routes = [
             ['get', 'hello', '\Tests\Support\Controllers\Hello::index'],
             ['get', 'nohello', '\Tests\Support\Controllers\NoHello::index']
         ];
-        
+
         $this->withRoutes($routes);
 
         $this->config = config('RestServer');
     }
 
-    public function testAttemp()
+    /** @var Request */
+    protected function request()
+    {
+        return new Request(Factories::config('App'));
+    }
+
+    public function testRemovePastAttemp()
     {
         $this->withHeaders([
             'Origin' => 'https://test-cors.local',
@@ -51,9 +59,29 @@ class AttempTest extends CIUnitTestCase
             json_encode(['test' => 'hello'])
         )->call('get', 'hello');
 
-        $result = $this->call('get', 'hello');
-        $result = $this->call('get', 'hello');
-        $result = $this->call('get', 'hello');
+        $content = \json_decode($result->getJson());
+
+        $result->assertStatus(401);
+        $this->assertObjectHasAttribute("error", $content->messages);
+        $this->assertMatchesRegularExpression("/Invalid API key/i", $content->messages->error);
+    }
+
+    public function testErrorMaxAttempts()
+    {
+        $this->withHeaders([
+            'Origin' => 'https://test-cors.local',
+            'X-API-KEY' => '33o8go0csckk8cckgw4kk40g4c4s0ckkcscggo12',
+            'Content-Type' => 'application/json'
+        ]);
+
+        $attemptModel = new \Daycry\RestServer\Models\AttemptModel();
+        $attempt = $attemptModel->where('ip_address', $this->request()->getIPAddress())->first();
+        $attempt->hour_started = time();
+        $attemptModel->save($attempt);
+
+        $result = $this->withBody(
+            json_encode(['test' => 'hello'])
+        )->call('get', 'hello');
 
         $content = \json_decode($result->getJson());
 

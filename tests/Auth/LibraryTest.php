@@ -13,7 +13,8 @@ use Daycry\RestServer\Database\Seeds\ExampleSeeder;
 
 class LibraryTest extends CIUnitTestCase
 {
-    use DatabaseTestTrait, FeatureTestTrait;
+    use DatabaseTestTrait;
+    use FeatureTestTrait;
 
     protected $migrate     = true;
     protected $migrateOnce = false;
@@ -33,7 +34,7 @@ class LibraryTest extends CIUnitTestCase
             ['get', 'helloauthlibrary', '\Tests\Support\Controllers\HelloAuthLibrary::index'],
             ['get', 'helloauthlibraryerror', '\Tests\Support\Controllers\HelloAuthLibraryError::index']
         ];
-        
+
         $this->withRoutes($routes);
 
         $this->config = config('RestServer');
@@ -51,7 +52,7 @@ class LibraryTest extends CIUnitTestCase
             json_encode(['test' => 'helloauthlibraryerror'])
         )->call('get', 'helloauthlibraryerror?format=json');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(403);
         $this->assertObjectHasAttribute("error", $content->messages);
@@ -70,7 +71,7 @@ class LibraryTest extends CIUnitTestCase
             json_encode(['test' => 'helloauthlibrary'])
         )->call('get', 'helloauthlibrary?format=json1');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(400);
         $this->assertObjectHasAttribute("error", $content->messages);
@@ -89,7 +90,7 @@ class LibraryTest extends CIUnitTestCase
             json_encode(['test' => 'helloauthlibrary'])
         )->call('get', 'helloauthlibrary');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(400);
         $this->assertObjectHasAttribute("error", $content->messages);
@@ -109,7 +110,7 @@ class LibraryTest extends CIUnitTestCase
         )->call('get', 'helloauthlibrary');
 
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(200);
         $this->assertObjectHasAttribute("test", $content);

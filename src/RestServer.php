@@ -115,6 +115,13 @@ class RestServer extends ResourceController
     protected ?object $apiUser = null;
 
     /**
+     * Information about the current AUTH user.
+     *
+     * @var object
+     */
+    protected $user = null;
+
+    /**
      * Extend this function to apply additional checking early on in the process.
      *
      * @return void
@@ -139,7 +146,7 @@ class RestServer extends ResourceController
         }
 
         // Rest server config
-        if(!isset($this->_restConfig)){
+        if (!isset($this->_restConfig)) {
             $this->_restConfig = config('RestServer');
         }
 
@@ -225,9 +232,7 @@ class RestServer extends ResourceController
             }
         }
 
-        $this->user = null;
-        
-        return true;
+        return null;
     }
 
     protected function validation(String $rules, \Config\Validation $config = null, bool $getShared = true, bool $filter = false)
@@ -269,7 +274,7 @@ class RestServer extends ResourceController
             'uri'        => $this->request->uri,
             'method'     => $this->request->getMethod(),
             'params'     => $params,
-            'api_key'    => isset($this->apiUser) ? $this->apiUser->key : '',
+            'api_key'    => isset($this->apiUser->key) ? $this->apiUser->key : '',
             'ip_address' => $this->request->getIPAddress(),
             'duration'   => $this->_benchmark->getElapsedTime('petition'),
             'response_code' => $this->response->getStatusCode(),
@@ -308,7 +313,6 @@ class RestServer extends ResourceController
             }
 
             if ($this->request->isAJAX() === false && $this->_restConfig->restAjaxOnly) {
-                $this->authorized = false;
                 throw ForbiddenException::forOnlyAjax();
             }
 
@@ -316,42 +320,51 @@ class RestServer extends ResourceController
                 \Daycry\RestServer\Validators\Cors::check($this->request, $this->router, $this->response);
             }
 
-            $attempt = \Daycry\RestServer\Validators\Attemp::check($this->request);
-
             if ($this->_restConfig->restEnableInvalidAttempts == true) {
                 $attemp = \Daycry\RestServer\Validators\Attemp::check($this->request);
-                if( $attemp !== true ){
-                    $this->authorized = false;
+                if ($attemp !== true) {
                     throw FailTooManyRequestsException::forInvalidAttemptsLimit($this->request->getIPAddress(), $attemp);
                 }
             }
 
             if ($this->_restConfig->restIpBlacklistEnabled == true) {
                 if (!\Daycry\RestServer\Validators\BlackList::check($this->request)) {
-                    $this->authorized = false;
                     throw UnauthorizedException::forIpDenied();
                 }
             }
 
             if ($this->_restConfig->restIpWhitelistEnabled == true) {
                 if (!\Daycry\RestServer\Validators\WhiteList::check($this->request)) {
-                    // @codeCoverageIgnoreStart
-                    $this->authorized = false;
                     throw UnauthorizedException::forIpDenied();
-                    // @codeCoverageIgnoreEnd
                 }
             }
 
-            $this->apiUser = \Daycry\RestServer\Validators\ApiKey::check($this->request, $this->_petition, $this->args, $this->authorized);
+            $this->apiUser = \Daycry\RestServer\Validators\ApiKey::check($this->request, $this->_petition, $this->args);
 
-            if (!$override = $this->_authOverrideCheck()) {
-                    $this->_getAuthMethod($this->_restConfig->restAuth);
+            if ($this->_restConfig->strictApiAndAuth && $this->apiUser instanceof \Exception) {
+                throw $this->apiUser;
             }
 
+            if (!$override = $this->_authOverrideCheck()) {
+                if (!$this->_restConfig->restEnableKeys || $this->_restConfig->allowAuthAndKeys) {
+                    $this->user = $this->_getAuthMethod($this->_restConfig->restAuth);
+                }
+
+                if ($this->_restConfig->allowAuthAndKeys && !$this->user && $this->apiUser instanceof \Exception) {
+                    throw UnauthorizedException::forUnauthorized();
+                }
+
+                if ($this->_restConfig->restEnableKeys && !$this->_restConfig->allowAuthAndKeys && $this->apiUser instanceof \Exception) {
+                    throw $this->apiUser;
+                }
+
+                if ($this->apiUser instanceof \Exception) {
+                    $this->apiUser = null;
+                }
+            }
 
             // Check to see if this key has access to the requested controller
             if ($this->_restConfig->restEnableKeys && empty($this->apiUser) === false && \Daycry\RestServer\Validators\Access::check($this->request, $this->router, $this->apiUser) === false) {
-                $this->authorized = false;
                 throw UnauthorizedException::forApiKeyUnauthorized();
             }
 
@@ -360,7 +373,6 @@ class RestServer extends ResourceController
 
                 // Check the limit
                 if ($this->_restConfig->restEnableLimits && \Daycry\RestServer\Validators\Limit::check($this->request, $this->router, $this->apiUser, $this->_petition) === false) {
-                    $this->authorized = false;
                     throw FailTooManyRequestsException::forApiKeyLimit($this->apiUser->key);
                 }
 
@@ -370,13 +382,11 @@ class RestServer extends ResourceController
                 // If no level is set, or it is lower than/equal to the key's level
                 if ($level > $this->apiUser->level) {
                     // They don't have good enough perms
-                    $this->authorized = false;
                     throw UnauthorizedException::forApiKeyPermissions();
                 }
             }
             //check request limit by ip without login
             elseif ($this->_restConfig->restLimitsMethod == 'IP_ADDRESS' && $this->_restConfig->restEnableLimits && \Daycry\RestServer\Validators\Limit::check($this->request, $this->router, $this->apiUser, $this->_petition) === false) {
-                $this->authorized = false;
                 throw FailTooManyRequestsException::forIpAddressTimeLimit();
             }
 
@@ -395,13 +405,12 @@ class RestServer extends ResourceController
             }
 
             return \call_user_func_array([ $this, $this->router->methodName() ], $params);
-
         } catch (\Exception $ex) {
             if (property_exists($ex, 'authorized')) {
                 $this->authorized = $ex::$authorized;
             }
 
-            $message = (isset($this->validator) && $this->validator->getErrors()) ? $this->validator->getErrors():$ex->getMessage();
+            $message = (isset($this->validator) && $this->validator->getErrors()) ? $this->validator->getErrors() : $ex->getMessage();
 
             if ($ex->getCode()) {
                 return $this->fail($message, $ex->getCode());
@@ -423,8 +432,7 @@ class RestServer extends ResourceController
      */
     public function __destruct()
     {
-        if($this->request && $this->_restConfig)
-        {
+        if ($this->request && $this->_restConfig) {
             // Log the loading time to the log table
             if ($this->_isLogAuthorized === true) {
                 $this->_benchmark->stop('petition');

@@ -11,7 +11,7 @@ class CreateRestServerTablesTest extends Migration
     public function up()
     {
         $config = $this->_getConfig();
-        
+
         /*
          * Petitions
          */

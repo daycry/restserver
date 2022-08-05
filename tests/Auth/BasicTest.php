@@ -13,7 +13,8 @@ use Daycry\RestServer\Database\Seeds\ExampleSeeder;
 
 class BasicTest extends CIUnitTestCase
 {
-    use DatabaseTestTrait, FeatureTestTrait;
+    use DatabaseTestTrait;
+    use FeatureTestTrait;
 
     protected $migrate     = true;
     protected $migrateOnce = false;
@@ -35,7 +36,7 @@ class BasicTest extends CIUnitTestCase
             ['get', 'helloauthbasic/validateParams', '\Tests\Support\Controllers\HelloAuthBasic::validateParams'],
             ['get', 'helloauthbasicajax', '\Tests\Support\Controllers\HelloAuthBasicAjax::index']
         ];
-        
+
         $this->withRoutes($routes);
 
         $this->config = config('RestServer');
@@ -53,7 +54,7 @@ class BasicTest extends CIUnitTestCase
             json_encode(['test' => 'helloauthbasic'])
         )->call('get', 'helloauthbasic?format=json');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(400);
         $this->assertObjectHasAttribute("error", $content->messages);
@@ -72,7 +73,7 @@ class BasicTest extends CIUnitTestCase
             json_encode(['test' => 'helloauthbasic'])
         )->call('get', 'helloauthbasic?format=json');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(400);
         $this->assertObjectHasAttribute("error", $content->messages);
@@ -91,7 +92,7 @@ class BasicTest extends CIUnitTestCase
             json_encode(['test' => 'helloauthbasic'])
         )->call('get', 'helloauthbasic?format=json1');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(400);
         $this->assertObjectHasAttribute("error", $content->messages);
@@ -110,7 +111,7 @@ class BasicTest extends CIUnitTestCase
             json_encode(['test' => 'helloauthbasic'])
         )->call('get', 'helloauthbasic');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(400);
         $this->assertObjectHasAttribute("error", $content->messages);
@@ -131,7 +132,7 @@ class BasicTest extends CIUnitTestCase
         )->call('get', 'helloauthbasic?tatiro=taa');
 
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(200);
         $this->assertObjectHasAttribute("test", $content);
@@ -158,7 +159,7 @@ class BasicTest extends CIUnitTestCase
             json_encode(['param' => 'helloauthbasic', 'method' => 'method'])
         )->call('get', 'helloauthbasic/validateParams');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(200);
         $this->assertObjectHasAttribute("param", $content);
@@ -189,7 +190,7 @@ class BasicTest extends CIUnitTestCase
             json_encode(['param' => 'helloauthbasic', 'method' => 'method', 'method1' => 'method1'])
         )->call('get', 'helloauthbasic/validateParams');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(403);
         $this->assertObjectHasAttribute("error", $content->messages);
@@ -208,7 +209,7 @@ class BasicTest extends CIUnitTestCase
             json_encode(['param' => '', 'method' => 'method'])
         )->call('get', 'helloauthbasic/validateParams');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(400);
         $this->assertObjectHasAttribute("param", $content->messages);
@@ -227,7 +228,7 @@ class BasicTest extends CIUnitTestCase
             json_encode(['test' => 'helloauthbasic'])
         )->call('get', 'helloauthbasic/invalid');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(403);
         $this->assertObjectHasAttribute("error", $content->messages);
@@ -246,7 +247,7 @@ class BasicTest extends CIUnitTestCase
             json_encode(['test' => 'helloauthbasicajax'])
         )->call('get', 'helloauthbasicajax');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(403);
         $this->assertObjectHasAttribute("error", $content->messages);
@@ -266,7 +267,7 @@ class BasicTest extends CIUnitTestCase
             json_encode(['test' => 'helloauthbasicajax'])
         )->call('get', 'helloauthbasicajax');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(200);
         $this->assertObjectHasAttribute("test", $content);

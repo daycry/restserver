@@ -56,7 +56,7 @@ abstract class BaseAuth
             $jwtLibrary = new \Daycry\RestServer\Libraries\JWT();
             $claims = $jwtLibrary->decode($username);
 
-            if (!$claims || !isset( $valid_logins[ $claims->get('data') ] )) {
+            if (!$claims || !isset($valid_logins[ $claims->get('data') ])) {
                 return false;
                 //throw \Daycry\RestServer\Exceptions\UnauthorizedException::forInvalidCredentials();
             }
