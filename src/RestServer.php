@@ -354,6 +354,10 @@ class RestServer extends ResourceController
                     throw UnauthorizedException::forUnauthorized();
                 }
 
+                if ($this->_restConfig->restEnableKeys && !$this->_restConfig->allowAuthAndKeys && $this->apiUser instanceof \Exception) {
+                    throw $this->apiUser;
+                }
+
                 if ($this->apiUser instanceof \Exception) {
                     $this->apiUser = null;
                 }
