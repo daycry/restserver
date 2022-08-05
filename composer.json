@@ -48,7 +48,7 @@
         }
     },
     "scripts": {
-        "test": "phpunit",
+        "test": "vendor/bin/phpunit",
         "cs-fixer": "vendor/bin/php-cs-fixer fix src"
     }
 }

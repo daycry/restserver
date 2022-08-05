@@ -47,9 +47,6 @@ class UnauthorizedException extends \RuntimeException implements \Daycry\RestSer
         return new self(lang('Rest.textRestInvalidCredentials'));
     }
 
-    /**
-     * @codeCoverageIgnore
-     */
     public static function forUnauthorized()
     {
         self::$authorized = false;

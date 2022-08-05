@@ -269,7 +269,7 @@ class RestServer extends ResourceController
             'uri'        => $this->request->uri,
             'method'     => $this->request->getMethod(),
             'params'     => $params,
-            'api_key'    => isset($this->apiUser) ? $this->apiUser->key : '',
+            'api_key'    => isset($this->apiUser->key) ? $this->apiUser->key : '',
             'ip_address' => $this->request->getIPAddress(),
             'duration'   => $this->_benchmark->getElapsedTime('petition'),
             'response_code' => $this->response->getStatusCode(),
@@ -308,7 +308,7 @@ class RestServer extends ResourceController
             }
 
             if ($this->request->isAJAX() === false && $this->_restConfig->restAjaxOnly) {
-                $this->authorized = false;
+                //$this->authorized = false;
                 throw ForbiddenException::forOnlyAjax();
             }
 
@@ -316,19 +316,17 @@ class RestServer extends ResourceController
                 \Daycry\RestServer\Validators\Cors::check($this->request, $this->router, $this->response);
             }
 
-            $attempt = \Daycry\RestServer\Validators\Attemp::check($this->request);
-
             if ($this->_restConfig->restEnableInvalidAttempts == true) {
                 $attemp = \Daycry\RestServer\Validators\Attemp::check($this->request);
                 if( $attemp !== true ){
-                    $this->authorized = false;
+                    //$this->authorized = false;
                     throw FailTooManyRequestsException::forInvalidAttemptsLimit($this->request->getIPAddress(), $attemp);
                 }
             }
 
             if ($this->_restConfig->restIpBlacklistEnabled == true) {
                 if (!\Daycry\RestServer\Validators\BlackList::check($this->request)) {
-                    $this->authorized = false;
+                    //$this->authorized = false;
                     throw UnauthorizedException::forIpDenied();
                 }
             }
@@ -336,22 +334,36 @@ class RestServer extends ResourceController
             if ($this->_restConfig->restIpWhitelistEnabled == true) {
                 if (!\Daycry\RestServer\Validators\WhiteList::check($this->request)) {
                     // @codeCoverageIgnoreStart
-                    $this->authorized = false;
+                    //$this->authorized = false;
                     throw UnauthorizedException::forIpDenied();
                     // @codeCoverageIgnoreEnd
                 }
             }
 
-            $this->apiUser = \Daycry\RestServer\Validators\ApiKey::check($this->request, $this->_petition, $this->args, $this->authorized);
+            $this->apiUser = \Daycry\RestServer\Validators\ApiKey::check($this->request, $this->_petition, $this->args);
 
-            if (!$override = $this->_authOverrideCheck()) {
-                    $this->_getAuthMethod($this->_restConfig->restAuth);
+            if( $this->_restConfig->strictApiAndAuth && $this->apiUser instanceof \Exception )
+            {
+                //$this->authorized = false;
+                throw $this->apiUser;
             }
 
+            if (!$override = $this->_authOverrideCheck()) {
+                if( !$this->_restConfig->restEnableKeys || $this->_restConfig->allowAuthAndKeys )
+                {
+                    $this->_getAuthMethod($this->_restConfig->restAuth);
+                }
+
+                if( $this->_restConfig->allowAuthAndKeys && !$this->user && $this->apiUser instanceof \Exception )
+                {
+                    //$this->authorized = false;
+                    throw UnauthorizedException::forUnauthorized();
+                }
+            }
 
             // Check to see if this key has access to the requested controller
             if ($this->_restConfig->restEnableKeys && empty($this->apiUser) === false && \Daycry\RestServer\Validators\Access::check($this->request, $this->router, $this->apiUser) === false) {
-                $this->authorized = false;
+                //$this->authorized = false;
                 throw UnauthorizedException::forApiKeyUnauthorized();
             }
 
@@ -360,7 +372,7 @@ class RestServer extends ResourceController
 
                 // Check the limit
                 if ($this->_restConfig->restEnableLimits && \Daycry\RestServer\Validators\Limit::check($this->request, $this->router, $this->apiUser, $this->_petition) === false) {
-                    $this->authorized = false;
+                    //$this->authorized = false;
                     throw FailTooManyRequestsException::forApiKeyLimit($this->apiUser->key);
                 }
 
@@ -370,13 +382,13 @@ class RestServer extends ResourceController
                 // If no level is set, or it is lower than/equal to the key's level
                 if ($level > $this->apiUser->level) {
                     // They don't have good enough perms
-                    $this->authorized = false;
+                    //$this->authorized = false;
                     throw UnauthorizedException::forApiKeyPermissions();
                 }
             }
             //check request limit by ip without login
             elseif ($this->_restConfig->restLimitsMethod == 'IP_ADDRESS' && $this->_restConfig->restEnableLimits && \Daycry\RestServer\Validators\Limit::check($this->request, $this->router, $this->apiUser, $this->_petition) === false) {
-                $this->authorized = false;
+                //$this->authorized = false;
                 throw FailTooManyRequestsException::forIpAddressTimeLimit();
             }
 

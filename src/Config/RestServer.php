@@ -336,7 +336,7 @@ class RestServer extends BaseConfig
     | When set to TRUE, the REST API log parameters will be encrypt.
     |
     */
-    public $restEncryptLogParams = true;
+    public $restEncryptLogParams = false;
 
     /*
     |--------------------------------------------------------------------------

@@ -8,7 +8,7 @@ class HelloAuthBasic extends RestServer
 {
     public function index()
     {
-        $content = array_merge((array)$this->getVar(), array( 'auth' => $this->user ), (array)$this->apiUser);
+        $content = array_merge((array)$this->content, array( 'auth' => $this->user ), (array)$this->apiUser);
         return $this->respond($content);
     }
 
