@@ -139,7 +139,7 @@ class RestServer extends ResourceController
         }
 
         // Rest server config
-        if(!isset($this->_restConfig)){
+        if (!isset($this->_restConfig)) {
             $this->_restConfig = config('RestServer');
         }
 
@@ -226,7 +226,7 @@ class RestServer extends ResourceController
         }
 
         $this->user = null;
-        
+
         return true;
     }
 
@@ -318,7 +318,7 @@ class RestServer extends ResourceController
 
             if ($this->_restConfig->restEnableInvalidAttempts == true) {
                 $attemp = \Daycry\RestServer\Validators\Attemp::check($this->request);
-                if( $attemp !== true ){
+                if ($attemp !== true) {
                     //$this->authorized = false;
                     throw FailTooManyRequestsException::forInvalidAttemptsLimit($this->request->getIPAddress(), $attemp);
                 }
@@ -342,20 +342,17 @@ class RestServer extends ResourceController
 
             $this->apiUser = \Daycry\RestServer\Validators\ApiKey::check($this->request, $this->_petition, $this->args);
 
-            if( $this->_restConfig->strictApiAndAuth && $this->apiUser instanceof \Exception )
-            {
+            if ($this->_restConfig->strictApiAndAuth && $this->apiUser instanceof \Exception) {
                 //$this->authorized = false;
                 throw $this->apiUser;
             }
 
             if (!$override = $this->_authOverrideCheck()) {
-                if( !$this->_restConfig->restEnableKeys || $this->_restConfig->allowAuthAndKeys )
-                {
+                if (!$this->_restConfig->restEnableKeys || $this->_restConfig->allowAuthAndKeys) {
                     $this->_getAuthMethod($this->_restConfig->restAuth);
                 }
 
-                if( $this->_restConfig->allowAuthAndKeys && !$this->user && $this->apiUser instanceof \Exception )
-                {
+                if ($this->_restConfig->allowAuthAndKeys && !$this->user && $this->apiUser instanceof \Exception) {
                     //$this->authorized = false;
                     throw UnauthorizedException::forUnauthorized();
                 }
@@ -407,13 +404,12 @@ class RestServer extends ResourceController
             }
 
             return \call_user_func_array([ $this, $this->router->methodName() ], $params);
-
         } catch (\Exception $ex) {
             if (property_exists($ex, 'authorized')) {
                 $this->authorized = $ex::$authorized;
             }
 
-            $message = (isset($this->validator) && $this->validator->getErrors()) ? $this->validator->getErrors():$ex->getMessage();
+            $message = (isset($this->validator) && $this->validator->getErrors()) ? $this->validator->getErrors() : $ex->getMessage();
 
             if ($ex->getCode()) {
                 return $this->fail($message, $ex->getCode());
@@ -435,8 +431,7 @@ class RestServer extends ResourceController
      */
     public function __destruct()
     {
-        if($this->request && $this->_restConfig)
-        {
+        if ($this->request && $this->_restConfig) {
             // Log the loading time to the log table
             if ($this->_isLogAuthorized === true) {
                 $this->_benchmark->stop('petition');

@@ -13,7 +13,8 @@ use Daycry\RestServer\Database\Seeds\ExampleSeeder;
 
 class BearerTest extends CIUnitTestCase
 {
-    use DatabaseTestTrait, FeatureTestTrait;
+    use DatabaseTestTrait;
+    use FeatureTestTrait;
 
     protected $migrate     = true;
     protected $migrateOnce = false;
@@ -33,7 +34,7 @@ class BearerTest extends CIUnitTestCase
             ['get', 'helloauthbearer', '\Tests\Support\Controllers\HelloAuthBearer::index'],
             ['get', 'helloauthcustombearer', '\Tests\Support\Controllers\HelloAuthCustomBearer::index']
         ];
-        
+
         $this->withRoutes($routes);
 
         $this->config = config('RestServer');
@@ -54,7 +55,7 @@ class BearerTest extends CIUnitTestCase
         )->call('get', 'helloauthbearer');
 
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(401);
         $this->assertObjectHasAttribute("error", $content->messages);
@@ -76,7 +77,7 @@ class BearerTest extends CIUnitTestCase
         )->call('get', 'helloauthbearer');
 
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(401);
         $this->assertObjectHasAttribute("error", $content->messages);
@@ -98,7 +99,7 @@ class BearerTest extends CIUnitTestCase
             json_encode(['test' => 'helloauthbearer'])
         )->call('get', 'helloauthbearer');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(200);
         $this->assertObjectHasAttribute("test", $content);
@@ -131,7 +132,7 @@ class BearerTest extends CIUnitTestCase
             json_encode(['test' => 'helloauthbearer'])
         )->call('get', 'helloauthbearer');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(401);
         $this->assertObjectHasAttribute("error", $content->messages);
@@ -154,7 +155,7 @@ class BearerTest extends CIUnitTestCase
             json_encode(['test' => 'helloauthbearer'])
         )->call('get', 'helloauthbearer');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(200);
         $this->assertObjectHasAttribute("test", $content);
@@ -186,7 +187,7 @@ class BearerTest extends CIUnitTestCase
             json_encode(['test' => 'helloauthcustombearer'])
         )->call('get', 'helloauthcustombearer');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(200);
         $this->assertObjectHasAttribute("test", $content);

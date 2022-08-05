@@ -13,7 +13,8 @@ use Daycry\RestServer\Database\Seeds\ExampleSeeder;
 
 class BlackListIpTest extends CIUnitTestCase
 {
-    use DatabaseTestTrait, FeatureTestTrait;
+    use DatabaseTestTrait;
+    use FeatureTestTrait;
 
     protected $migrate     = true;
     protected $migrateOnce = false;
@@ -32,7 +33,7 @@ class BlackListIpTest extends CIUnitTestCase
         $routes = [
             ['get', 'helloblacklistip', '\Tests\Support\Controllers\HelloBlackListIp::index']
         ];
-        
+
         $this->withRoutes($routes);
 
         $this->config = config('RestServer');
@@ -48,7 +49,7 @@ class BlackListIpTest extends CIUnitTestCase
             json_encode(['test' => 'helloblacklistip'])
         )->call('get', 'helloblacklistip');
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(401);
         $this->assertObjectHasAttribute("error", $content->messages);

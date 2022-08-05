@@ -13,7 +13,8 @@ use Daycry\RestServer\Database\Seeds\ExampleSeeder;
 
 class ApiKeyTest extends CIUnitTestCase
 {
-    use DatabaseTestTrait, FeatureTestTrait;
+    use DatabaseTestTrait;
+    use FeatureTestTrait;
 
     protected $migrate     = true;
     protected $migrateOnce = false;
@@ -33,7 +34,7 @@ class ApiKeyTest extends CIUnitTestCase
             ['get', 'hello', '\Tests\Support\Controllers\Hello::index'],
             ['get', 'nohello', '\Tests\Support\Controllers\NoHello::index']
         ];
-        
+
         $this->withRoutes($routes);
 
         $this->config = config('RestServer');
@@ -89,7 +90,7 @@ class ApiKeyTest extends CIUnitTestCase
         $this->assertObjectHasAttribute("error", $content->messages);
         $this->assertSame("This API key does not have enough permissions", $content->messages->error);
     }
-    
+
     protected function tearDown(): void
     {
         parent::tearDown();

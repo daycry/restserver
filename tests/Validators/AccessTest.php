@@ -13,7 +13,8 @@ use Daycry\RestServer\Database\Seeds\ExampleSeeder;
 
 class AccessTest extends CIUnitTestCase
 {
-    use DatabaseTestTrait, FeatureTestTrait;
+    use DatabaseTestTrait;
+    use FeatureTestTrait;
 
     protected $migrate     = true;
     protected $migrateOnce = false;
@@ -34,7 +35,7 @@ class AccessTest extends CIUnitTestCase
             ['get', 'nohello', '\Tests\Support\Controllers\NoHello::index'],
             ['get', 'noaccess', '\Tests\Support\Controllers\NoAccess::index']
         ];
-        
+
         $this->withRoutes($routes);
 
         $this->config = config('RestServer');
@@ -52,7 +53,7 @@ class AccessTest extends CIUnitTestCase
         )->call('get', 'noaccess');
 
 
-        $content = \json_decode( $result->getJson() );
+        $content = \json_decode($result->getJson());
 
         $result->assertStatus(401);
         $this->assertObjectHasAttribute("error", $content->messages);

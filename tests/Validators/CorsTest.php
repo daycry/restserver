@@ -13,7 +13,8 @@ use Daycry\RestServer\Database\Seeds\ExampleSeeder;
 
 class CorsTest extends CIUnitTestCase
 {
-    use DatabaseTestTrait, FeatureTestTrait;
+    use DatabaseTestTrait;
+    use FeatureTestTrait;
 
     protected $migrate     = true;
     protected $migrateOnce = false;
@@ -35,7 +36,7 @@ class CorsTest extends CIUnitTestCase
             ['options', 'helloallcors', '\Tests\Support\Controllers\HelloAllCors::index'],
             ['get', 'nohello', '\Tests\Support\Controllers\NoHello::index']
         ];
-        
+
         $this->withRoutes($routes);
 
         $this->config = config('RestServer');

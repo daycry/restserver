@@ -12,28 +12,25 @@ class Output
 
         $mimes = \Config\Mimes::$mimes;
 
-        if( $format ) {
+        if ($format) {
             $response = 'application/json';
             $response = \Config\Mimes::guessTypeFromExtension($format);
 
-            if(!$response)
-            {
+            if (!$response) {
                 return $request->negotiate('media', config('Format')->supportedResponseFormats);
             }
 
             return $response;
-        }else{
+        } else {
             return $request->negotiate('media', config('Format')->supportedResponseFormats);
         }
     }
 
-    private static function _getFormatInArgs( array $args) :?string
+    private static function _getFormatInArgs(array $args): ?string
     {
         $format = null;
-        foreach( $args as $key => $value )
-        {
-            if( $key === 'format' )
-            {
+        foreach ($args as $key => $value) {
+            if ($key === 'format') {
                 $format = $value;
                 break;
             }

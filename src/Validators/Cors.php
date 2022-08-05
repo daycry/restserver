@@ -25,8 +25,7 @@ class Cors
                 $origin = $request->getHeaderLine('origin');
 
                 $allowedCorsOrigins = config('RestServer')->allowedCorsOrigins;
-                if( !is_array($allowedCorsOrigins) )
-                {
+                if (!is_array($allowedCorsOrigins)) {
                     $allowedCorsOrigins = [$allowedCorsOrigins];
                 }
 

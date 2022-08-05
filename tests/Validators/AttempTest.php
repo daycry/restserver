@@ -13,7 +13,8 @@ use Daycry\RestServer\Database\Seeds\ExampleSeeder;
 
 class AttempTest extends CIUnitTestCase
 {
-    use DatabaseTestTrait, FeatureTestTrait;
+    use DatabaseTestTrait;
+    use FeatureTestTrait;
 
     protected $migrate     = true;
     protected $migrateOnce = false;
@@ -27,14 +28,14 @@ class AttempTest extends CIUnitTestCase
     {
         $this->resetServices();
         $this->resetFactories();
-        
+
         parent::setUp();
 
         $routes = [
             ['get', 'hello', '\Tests\Support\Controllers\Hello::index'],
             ['get', 'nohello', '\Tests\Support\Controllers\NoHello::index']
         ];
-        
+
         $this->withRoutes($routes);
 
         $this->config = config('RestServer');
