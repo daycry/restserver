@@ -55,7 +55,7 @@
 		<env name="database.tests.hostname" value="localhost" force="true"/>
 		<env name="database.tests.database" value="web_service_tests" force="true"/>
 		<env name="database.tests.username" value="tests_user" force="true"/>
-		<env name="database.tests.password" value="" force="true"/>
+		<env name="database.tests.password" value="tests_user" force="true"/>
 		<env name="database.tests.DBDriver" value="MySQLi"/>
 		<env name="database.tests.DBPrefix" value="" force="true"/>
 
