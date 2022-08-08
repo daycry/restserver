@@ -25,7 +25,8 @@ jobs:
         image: mysql:${{ matrix.mysql-versions }}
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
-          MYSQL_DATABASE: test
+          MYSQL_DATABASE: web_service_tests
+          MYSQL_USER: tests_user
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
