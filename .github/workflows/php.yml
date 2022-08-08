@@ -74,7 +74,7 @@ jobs:
           composer global require --ansi php-coveralls/php-coveralls:^2.4
           php-coveralls --coverage_clover=build/logs/clover.xml -v
         env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_API_TOKEN }}
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COVERALLS_PARALLEL: true
           COVERALLS_FLAG_NAME: PHP ${{ matrix.php-versions }} - ${{ matrix.db-platforms }}
   coveralls-finish:
@@ -85,5 +85,5 @@ jobs:
       - name: Coveralls Finished
         uses: coverallsapp/github-action@master
         with:
-          github-token: ${{ secrets.COVERALLS_API_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel-finished: true
