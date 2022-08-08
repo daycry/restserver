@@ -10,7 +10,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  tests:
+    name: PHP ${{ matrix.php-versions }} - ${{ matrix.db-platforms }}
     runs-on: ubuntu-latest
     
     strategy:
@@ -57,10 +58,6 @@ jobs:
       - name: Install dependencies
         run: composer install --ansi --no-interaction
 
-      - name: Profile slow tests in PHP 8.0
-        if: matrix.php-versions == '8.0'
-        run: echo "TACHYCARDIA_MONITOR_GA=enabled" >> $GITHUB_ENV
-
       - name: Compute coverage option
         uses: actions/github-script@v6
         id: phpunit-coverage-option
@@ -70,3 +67,24 @@ jobs:
       
       - name: Test with PHPUnit
         run: script -e -c "vendor/bin/phpunit --color=always --exclude-group=auto-review ${{ steps.phpunit-coverage-option.outputs.result }}"
+        
+      - name: Run Coveralls
+        if: github.repository_owner == 'restserver'  && matrix.php-versions == '8.0'
+        run: |
+          composer global require --ansi php-coveralls/php-coveralls:^2.4
+          php-coveralls --coverage_clover=build/logs/clover.xml -v
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_API_TOKEN }}
+          COVERALLS_PARALLEL: true
+          COVERALLS_FLAG_NAME: PHP ${{ matrix.php-versions }} - ${{ matrix.db-platforms }}
+  coveralls-finish:
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'restserver'
+    needs: [tests]
+
+    steps:
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.COVERALLS_API_TOKEN }}
+          parallel-finished: true
