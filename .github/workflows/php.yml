@@ -69,7 +69,7 @@ jobs:
         run: script -e -c "vendor/bin/phpunit --color=always --exclude-group=auto-review ${{ steps.phpunit-coverage-option.outputs.result }}"
         
       - name: Run Coveralls
-        if: github.repository_owner == 'restserver'  && matrix.php-versions == '8.0'
+        if: matrix.php-versions == '8.0'
         run: |
           composer global require --ansi php-coveralls/php-coveralls:^2.4
           php-coveralls --coverage_clover=build/logs/clover.xml -v
@@ -79,7 +79,6 @@ jobs:
           COVERALLS_FLAG_NAME: PHP ${{ matrix.php-versions }} - ${{ matrix.db-platforms }}
   coveralls-finish:
     runs-on: ubuntu-latest
-    if: github.repository_owner == 'restserver'
     needs: [tests]
 
     steps:
