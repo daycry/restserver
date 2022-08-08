@@ -17,9 +17,21 @@ jobs:
       fail-fast: false
       matrix:
         php-versions: ['7.4', '8.0', '8.1']
+        db-platforms: ['MySQLi']
+        mysql-versions: ['5.7']
 
+    services:
+      mysql:
+        image: mysql:${{ matrix.mysql-versions }}
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+        
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2
@@ -27,33 +39,33 @@ jobs:
           php-version: ${{ matrix.php-versions }}
           tools: composer
           coverage: xdebug
+        env:
+          update: true
 
       - name: Get composer cache directory
         id: composercache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
       - name: Cache dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.composercache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
-      - uses: mirromutth/mysql-action@v1.1
-        with:
-          host port: 3306 # Optional, default value is 3306. The port of host
-          container port: 3306 # Optional, default value is 3306. The port of container
-          character set server: 'utf8' # Optional, default value is 'utf8mb4'. The '--character-set-server' option for mysqld
-          collation server: 'utf8_general_ci' # Optional, default value is 'utf8mb4_general_ci'. The '--collation-server' option for mysqld
-          mysql version: '8.0' # Optional, default value is "latest". The version of the MySQL
-          mysql database: 'web_service_tests' # Optional, default value is "test". The specified database which will be create
-          mysql user: 'tests_user' # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
-          mysql password: 'tests_user' # Required if "mysql user" exists. The password for the "mysql user"
-    
       - name: Install dependencies
         run: composer install --ansi --no-interaction
 
-    
+      - name: Profile slow tests in PHP 8.0
+        if: matrix.php-versions == '8.0'
+        run: echo "TACHYCARDIA_MONITOR_GA=enabled" >> $GITHUB_ENV
 
+      - name: Compute coverage option
+        uses: actions/github-script@v6
+        id: phpunit-coverage-option
+        with:
+          script: 'return "${{ matrix.php-versions }}" == "8.0" ? "" : "--no-coverage"'
+          result-encoding: string
+      
       - name: Test with PHPUnit
-        run: script -e -c "vendor/bin/phpunit -v"
+        run: script -e -c "vendor/bin/phpunit --color=always --exclude-group=auto-review ${{ steps.phpunit-coverage-option.outputs.result }}"
