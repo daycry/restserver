@@ -1,6 +1,7 @@
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate?business=SYC5XDT23UZ5G&no_recurring=0&item_name=Thank+you%21&currency_code=EUR)
 
-# Rest Server
+# Rest Server[![](https://github.com/daycry/restserver/workflows/PHP%20Tests/badge.svg)](https://github.com/daycry/restserver/actions?query=workflow%3A%22PHP+Tests%22)
+
 
 Rest Server with Doctrine for Codeigniter 4
 
