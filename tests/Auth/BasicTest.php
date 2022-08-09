@@ -1,6 +1,6 @@
 <?php
 
-namespace Daycry\RestServer\Tests\Auth;
+namespace Tests\Auth;
 
 use CodeIgniter\Config\Factories;
 use CodeIgniter\HTTP\Request;
