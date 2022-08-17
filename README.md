@@ -35,8 +35,9 @@ $psr4 = [
 
 Run command:
 
-	> php spark restserver:publish
+    > php spark restserver:publish
     > php spark settings:publish
+    > php spark jwt:publish
 
 This command will copy a config file to your app namespace.
 Then you can adjust it to your needs. By default file will be present in `app/Config/RestServer.php`.

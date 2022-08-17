@@ -265,7 +265,6 @@ class RestServer extends ResourceController
     {
         // Insert the request into the log table
         $logModel = new \Daycry\RestServer\Models\LogModel();
-        //$logModel->setTableName( $this->_restConfig->configRestLogsTable );
 
         $params = $this->args ? ($this->_restConfig->restLogsJsonParams == true ? \json_encode($this->args) : \serialize($this->args)) : null;
         $params = ($params != null && $this->_restConfig->restEncryptLogParams == true) ? $this->encryption->encrypt($params) : $params;

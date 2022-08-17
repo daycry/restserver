@@ -12,17 +12,17 @@
     ],
     "license": "MIT",
     "require": {
-      "php": ">=7.2 || ^8.0",
+      "php": ">=7.4 || ^8.0",
         "daycry/encryption": "^2.0",
-        "lcobucci/jwt": "^4.1",
         "daycry/settings": "^1.0",
         "daycry/class-finder": "^1.0",
-        "daycry/relations": "^2.0"
+        "daycry/relations": "^2.0",
+        "daycry/jwt": "^1.0"
     },
     "require-dev":
     {
         "phpunit/phpunit": "^9.1",
-        "codeigniter4/framework": "4.2.3",
+        "codeigniter4/framework": "^4",
         "friendsofphp/php-cs-fixer": "3.6.*",
         "mikey179/vfsstream": "^1.6",
         "nexusphp/cs-config": "^3.3",

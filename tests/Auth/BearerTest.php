@@ -59,7 +59,7 @@ class BearerTest extends CIUnitTestCase
 
         $result->assertStatus(401);
         $this->assertObjectHasAttribute("error", $content->messages);
-        $this->AssertSame("Invalid credentials", $content->messages->error);
+        $this->assertSame("Invalid credentials", $content->messages->error);
     }
 
     public function testBearerErrorNoBearer()
@@ -86,7 +86,7 @@ class BearerTest extends CIUnitTestCase
 
     public function testBearerSuccess()
     {
-        $jwtLibrary = new \Daycry\RestServer\Libraries\JWT();
+        $jwtLibrary = new \Daycry\JWT\JWT();
         $bearer = $jwtLibrary->encode('admin');
 
         $this->withHeaders([
@@ -116,9 +116,9 @@ class BearerTest extends CIUnitTestCase
 
     public function testBearerWrongError()
     {
-        $config = new \Daycry\RestServer\Config\JWT();
+        $config = new \Daycry\JWT\Config\JWT();
         $config->identifier = '12345';
-        $jwtLibrary = new \Daycry\RestServer\Libraries\JWT($config);
+        $jwtLibrary = new \Daycry\JWT\JWT($config);
         $jwtLibrary->setParamData('data');
         $bearer = $jwtLibrary->encode('admin', 'uid');
 
@@ -136,12 +136,12 @@ class BearerTest extends CIUnitTestCase
 
         $result->assertStatus(401);
         $this->assertObjectHasAttribute("error", $content->messages);
-        $this->AssertSame("Invalid credentials", $content->messages->error);
+        $this->assertSame("Invalid credentials", $content->messages->error);
     }
 
     public function testBearerSetParamSuccess()
     {
-        $jwtLibrary = new \Daycry\RestServer\Libraries\JWT();
+        $jwtLibrary = new \Daycry\JWT\JWT();
         $jwtLibrary->setParamData('data');
         $bearer = $jwtLibrary->encode('admin', 'uid');
 
@@ -172,7 +172,7 @@ class BearerTest extends CIUnitTestCase
 
     public function testBearerSplitDataSuccess()
     {
-        $jwtLibrary = new \Daycry\RestServer\Libraries\JWT();
+        $jwtLibrary = new \Daycry\JWT\JWT();
         $jwtLibrary->setSplitData(true);
         $data = array('username' => 'admin', 'split' => true);
         $bearer = $jwtLibrary->encode($data);

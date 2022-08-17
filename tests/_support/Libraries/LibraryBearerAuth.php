@@ -9,7 +9,7 @@ class LibraryBearerAuth implements LibraryAuthInterface
 {
     public function validate($username, $password = true)
     {
-        $jwtLibrary = new \Daycry\RestServer\Libraries\JWT();
+        $jwtLibrary = new \Daycry\JWT\JWT();
         $claims = $jwtLibrary->decode($username);
 
         if ($claims->get('username') != 'admin') {
