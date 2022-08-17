@@ -53,12 +53,19 @@ abstract class BaseAuth
         }
 
         if ($auth_source !== 'library' && $rest_auth === 'bearer') {
-            $jwtLibrary = new \Daycry\RestServer\Libraries\JWT();
-            $claims = $jwtLibrary->decode($username);
+            $jwtLibrary = new \Daycry\JWT\JWT();
 
-            if (!$claims || !isset($valid_logins[ $claims->get('data') ])) {
+            try{
+                $claims = $jwtLibrary->decode($username);
+            }catch( \Exception $ex)
+            {
                 return false;
-                //throw \Daycry\RestServer\Exceptions\UnauthorizedException::forInvalidCredentials();
+            }
+
+            if (!$claims || $claims instanceof \Lcobucci\JWT\Validation\RequiredConstraintsViolated || !isset($valid_logins[ $claims->get('data') ])) {
+                // @codeCoverageIgnoreStart
+                return false;
+                // @codeCoverageIgnoreEnd
             }
 
             return $claims->get('data');

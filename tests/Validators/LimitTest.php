@@ -1,6 +1,6 @@
 <?php
 
-namespace Daycry\RestServer\Tests\Validators;
+namespace Tests\Validators;
 
 use CodeIgniter\Config\Factories;
 use CodeIgniter\HTTP\Request;

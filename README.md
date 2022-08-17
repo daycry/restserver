@@ -4,6 +4,13 @@
 
 Rest Server with Doctrine for Codeigniter 4
 
+[![Build Status](https://github.com/daycry/restserver/workflows/PHP%20Tests/badge.svg)](https://github.com/daycry/restserver/actions?query=workflow%3A%22PHP+Tests%22)
+[![Coverage Status](https://coveralls.io/repos/github/daycry/restserver/badge.svg?branch=master)](https://coveralls.io/github/daycry/restserver?branch=master)
+[![Downloads](https://poser.pugx.org/daycry/restserver/downloads)](https://packagist.org/packages/daycry/restserver)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/daycry/restserver)](https://packagist.org/packages/daycry/restserver)
+[![GitHub stars](https://img.shields.io/github/stars/daycry/restserver)](https://packagist.org/packages/daycry/restserver)
+[![GitHub license](https://img.shields.io/github/license/daycry/restserver)](https://github.com/daycry/restserver/blob/master/LICENSE)
+
 ## Installation via composer
 
 Use the package with composer install
@@ -28,8 +35,9 @@ $psr4 = [
 
 Run command:
 
-	> php spark restserver:publish
+    > php spark restserver:publish
     > php spark settings:publish
+    > php spark jwt:publish
 
 This command will copy a config file to your app namespace.
 Then you can adjust it to your needs. By default file will be present in `app/Config/RestServer.php`.
@@ -40,7 +48,7 @@ This command create rest server tables in your database.
 
 If you want load and Example Seed you can use this command.
 
-    >php spark db:seed Daycry\RestServer\Database\Seeds\ExampleSeeder
+    > php spark db:seed Daycry\RestServer\Database\Seeds\ExampleSeeder
 
 More information about install doctrine: https://github.com/daycry/doctrine
 
