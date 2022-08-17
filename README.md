@@ -130,7 +130,7 @@ class Center extends \Daycry\RestServer\RestServer
 Validation function parameters
 
 Fiels | Desctiption
--------- | ------------- | ------- | -----------
+-------- | -----------
 rule | Name of rule
 namespace| Namespace that contains the rule
 getShared | **true** or **false**
