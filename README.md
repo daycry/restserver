@@ -48,7 +48,7 @@ This command create rest server tables in your database.
 
 If you want load and Example Seed you can use this command.
 
-    >php spark db:seed Daycry\RestServer\Database\Seeds\ExampleSeeder
+    > php spark db:seed Daycry\RestServer\Database\Seeds\ExampleSeeder
 
 More information about install doctrine: https://github.com/daycry/doctrine
 
