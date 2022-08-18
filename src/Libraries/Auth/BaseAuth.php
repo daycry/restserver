@@ -136,7 +136,7 @@ abstract class BaseAuth
         }
         // @codeCoverageIgnoreEnd
 
-        $authLibraryFunction = $this->restConfig->authLibraryFunction;
+        //$authLibraryFunction = $this->restConfig->authLibraryFunction;
 
         $authLibraryClass = new $authLibraryClass[ $this->method ]();
 
@@ -145,13 +145,17 @@ abstract class BaseAuth
         }
 
         // @codeCoverageIgnoreStart
-        if (empty($authLibraryFunction)) {
+        /*if (empty($authLibraryFunction)) {
             throw ForbiddenException::forInvalidLibraryImplementation();
-        }
+        }*/
         // @codeCoverageIgnoreEnd
 
-        if (\is_callable([ $authLibraryClass, $authLibraryFunction ])) {
+        /*if (\is_callable([ $authLibraryClass, $authLibraryFunction ])) {
             return $authLibraryClass->{$authLibraryFunction}($username, $password);
+        }*/
+
+        if (\is_callable([ $authLibraryClass, 'validate' ])) {
+            return $authLibraryClass->{'validate'}($username, $password);
         }
     }
 }

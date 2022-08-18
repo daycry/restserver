@@ -17,7 +17,8 @@
         "daycry/settings": "^1.0",
         "daycry/relations": "^2.0",
         "daycry/jwt": "^1.0",
-        "daycry/class-finder": "^2.0"
+        "daycry/class-finder": "^2.0",
+        "daycry/cronjob": "^2.0"
     },
     "require-dev":
     {

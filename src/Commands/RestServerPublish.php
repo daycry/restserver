@@ -11,6 +11,7 @@ class RestServerPublish extends BaseCommand
     protected $group       = 'Rest Server';
     protected $name        = 'restserver:publish';
     protected $description = 'Rest Server config file publisher.';
+    
     /**
      * The path to Daycry\RestServer\src directory.
      *

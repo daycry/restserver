@@ -10,6 +10,80 @@ class ExampleSeeder extends Seeder
     {
         $config = $this->_getConfig();
 
+        $namespace = [
+            [
+                'controller'=> '\App\Controllers\Login',
+                'methods'    => json_encode(array('doLogin'))
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\Hello',
+                'methods'    => json_encode(array('index'))
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\HelloAllCors',
+                'methods'    => json_encode(array('index'))
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\HelloIpAddressLimitNoApi',
+                'methods'    => json_encode(array('index'))
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\HelloBlackListIp',
+                'methods'    => json_encode(array('index'))
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\NoHello',
+                'methods'    => json_encode(array())
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\NoAccess',
+                'methods'    => json_encode(array('index'))
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\HelloAuthBasic',
+                'methods'    => json_encode(array('validateParams'))
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\HelloLimitApiKey',
+                'methods'    => json_encode(array('index'))
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\HelloLimitRoutedUrl',
+                'methods'    => json_encode(array('index'))
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\HelloAuthBasicAjax',
+                'methods'    => json_encode(array('index'))
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\HelloAuthBearer',
+                'methods'    => json_encode(array('index'))
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\HelloAuthCustomBearer',
+                'methods'    => json_encode(array('index'))
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\HelloAuthSession',
+                'methods'    => json_encode(array('index'))
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\HelloAuthDigest',
+                'methods'    => json_encode(array('index'))
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\HelloAuthLibrary',
+                'methods'    => json_encode(array('index'))
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\HelloAuthLibraryError',
+                'methods'    => json_encode(array('index'))
+            ]
+        ];
+
+        // Using Query Builder
+        $this->db->table($config->restNamespaceTable)->insertBatch($namespace);
+
         $petition = [
             [
                 'controller'=> '\App\Controllers\Login',
