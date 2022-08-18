@@ -20,7 +20,7 @@ class CreateNamespaceTable extends Migration
                 'type' => 'varchar',
                 'constraint' => 255,
                 'null' => false
-            ],
+            ]
         ];
 
         $this->forge->modifyColumn($config->configRestPetitionsTable, $field);
