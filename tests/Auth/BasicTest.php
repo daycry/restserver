@@ -21,6 +21,8 @@ class BasicTest extends CIUnitTestCase
     protected $refresh     = true;
     protected $seedOnce = false;
     protected $seed = ExampleSeeder::class;
+    protected $basePath = HOMEPATH . 'src/Database';
+    protected $namespace = 'Daycry\RestServer';
 
     protected $config;
 
@@ -131,18 +133,17 @@ class BasicTest extends CIUnitTestCase
             json_encode(['test' => 'helloauthbasic'])
         )->call('get', 'helloauthbasic?tatiro=taa');
 
-
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(200);
         $this->assertObjectHasAttribute("test", $content);
         $this->assertObjectHasAttribute("auth", $content);
         $this->assertObjectHasAttribute("key", $content);
-        $this->assertObjectHasAttribute("user", $content);
-        $this->assertIsArray($content->user);
-        $this->assertObjectHasAttribute('name', $content->user[0]);
+        $this->assertObjectHasAttribute("ws_users", $content);
+        $this->assertIsArray($content->ws_users);
+        $this->assertObjectHasAttribute('name', $content->ws_users[0]);
         $this->AssertSame("helloauthbasic", $content->test);
-        $this->AssertSame("userSample2", $content->user[0]->name);
+        $this->AssertSame("userSample2", $content->ws_users[0]->name);
         $this->AssertSame("admin", $content->auth);
         $this->AssertSame("1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123", $content->key);
     }
@@ -167,12 +168,12 @@ class BasicTest extends CIUnitTestCase
         $this->assertObjectHasAttribute("auth", $content);
         $this->assertObjectHasAttribute("format", $content);
         $this->assertObjectHasAttribute("key", $content);
-        $this->assertObjectHasAttribute("user", $content);
-        $this->assertIsArray($content->user);
-        $this->assertObjectHasAttribute('name', $content->user[0]);
+        $this->assertObjectHasAttribute("ws_users", $content);
+        $this->assertIsArray($content->ws_users);
+        $this->assertObjectHasAttribute('name', $content->ws_users[0]);
         $this->AssertSame("helloauthbasic", $content->param);
         $this->AssertSame("method", $content->method);
-        $this->AssertSame("userSample2", $content->user[0]->name);
+        $this->AssertSame("userSample2", $content->ws_users[0]->name);
         $this->AssertSame("admin", $content->auth);
         $this->AssertSame("json", $content->format);
         $this->AssertSame("1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123", $content->key);
@@ -273,11 +274,11 @@ class BasicTest extends CIUnitTestCase
         $this->assertObjectHasAttribute("test", $content);
         $this->assertObjectHasAttribute("auth", $content);
         $this->assertObjectHasAttribute("key", $content);
-        $this->assertObjectHasAttribute("user", $content);
-        $this->assertIsArray($content->user);
-        $this->assertObjectHasAttribute('name', $content->user[0]);
+        $this->assertObjectHasAttribute("ws_users", $content);
+        $this->assertIsArray($content->ws_users);
+        $this->assertObjectHasAttribute('name', $content->ws_users[0]);
         $this->AssertSame("helloauthbasicajax", $content->test);
-        $this->AssertSame("userSample2", $content->user[0]->name);
+        $this->AssertSame("userSample2", $content->ws_users[0]->name);
         $this->AssertSame("admin", $content->auth);
         $this->AssertSame("1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123", $content->key);
     }

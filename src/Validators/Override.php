@@ -9,20 +9,46 @@ class Override
 {
     public static function check(RequestInterface $request, Router $router)
     {
-        $petitionModel = new \Daycry\RestServer\Models\PetitionModel();
+        $namespaceModel = new \Daycry\RestServer\Models\NamespaceModel();
 
-        $petition = $petitionModel->where('controller', $router->controllerName())->where('method', $router->methodName())->where('http', $request->getMethod())->first();
+        $namespaces = $namespaceModel->where('controller', $router->controllerName())->first();
 
-        if (!$petition) {
-            $petition = $petitionModel->where('controller', $router->controllerName())->where('method', $router->methodName())->where('http', null)->first();
-            if (!$petition) {
-                $petition = $petitionModel->where('controller', $router->controllerName())->where('method', null)->where('http', $request->getMethod())->first();
-                if (!$petition) {
-                    $petition = $petitionModel->where('controller', $router->controllerName())->where('method', null)->where('http', null)->first();
-                }
+        $requests = ($namespaces->{config('RestServer')->configRestPetitionsTable}) ? $namespaces->{config('RestServer')->configRestPetitionsTable} : [];
+
+        if( !$requests )
+        {
+            return false;
+        }
+
+        $response = null;
+        
+        foreach( $requests as $r )
+        {
+            if( \strtolower($r->method) == \strtolower($router->methodName()) && \strtolower($r->http) == \strtolower($request->getMethod()))
+            {
+                $response = $r;
+                break;
+            }
+
+            if( \strtolower($r->method) == \strtolower($router->methodName()) && $r->http == null)
+            {
+                $response = $r;
+                break;
+            }
+
+            if( \strtolower($r->method) == null && \strtolower($r->http) == \strtolower($request->getMethod()))
+            {
+                $response = $r;
+                break;
+            }
+
+            if( $r->method == null && $r->http == null)
+            {
+                $response = $r;
+                break;
             }
         }
 
-        return $petition;
+        return $response;
     }
 }

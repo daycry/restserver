@@ -6,7 +6,7 @@ use CodeIgniter\Database\Migration;
 
 class CreateAttemptTable extends Migration
 {
-    protected $DBGroup = 'default';
+    //protected $DBGroup = 'default';
 
     public function up()
     {

@@ -6,7 +6,7 @@ use CodeIgniter\Database\Migration;
 
 class CreateRestServerTables extends Migration
 {
-    protected $DBGroup = 'default';
+    //protected $DBGroup = 'default';
 
     public function up()
     {
@@ -73,6 +73,7 @@ class CreateRestServerTables extends Migration
 
         $this->forge->addKey('id', true);
         $this->forge->addKey('deleted_at');
+        $this->forge->addKey($config->userKeyColumn);
         $this->forge->addUniqueKey('name');
         $this->forge->addForeignKey($config->userKeyColumn, $config->restKeysTable, 'id', '', 'CASCADE');
 
@@ -151,7 +152,7 @@ class CreateRestServerTables extends Migration
         // drop constraints first to prevent errors
         if ($this->db->DBDriver != 'SQLite3') { // @phpstan-ignore-line
             $this->forge->dropForeignKey($config->restUsersTable, $config->restUsersTable . '_key_id_foreign');
-            $this->forge->dropForeignKey($config->restAccessTable, $config->restAccessTable . '_api_key_foreign');
+            //$this->forge->dropForeignKey($config->restAccessTable, $config->restAccessTable . '_api_key_foreign');
         }
 
         $this->forge->dropTable($config->configRestPetitionsTable, true);

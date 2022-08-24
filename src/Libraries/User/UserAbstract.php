@@ -9,9 +9,11 @@ use Config\Database;
 
 abstract class UserAbstract extends Model
 {
+    use \Tatter\Relations\Traits\ModelTrait;
+
     protected $DBGroup = 'default';
 
-    protected $table      = 'users';
+    protected $table      = 'ws_users';
 
     protected $primaryKey = 'id';
 
@@ -21,7 +23,7 @@ abstract class UserAbstract extends Model
 
     protected $useSoftDeletes = true;
 
-    protected $allowedFields = [ 'name', 'key_id' ];
+    protected $allowedFields = [ 'name' ];
 
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';

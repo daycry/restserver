@@ -21,6 +21,8 @@ class BlackListIpTest extends CIUnitTestCase
     protected $refresh     = true;
     protected $seedOnce = false;
     protected $seed = ExampleSeeder::class;
+    protected $basePath = HOMEPATH . 'src/Database';
+    protected $namespace = 'Daycry\RestServer';
 
     protected $config;
 

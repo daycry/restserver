@@ -18,7 +18,7 @@ class RestServerPublish extends BaseCommand
      * @var string
      */
     protected $sourcePath;
-    //--------------------------------------------------------------------
+    
     /**
      * Copy config file
      *
@@ -30,7 +30,7 @@ class RestServerPublish extends BaseCommand
         $this->publishConfig();
         CLI::write('Config file was successfully generated.', 'green');
     }
-    //--------------------------------------------------------------------
+    
     /**
      * Determines the current source path from which all other files are located.
      */
@@ -42,7 +42,7 @@ class RestServerPublish extends BaseCommand
             exit();
         }
     }
-    //--------------------------------------------------------------------
+    
     /**
      * Publish config file.
      */
@@ -60,7 +60,7 @@ class RestServerPublish extends BaseCommand
         $content = str_replace('extends BaseConfig', 'extends \Daycry\RestServer\Config\JWT', $content);
         $this->writeFile('Config/JWT.php', $content);
     }
-    //--------------------------------------------------------------------
+    
     /**
      * Write a file, catching any exceptions and showing a nicely formatted error.
      *
@@ -88,5 +88,4 @@ class RestServerPublish extends BaseCommand
         $path = str_replace($appPath, '', $path);
         CLI::write(CLI::color('Created: ', 'yellow') . $path);
     }
-    //--------------------------------------------------------------------
 }

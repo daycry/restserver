@@ -16,11 +16,18 @@ class Access
         if (config('RestServer')->restEnableAccess == true) {
             $return = false;
             $accessModel = new \Daycry\RestServer\Models\AccessModel();
-            $results = $accessModel->setSchema(self::getSchema())->with(config('RestServer')->restKeysTable)->where('api_key', $apiUser->key)->where('controller', $router->controllerName())->findAll();
+            $namespaceModel = new \Daycry\RestServer\Models\NamespaceModel();
+
+            $namespace = $namespaceModel->setSchema(self::getSchema())->where('controller', $router->controllerName())->first();
+
+            if( !$namespace ){
+                return false;
+            }
+
+            $results = $accessModel->setSchema(self::getSchema())->where('namespace_id', $namespace->id)->where('key_id', $apiUser->id)->findAll();
 
             if (!empty($results)) {
                 foreach ($results as $result) {
-                    $result = \Daycry\RestServer\Libraries\Utils::modelAliases($result, config('RestServer')->restKeysTable, 'api_key');
                     if ($result->all_access) {
                         $return = true;
                         break;

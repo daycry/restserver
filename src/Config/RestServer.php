@@ -101,13 +101,9 @@ class RestServer extends BaseConfig
     [
         'basic' => null, // \Daycry\RestServer\Libraries\AuthClass::class
         'digest' => null, // \Daycry\RestServer\Libraries\AuthClass::class
-        'bearer' => null // \Daycry\RestServer\Libraries\AuthClass::class
+        'bearer' => null, // \Daycry\RestServer\Libraries\AuthClass::class
+        'session' => null // \Daycry\RestServer\Libraries\Auth\SessionAuth::class
     ];
-
-    /**
-     * @deprecated, the method name must be 'validate'
-     */
-    //public $authLibraryFunction = 'validate';
 
     /**
     *--------------------------------------------------------------------------
@@ -118,7 +114,7 @@ class RestServer extends BaseConfig
     *
     */
     public bool $restEnableInvalidAttempts = true;
-    public string $restInvalidAttemptsTable = 'ws_attempt';
+    public string $restInvalidAttemptsTable = 'ws_attempts';
     public int $restMaxAttempts = 3;
     public int $restTimeBlocked = 3600;
 
@@ -235,7 +231,7 @@ class RestServer extends BaseConfig
     * The table name in your database that stores API keys
     *
     */
-    public string $restUsersTable = 'ws_user';
+    public string $restUsersTable = 'ws_users';
 
 
     /**
@@ -253,7 +249,7 @@ class RestServer extends BaseConfig
     * The table name in your database that stores API keys
     *
     */
-    public string $restKeysTable = 'ws_key';
+    public string $restKeysTable = 'ws_keys';
     public bool $restEnableKeys = false;
 
     /*
@@ -313,7 +309,7 @@ class RestServer extends BaseConfig
     | table name to match e.g. my_operations
     |
     */
-    public string $configRestPetitionsTable = 'ws_request';
+    public string $configRestPetitionsTable = 'ws_requests';
 
     /*
     |--------------------------------------------------------------------------
@@ -336,7 +332,7 @@ class RestServer extends BaseConfig
     | table name to match e.g. my_logs
     |
     */
-    public string $configRestLogsTable = 'ws_log';
+    public string $configRestLogsTable = 'ws_logs';
 
     /*
     |--------------------------------------------------------------------------
@@ -380,7 +376,7 @@ class RestServer extends BaseConfig
     | table name to match e.g. my_limits
     |
     */
-    public string $restLimitsTable = 'ws_limit';
+    public string $restLimitsTable = 'ws_limits';
 
     /*
     |--------------------------------------------------------------------------
@@ -522,10 +518,11 @@ class RestServer extends BaseConfig
     * Set to TRUE to enable Cronjob for fill the table petitions with your API classes
     * $restNamespaceScope \Namespace\Class or \Namespace\Folder\Class or \Namespace example: \App\Controllers
     *
+    * This feature use Daycry\CronJob vendor
+    * for more information: https://github.com/daycry/cronjob
+    *
     */
-    public bool $restEnableCronjob = true;
-    public string $restNamespaceTable = 'ws_namespace';
+    public string $restApiTable = 'ws_apis';
+    public string $restNamespaceTable = 'ws_namespaces';
     public array $restNamespaceScope = ['\Daycry\JWT'];
-
-
 }

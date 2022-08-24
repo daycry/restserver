@@ -10,74 +10,101 @@ class ExampleSeeder extends Seeder
     {
         $config = $this->_getConfig();
 
+        $api = [
+            [
+                'id' => 1,
+                'url' => 'https://vendor.local'
+            ]
+        ];
+
+        // Using Query Builder
+        $this->db->table($config->restApiTable)->insertBatch($api);
+
         $namespace = [
             [
                 'controller'=> '\App\Controllers\Login',
-                'methods'    => json_encode(array('doLogin'))
+                'api_id'    => 1,
+                'methods'   => json_encode(array('doLogin'))
             ],
             [
                 'controller'=> '\Tests\Support\Controllers\Hello',
-                'methods'    => json_encode(array('index'))
+                'api_id'    => 1,
+                'methods'   => json_encode(array('index'))
             ],
             [
                 'controller'=> '\Tests\Support\Controllers\HelloAllCors',
-                'methods'    => json_encode(array('index'))
+                'api_id'    => 1,
+                'methods'   => json_encode(array('index'))
             ],
             [
                 'controller'=> '\Tests\Support\Controllers\HelloIpAddressLimitNoApi',
-                'methods'    => json_encode(array('index'))
+                'api_id'    => 1,
+                'methods'   => json_encode(array('index'))
             ],
             [
                 'controller'=> '\Tests\Support\Controllers\HelloBlackListIp',
-                'methods'    => json_encode(array('index'))
+                'api_id'    => 1,
+                'methods'   => json_encode(array('index'))
             ],
             [
                 'controller'=> '\Tests\Support\Controllers\NoHello',
-                'methods'    => json_encode(array())
+                'api_id'    => 1,
+                'methods'   => json_encode(array())
             ],
             [
                 'controller'=> '\Tests\Support\Controllers\NoAccess',
-                'methods'    => json_encode(array('index'))
+                'api_id'    => 1,
+                'methods'   => json_encode(array('index'))
             ],
             [
                 'controller'=> '\Tests\Support\Controllers\HelloAuthBasic',
-                'methods'    => json_encode(array('validateParams'))
+                'api_id'    => 1,
+                'methods'   => json_encode(array('validateParams'))
             ],
             [
                 'controller'=> '\Tests\Support\Controllers\HelloLimitApiKey',
-                'methods'    => json_encode(array('index'))
+                'api_id'    => 1,
+                'methods'   => json_encode(array('index'))
             ],
             [
                 'controller'=> '\Tests\Support\Controllers\HelloLimitRoutedUrl',
-                'methods'    => json_encode(array('index'))
+                'api_id'    => 1,
+                'methods'   => json_encode(array('index'))
             ],
             [
                 'controller'=> '\Tests\Support\Controllers\HelloAuthBasicAjax',
-                'methods'    => json_encode(array('index'))
+                'api_id'    => 1,
+                'methods'   => json_encode(array('index'))
             ],
             [
                 'controller'=> '\Tests\Support\Controllers\HelloAuthBearer',
-                'methods'    => json_encode(array('index'))
+                'api_id'    => 1,
+                'methods'   => json_encode(array('index'))
             ],
             [
                 'controller'=> '\Tests\Support\Controllers\HelloAuthCustomBearer',
-                'methods'    => json_encode(array('index'))
+                'api_id'    => 1,
+                'methods'   => json_encode(array('index'))
             ],
             [
                 'controller'=> '\Tests\Support\Controllers\HelloAuthSession',
-                'methods'    => json_encode(array('index'))
+                'api_id'    => 1,
+                'methods'   => json_encode(array('index'))
             ],
             [
                 'controller'=> '\Tests\Support\Controllers\HelloAuthDigest',
-                'methods'    => json_encode(array('index'))
+                'api_id'    => 1,
+                'methods'   => json_encode(array('index'))
             ],
             [
                 'controller'=> '\Tests\Support\Controllers\HelloAuthLibrary',
-                'methods'    => json_encode(array('index'))
+                'api_id'    => 1,
+                'methods'   => json_encode(array('index'))
             ],
             [
                 'controller'=> '\Tests\Support\Controllers\HelloAuthLibraryError',
-                'methods'    => json_encode(array('index'))
+                'api_id'    => 1,
+                'methods'   => json_encode(array('index'))
             ]
         ];
 
@@ -86,7 +113,7 @@ class ExampleSeeder extends Seeder
 
         $petition = [
             [
-                'controller'=> '\App\Controllers\Login',
+                'namespace_id'=> 1,
                 'method'    => 'doLogin',
                 'http'      => 'POST',
                 'auth'      => null,
@@ -96,7 +123,7 @@ class ExampleSeeder extends Seeder
                 'level'     => 10
             ],
             [
-                'controller'=> '\Tests\Support\Controllers\Hello',
+                'namespace_id'=> 2,
                 'method'    => 'index',
                 'http'      => null,
                 'auth'      => null,
@@ -106,7 +133,7 @@ class ExampleSeeder extends Seeder
                 'level'     => 10
             ],
             [
-                'controller'=> '\Tests\Support\Controllers\HelloAllCors',
+                'namespace_id'=> 3,
                 'method'    => 'index',
                 'http'      => null,
                 'auth'      => null,
@@ -116,7 +143,7 @@ class ExampleSeeder extends Seeder
                 'level'     => 10
             ],
             [
-                'controller'=> '\Tests\Support\Controllers\HelloIpAddressLimitNoApi',
+                'namespace_id'=> 4,
                 'method'    => 'index',
                 'http'      => null,
                 'auth'      => null,
@@ -126,7 +153,7 @@ class ExampleSeeder extends Seeder
                 'level'     => 10
             ],
             [
-                'controller'=> '\Tests\Support\Controllers\HelloBlackListIp',
+                'namespace_id'=> 5,
                 'method'    => 'index',
                 'http'      => null,
                 'auth'      => null,
@@ -136,7 +163,7 @@ class ExampleSeeder extends Seeder
                 'level'     => 10
             ],
             [
-                'controller'=> '\Tests\Support\Controllers\NoHello',
+                'namespace_id'=> 6,
                 'method'    => null,
                 'http'      => null,
                 'auth'      => null,
@@ -146,7 +173,7 @@ class ExampleSeeder extends Seeder
                 'level'     => 10
             ],
             [
-                'controller'=> '\Tests\Support\Controllers\NoAccess',
+                'namespace_id'=> 7,
                 'method'    => 'index',
                 'http'      => 'GET',
                 'auth'      => null,
@@ -156,7 +183,7 @@ class ExampleSeeder extends Seeder
                 'level'     => 10
             ],
             [
-                'controller'=> '\Tests\Support\Controllers\HelloAuthBasic',
+                'namespace_id'=> 8,
                 'method'    => 'validateParams',
                 'http'      => 'GET',
                 'auth'      => 'basic',
@@ -166,7 +193,7 @@ class ExampleSeeder extends Seeder
                 'level'     => 10
             ],
             [
-                'controller'=> '\Tests\Support\Controllers\HelloAuthBasic',
+                'namespace_id'=> 8,
                 'method'    => 'index',
                 'http'      => 'GET',
                 'auth'      => 'basic',
@@ -176,7 +203,7 @@ class ExampleSeeder extends Seeder
                 'level'     => 10
             ],
             [
-                'controller'=> '\Tests\Support\Controllers\HelloLimitApiKey',
+                'namespace_id'=> 9,
                 'method'    => 'index',
                 'http'      => 'GET',
                 'auth'      => null,
@@ -186,7 +213,7 @@ class ExampleSeeder extends Seeder
                 'level'     => 10
             ],
             [
-                'controller'=> '\Tests\Support\Controllers\HelloLimitRoutedUrl',
+                'namespace_id'=> 10,
                 'method'    => 'index',
                 'http'      => 'GET',
                 'auth'      => null,
@@ -196,7 +223,7 @@ class ExampleSeeder extends Seeder
                 'level'     => 10
             ],
             [
-                'controller'=> '\Tests\Support\Controllers\HelloAuthBasicAjax',
+                'namespace_id'=> 11,
                 'method'    => 'index',
                 'http'      => 'GET',
                 'auth'      => 'basic',
@@ -206,7 +233,7 @@ class ExampleSeeder extends Seeder
                 'level'     => 10
             ],
             [
-                'controller'=> '\Tests\Support\Controllers\HelloAuthBearer',
+                'namespace_id'=> 12,
                 'method'    => 'index',
                 'http'      => 'GET',
                 'auth'      => 'bearer',
@@ -216,7 +243,7 @@ class ExampleSeeder extends Seeder
                 'level'     => 10
             ],
             [
-                'controller'=> '\Tests\Support\Controllers\HelloAuthCustomBearer',
+                'namespace_id'=> 13,
                 'method'    => 'index',
                 'http'      => 'GET',
                 'auth'      => 'bearer',
@@ -226,7 +253,7 @@ class ExampleSeeder extends Seeder
                 'level'     => 10
             ],
             [
-                'controller'=> '\Tests\Support\Controllers\HelloAuthSession',
+                'namespace_id'=> 14,
                 'method'    => 'index',
                 'http'      => 'GET',
                 'auth'      => 'session',
@@ -236,7 +263,7 @@ class ExampleSeeder extends Seeder
                 'level'     => 10
             ],
             [
-                'controller'=> '\Tests\Support\Controllers\HelloAuthDigest',
+                'namespace_id'=> 15,
                 'method'    => 'index',
                 'http'      => 'GET',
                 'auth'      => 'digest',
@@ -246,7 +273,7 @@ class ExampleSeeder extends Seeder
                 'level'     => 10
             ],
             [
-                'controller'=> '\Tests\Support\Controllers\HelloAuthLibrary',
+                'namespace_id'=> 16,
                 'method'    => 'index',
                 'http'      => 'GET',
                 'auth'      => 'basic',
@@ -256,7 +283,7 @@ class ExampleSeeder extends Seeder
                 'level'     => 10
             ],
             [
-                'controller'=> '\Tests\Support\Controllers\HelloAuthLibraryError',
+                'namespace_id'=> 17,
                 'method'    => 'index',
                 'http'      => 'GET',
                 'auth'      => 'basic',
@@ -303,7 +330,7 @@ class ExampleSeeder extends Seeder
                 'uri'  => 'api-key:wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',
                 'count'                 => '10',
                 'hour_started'        => 1459537345,
-                'api_key'          => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg'
+                'key_id'          => 1
             ]
         ];
 
@@ -336,99 +363,99 @@ class ExampleSeeder extends Seeder
 
         $access = [
             [
-                'api_key'       => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',
+                'key_id'       => 1,
                 'all_access'    => 1,
-                'controller'    => '\Tests\Support\Controllers\Hello',
+                'namespace_id'    => 2,
                 'method'        => null
             ],
             [
-                'api_key'       => '4568go0csckk8cckgw4kk40g4c4s0ckkcscgg456',
+                'key_id'       => 3,
                 'all_access'    => 1,
-                'controller'    => '\Tests\Support\Controllers\Hello',
+                'namespace_id'    => 2,
                 'method'        => null
             ],
             [
-                'api_key'       => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',
+                'key_id'       => 1,
                 'all_access'    => 1,
-                'controller'    => '\Tests\Support\Controllers\HelloBlackListIp',
+                'namespace_id'    => 5,
                 'method'        => null
             ],
             [
-                'api_key'       => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',
+                'key_id'       => 1,
                 'all_access'    => 1,
-                'controller'    => '\Tests\Support\Controllers\HelloLimitApiKey',
+                'namespace_id'    => 9,
                 'method'        => null
             ],
             [
-                'api_key'       => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',
+                'key_id'       => 1,
                 'all_access'    => 1,
-                'controller'    => '\Tests\Support\Controllers\HelloLimitRoutedUrl',
+                'namespace_id'    => 10,
                 'method'        => null
             ],
             [
-                'api_key'       => 'wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',
+                'key_id'       => 1,
                 'all_access'    => 0,
-                'controller'    => '\Tests\Support\Controllers\NoHello',
+                'namespace_id'    => 6,
                 'method'        => 'index'
             ],
             [
-                'api_key'       => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
+                'key_id'       => 2,
                 'all_access'    => 0,
-                'controller'    => '\Tests\Support\Controllers\HelloAuthBasic',
+                'namespace_id'    => 8,
                 'method'        => 'index'
             ],
             [
-                'api_key'       => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
+                'key_id'       => 2,
                 'all_access'    => 0,
-                'controller'    => '\Tests\Support\Controllers\HelloAuthBasic',
+                'namespace_id'    => 8,
                 'method'        => 'validateParams'
             ],
             [
-                'api_key'       => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
+                'key_id'       => 2,
                 'all_access'    => 0,
-                'controller'    => '\Tests\Support\Controllers\HelloAuthBasicAjax',
+                'namespace_id'    => 11,
                 'method'        => 'index'
             ],
             [
-                'api_key'       => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
+                'key_id'       => 2,
                 'all_access'    => 0,
-                'controller'    => '\Tests\Support\Controllers\HelloAuthBasic',
+                'namespace_id'    => 8,
                 'method'        => 'invalid'
             ],
             [
-                'api_key'       => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
+                'key_id'       => 2,
                 'all_access'    => 0,
-                'controller'    => '\Tests\Support\Controllers\HelloAuthBearer',
+                'namespace_id'    => 12,
                 'method'        => 'index'
             ],
             [
-                'api_key'       => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
+                'key_id'       => 2,
                 'all_access'    => 0,
-                'controller'    => '\Tests\Support\Controllers\HelloAuthCustomBearer',
+                'namespace_id'    => 13,
                 'method'        => 'index'
             ],
             [
-                'api_key'       => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
+                'key_id'       => 2,
                 'all_access'    => 0,
-                'controller'    => '\Tests\Support\Controllers\HelloAuthSession',
+                'namespace_id'    => 14,
                 'method'        => 'index'
             ],
             [
-                'api_key'       => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
+                'key_id'       => 2,
                 'all_access'    => 0,
-                'controller'    => '\Tests\Support\Controllers\HelloAuthDigest',
+                'namespace_id'    => 15,
                 'method'        => 'index'
             ],
             [
-                'api_key'       => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
+                'key_id'       => 2,
                 'all_access'    => 0,
-                'controller'    => '\Tests\Support\Controllers\HelloAuthLibrary',
+                'namespace_id'    => 16,
                 'method'        => 'index'
             ],
             [
-                'api_key'       => '1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123',
+                'key_id'       => 2,
                 'all_access'    => 0,
-                'controller'    => '\Tests\Support\Controllers\HelloAuthLibraryError',
+                'namespace_id'    => 17,
                 'method'        => 'index'
             ]
         ];

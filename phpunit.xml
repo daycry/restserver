@@ -18,11 +18,13 @@
 		</include>
 		<exclude>
 			<directory suffix=".php">./src/Config</directory>
+			<directory suffix=".php">./src/Entities</directory>
 			<directory suffix=".php">./src/Commands</directory>
 			<directory suffix=".php">./src/Database</directory>
 			<directory suffix=".php">./src/Libraries/User</directory>
 			<directory suffix=".php">./src/Interfaces</directory>
 			<file>./src/Libraries/CheckIp.php</file>
+			<file>./src/Libraries/Utils.php</file>
 			<file>./src/Exceptions/UserException.php</file>
 		</exclude>
 		<report>
@@ -43,14 +45,14 @@
 		<junit outputFile="build/logs/logfile.xml"/>
 	</logging>
 	<php>
-		<server name="app.baseURL" value="http://example.com/"/>
+		<server name="app.baseURL" value="https://vendor.local/"/>
 		<env name="app.appTimezone" value="Europe/Madrid" force="true"/>
 		<!-- Directory containing phpunit.xml -->
 		<const name="HOMEPATH" value="./"/>
 		<!-- Directory containing the Paths config file -->
 		<const name="CONFIGPATH" value="./vendor/codeigniter4/framework/app/Config/"/>
 		<!-- Directory containing the front controller (index.php) -->
-		<const name="PUBLICPATH" value="./public/"/>
+		<const name="PUBLICPATH" value="./vendor/codeigniter4/framework/public/"/>
 		<!-- Database configuration -->
 		<!-- <env name="database.tests.hostname" value="localhost" force="true"/> -->
 		<env name="database.default.database" value="web_service_tests" force="true"/>

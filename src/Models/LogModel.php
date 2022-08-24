@@ -13,13 +13,13 @@ class LogModel extends Model
 
     protected $DBGroup = 'default';
 
-    protected $table      = 'logs';
+    protected $table      = 'ws_logs';
 
     protected $primaryKey = 'id';
 
     protected $useAutoIncrement = true;
 
-    protected $returnType     = 'object';
+    protected $returnType     = \Daycry\RestServer\Entities\LogEntity::class;
 
     protected $useSoftDeletes = true;
 
