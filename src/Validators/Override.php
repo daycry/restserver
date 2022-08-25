@@ -18,7 +18,7 @@ class Override
         $requests = ($namespace->{config('RestServer')->configRestPetitionsTable}) ? $namespace->{config('RestServer')->configRestPetitionsTable} : [];
 
         if (!$requests) {
-            return false;
+            return null;
         }
 
         $response = null;
