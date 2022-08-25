@@ -301,9 +301,9 @@ Or creating a cronjob tasks editing **CronJob.php** config file like this.
     */
     public function init(Scheduler $schedule)
     {
-        $schedule->command('restserver:discover')->named('discoverRestserver')->dayly();
+        $schedule->command('restserver:discover')->named('discoverRestserver')->daily();
         or
-        $schedule->command('restserver:discover')->named('discoverRestserver')->dayly('11:30 am');
+        $schedule->command('restserver:discover')->named('discoverRestserver')->daily('11:30 am');
     }
 ```
 
