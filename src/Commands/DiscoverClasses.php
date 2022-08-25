@@ -41,12 +41,13 @@ class DiscoverClasses extends BaseCommand
                         $methods = $this->_getMethodsFromCLass($class);
 
                         foreach ($methods as $key => $value) {
-                            if (strpos($value, '__') !== false) {
+                            if ($value[0] == '_') {
                                 unset($methods[$key]);
                             }
                         }
 
                         $class = (mb_substr($class, 0, 1) !== '\\') ? '\\' . $class : $class;
+
                         $this->_checkClassNamespace($api, $class, $methods);
                     }
 
@@ -99,8 +100,15 @@ class DiscoverClasses extends BaseCommand
 
     private function _getMethodsFromCLass($namespace): array
     {
-        $methods = get_class_methods($namespace);
-        return ($methods) ? $methods : [];
+        $f = new \ReflectionClass($namespace);
+        $methods = array();
+        foreach ($f->getMethods() as $m) {
+            if ($m->class == $namespace) {
+                $methods[] = $m->name;
+            }
+        }
+
+        return $methods;
     }
 
     private function _checkClassNamespace(\Daycry\RestServer\Entities\ApiEntity $api, string $class, array $methods = [])
@@ -117,10 +125,9 @@ class DiscoverClasses extends BaseCommand
                 }
                 // @codeCoverageIgnoreEnd
 
-                $namespace->fill(array( 'checked_at' => (new DateTime('now'))->format('Y-m-d H:i:s') ));
-                $namespaceModel->save($namespace);
-
                 if ($namespace->controller == $class) {
+                    $namespace->fill(array( 'checked_at' => (new DateTime('now'))->format('Y-m-d H:i:s'), 'methods' => $methods) );
+                    $namespaceModel->save($namespace);
                     $found = true;
                     break;
                 }
@@ -130,7 +137,7 @@ class DiscoverClasses extends BaseCommand
 
         if (!$found) {
             $namespace = new \Daycry\RestServer\Entities\NamespaceEntity();
-            $namespace = $namespace->setController($class);//->setMethods($methods);
+            $namespace = $namespace->setController($class);
             $namespace->methods = $methods;
             $namespace->api_id = $api->id;
             $namespaceModel->save($namespace);
