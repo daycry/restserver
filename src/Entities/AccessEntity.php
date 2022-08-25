@@ -12,11 +12,13 @@ class AccessEntity extends Entity
     use EntityTrait;
     use Schema;
 
+    protected $DBGroup = 'default';
     protected $table      = 'ws_access';
     protected $primaryKey = 'id';
 
     public function __construct(?array $data = null)
     {
+        $this->DBGroup = config('RestServer')->restDatabaseGroup;
         $this->table = config('RestServer')->restAccessTable;
 
         parent::__construct($data);

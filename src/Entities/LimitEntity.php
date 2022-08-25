@@ -12,11 +12,13 @@ class LimitEntity extends Entity
     use EntityTrait;
     use Schema;
 
+    protected $DBGroup = 'default';
     protected $table      = 'ws_limits';
     protected $primaryKey = 'id';
 
     public function __construct(?array $data = null)
     {
+        $this->DBGroup = config('RestServer')->restDatabaseGroup;
         $this->table = config('RestServer')->restLimitsTable;
 
         parent::__construct($data);

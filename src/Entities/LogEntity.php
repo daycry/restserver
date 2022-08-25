@@ -12,11 +12,13 @@ class LogEntity extends Entity
     use EntityTrait;
     use Schema;
 
+    protected $DBGroup = 'default';
     protected $table      = 'ws_logs';
     protected $primaryKey = 'id';
 
     public function __construct(?array $data = null)
     {
+        $this->DBGroup = config('RestServer')->restDatabaseGroup;
         $this->table = config('RestServer')->configRestLogsTable;
 
         parent::__construct($data);

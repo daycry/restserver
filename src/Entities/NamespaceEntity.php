@@ -12,6 +12,7 @@ class NamespaceEntity extends Entity
     use EntityTrait;
     use Schema;
 
+    protected $DBGroup = 'default';
     protected $table      = 'ws_namespace';
     protected $primaryKey = 'id';
 
@@ -21,6 +22,7 @@ class NamespaceEntity extends Entity
 
     public function __construct(?array $data = null)
     {
+        $this->DBGroup = config('RestServer')->restDatabaseGroup;
         $this->table = config('RestServer')->restNamespaceTable;
 
         parent::__construct($data);
