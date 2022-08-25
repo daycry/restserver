@@ -49,11 +49,10 @@ class AccessModel extends Model
     /**
      * @codeCoverageIgnore
      */
-    public function addFieldAllowedFields( string $field) :AccessModel
+    public function addFieldAllowedFields(string $field): AccessModel
     {
-        if( !in_array($field, $this->allowedFields) )
-        {
-            array_push( $this->allowedFields, $field );
+        if (!in_array($field, $this->allowedFields)) {
+            array_push($this->allowedFields, $field);
         }
 
         return $this;

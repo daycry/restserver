@@ -12,7 +12,7 @@ class DiscoverClasses extends BaseCommand
     protected $group       = 'Rest Server';
     protected $name        = 'restserver:discover';
     protected $description = 'Discover classes from namespace to import in database.';
-    
+
     protected Datetime $timeStart;
     protected BaseConfig $config;
     protected array $allClasses = [];
@@ -23,36 +23,30 @@ class DiscoverClasses extends BaseCommand
 
         $this->config = config('RestServer');
 
-        if( !empty($this->config->restNamespaceScope ) )
-        {
+        if (!empty($this->config->restNamespaceScope)) {
             $finderConfig = config('ClassFinder');
             $finderConfig->finder['files'] = false;
 
             $api = $this->_checkApiModel();
 
-            foreach( $this->config->restNamespaceScope as $namespace )
-            {
+            foreach ($this->config->restNamespaceScope as $namespace) {
                 //remove "\" for search in class-finder
-                $namespace = ( mb_substr($namespace, 0, 1) == '\\' ) ? mb_substr($namespace, 1) : $namespace;
+                $namespace = (mb_substr($namespace, 0, 1) == '\\') ? mb_substr($namespace, 1) : $namespace;
 
                 $classes = (new \Daycry\ClassFinder\ClassFinder($finderConfig))->getClassesInNamespace($namespace);
-                if( $classes )
-                {
-                    foreach( $classes as $class )
-                    {
+                if ($classes) {
+                    foreach ($classes as $class) {
                         \array_push($this->allClasses, '\\' . $class);
 
                         $methods = $this->_getMethodsFromCLass($class);
 
-                        foreach( $methods as $key => $value )
-                        {
-                            if( strpos( $value, '__' ) !== false )
-                            {
+                        foreach ($methods as $key => $value) {
+                            if (strpos($value, '__') !== false) {
                                 unset($methods[$key]);
                             }
                         }
 
-                        $class = ( mb_substr($class, 0, 1) !== '\\' ) ? '\\' . $class : $class;
+                        $class = (mb_substr($class, 0, 1) !== '\\') ? '\\' . $class : $class;
                         $this->_checkClassNamespace($api, $class, $methods);
                     }
 
@@ -63,22 +57,18 @@ class DiscoverClasses extends BaseCommand
             //removing obsolet namespaces
             $namespaceModel = new \Daycry\RestServer\Models\NamespaceModel();
             $namespaces = ($api->{$this->config->restNamespaceTable}) ? $api->{$this->config->restNamespaceTable} : [];
-            foreach( $namespaces as $n )
-            {
+            foreach ($namespaces as $n) {
                 // @codeCoverageIgnoreStart
-                if( !$n instanceof \Daycry\RestServer\Entities\NamespaceEntity )
-                {
+                if (!$n instanceof \Daycry\RestServer\Entities\NamespaceEntity) {
                     $n = new \Daycry\RestServer\Entities\NamespaceEntity((array)$n);
                 }
                 // @codeCoverageIgnoreEnd
 
-                if(!\in_array( $n->controller, $this->allClasses))
-                {
+                if (!\in_array($n->controller, $this->allClasses)) {
                     $requestModel = new \Daycry\RestServer\Models\PetitionModel();
                     $availableRequest = ($n->{$this->config->configRestPetitionsTable}) ? $n->{$this->config->configRestPetitionsTable} : [];
 
-                    foreach( $availableRequest as $r )
-                    {
+                    foreach ($availableRequest as $r) {
                         $requestModel->delete($r->id);
                     }
                     $namespaceModel->delete($n->id);
@@ -86,21 +76,20 @@ class DiscoverClasses extends BaseCommand
             }
         }
 
-        CLI::write( '**** FINISHED. ****', 'white', 'green' );
+        CLI::write('**** FINISHED. ****', 'white', 'green');
     }
 
-    private function _checkApiModel() :?\Daycry\RestServer\Entities\ApiEntity
+    private function _checkApiModel(): ?\Daycry\RestServer\Entities\ApiEntity
     {
         $apiModel = new \Daycry\RestServer\Models\ApiModel();
         $api = $apiModel->where('url', site_url())->first();
 
-        if( !$api )
-        {
+        if (!$api) {
             $api = new \Daycry\RestServer\Entities\ApiEntity();
-            $api->fill( array('url' => site_url()) );
+            $api->fill(array('url' => site_url()));
             $apiModel->save($api);
             $api->id = $apiModel->getInsertID();
-        }else{
+        } else {
             $api->fill(array( 'checked_at' => (new DateTime('now'))->format('Y-m-d H:i:s') ));
             $apiModel->save($api);
         }
@@ -108,25 +97,22 @@ class DiscoverClasses extends BaseCommand
         return $api;
     }
 
-    private function _getMethodsFromCLass($namespace) :array
+    private function _getMethodsFromCLass($namespace): array
     {
         $methods = get_class_methods($namespace);
-        return ( $methods ) ? $methods : [];
+        return ($methods) ? $methods : [];
     }
 
-    private function _checkClassNamespace( \Daycry\RestServer\Entities\ApiEntity $api, string $class, array $methods = [] )
+    private function _checkClassNamespace(\Daycry\RestServer\Entities\ApiEntity $api, string $class, array $methods = [])
     {
         $namespaceModel = new \Daycry\RestServer\Models\NamespaceModel();
 
         $found = false;
         $namespaces = $api->{$this->config->restNamespaceTable};
-        if( $namespaces )
-        {
-            foreach( $namespaces as $namespace )
-            {
+        if ($namespaces) {
+            foreach ($namespaces as $namespace) {
                 // @codeCoverageIgnoreStart
-                if( !$namespace instanceof \Daycry\RestServer\Entities\NamespaceEntity )
-                {
+                if (!$namespace instanceof \Daycry\RestServer\Entities\NamespaceEntity) {
                     $namespace = new \Daycry\RestServer\Entities\NamespaceEntity((array)$namespace);
                 }
                 // @codeCoverageIgnoreEnd
@@ -134,8 +120,7 @@ class DiscoverClasses extends BaseCommand
                 $namespace->fill(array( 'checked_at' => (new DateTime('now'))->format('Y-m-d H:i:s') ));
                 $namespaceModel->save($namespace);
 
-                if( $namespace->controller == $class )
-                {
+                if ($namespace->controller == $class) {
                     $found = true;
                     break;
                 }
@@ -143,25 +128,22 @@ class DiscoverClasses extends BaseCommand
             unset($namespaces);
         }
 
-        if( !$found)
-        {
+        if (!$found) {
             $namespace = new \Daycry\RestServer\Entities\NamespaceEntity();
             $namespace = $namespace->setController($class);//->setMethods($methods);
             $namespace->methods = $methods;
             $namespace->api_id = $api->id;
             $namespaceModel->save($namespace);
-        }else{
+        } else {
             $availableRequest = ($namespace->{$this->config->configRestPetitionsTable}) ? $namespace->{$this->config->configRestPetitionsTable} : [];
             $requestModel = new \Daycry\RestServer\Models\PetitionModel();
 
-            foreach( $availableRequest as $request )
-            {
-                if( $request->method === null || \in_array( $request->method, $methods) )
-                {
+            foreach ($availableRequest as $request) {
+                if ($request->method === null || \in_array($request->method, $methods)) {
                     $request->checked_at = (new DateTime('now'))->format('Y-m-d H:i:s');
-                    $requestModel->save( $request );
-                }else{
-                    $requestModel->delete( $request->id );
+                    $requestModel->save($request);
+                } else {
+                    $requestModel->delete($request->id);
                 }
             }
         }

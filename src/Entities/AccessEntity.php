@@ -9,7 +9,8 @@ use Daycry\RestServer\Traits\Schema;
 
 class AccessEntity extends Entity
 {
-    use EntityTrait, Schema;
+    use EntityTrait;
+    use Schema;
 
     protected $table      = 'ws_access';
     protected $primaryKey = 'id';

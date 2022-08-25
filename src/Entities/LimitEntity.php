@@ -9,7 +9,8 @@ use Daycry\RestServer\Traits\Schema;
 
 class LimitEntity extends Entity
 {
-    use EntityTrait, Schema;
+    use EntityTrait;
+    use Schema;
 
     protected $table      = 'ws_limits';
     protected $primaryKey = 'id';

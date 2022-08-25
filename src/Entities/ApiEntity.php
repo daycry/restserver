@@ -9,7 +9,8 @@ use Daycry\RestServer\Traits\Schema;
 
 class ApiEntity extends Entity
 {
-    use EntityTrait, Schema;
+    use EntityTrait;
+    use Schema;
 
     protected $table      = 'ws_apis';
     protected $primaryKey = 'id';

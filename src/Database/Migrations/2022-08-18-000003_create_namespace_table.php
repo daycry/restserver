@@ -19,11 +19,11 @@ class CreateNamespaceTable extends Migration
         $allRequests = array();
 
         $apiModel = new \Daycry\RestServer\Models\ApiModel();
-        $accessModel = (new \Daycry\RestServer\Models\AccessModel())->setAllowedFields( [ 'all_access', 'controller', 'api_key' ] );
+        $accessModel = (new \Daycry\RestServer\Models\AccessModel())->setAllowedFields([ 'all_access', 'controller', 'api_key' ]);
         $keyModel = new \Daycry\RestServer\Models\KeyModel();
         $namespaceModel = new \Daycry\RestServer\Models\NamespaceModel();
         $requestModel = new \Daycry\RestServer\Models\PetitionModel();
-        $limitModel = (new \Daycry\RestServer\Models\LimitModel())->setAllowedFields( [ 'uri', 'count', 'hour_started', 'api_key' ] );
+        $limitModel = (new \Daycry\RestServer\Models\LimitModel())->setAllowedFields([ 'uri', 'count', 'hour_started', 'api_key' ]);
 
         /*
          * Namespace Table
@@ -71,10 +71,9 @@ class CreateNamespaceTable extends Migration
         //migration for new estructure
         $requests = $requestModel->findAll();
 
-        foreach($requests as $request)
-        {
+        foreach ($requests as $request) {
             $namespaceEntity = new \Daycry\RestServer\Entities\NamespaceEntity();
-            $namespaceEntity->fill( array( 'api_id' => $apiId, 'controller' => $request->controller ) );
+            $namespaceEntity->fill(array( 'api_id' => $apiId, 'controller' => $request->controller ));
             $namespaceModel->save($namespaceEntity);
             $id = $namespaceModel->getInsertID();
             $allRequests[$id] = $request->controller;
@@ -84,7 +83,7 @@ class CreateNamespaceTable extends Migration
 
         /*
          * Request Table
-         */ 
+         */
         $field = [
             'controller' => [
                 'name' => 'namespace_id',
@@ -110,14 +109,12 @@ class CreateNamespaceTable extends Migration
         //migration for new estructure
         $access = $accessModel->findAll();
 
-        foreach($access as $a)
-        {
-            if( false !== $key = array_search($a->controller, $allRequests) )
-            {
+        foreach ($access as $a) {
+            if (false !== $key = array_search($a->controller, $allRequests)) {
                 $a->controller = $key;
-            }else{
+            } else {
                 $namespaceEntity = new \Daycry\RestServer\Entities\NamespaceEntity();
-                $namespaceEntity->fill( array( 'api_id' => $apiId, 'controller' => $a->controller, 'methods' => [] ) );
+                $namespaceEntity->fill(array( 'api_id' => $apiId, 'controller' => $a->controller, 'methods' => [] ));
                 $namespaceModel->save($namespaceEntity);
                 $id = $namespaceModel->getInsertID();
                 $allRequests[$id] = $a->controller;
@@ -168,11 +165,9 @@ class CreateNamespaceTable extends Migration
         //migration for new estructure
         $limits = $limitModel->findAll();
 
-        foreach($limits as $limit)
-        {
+        foreach ($limits as $limit) {
             $key = $keyModel->where('key', $limit->api_key)->first();
-            if( $key )
-            {
+            if ($key) {
                 $limit->api_key = $key->id;
                 $limitModel->save($limit);
             }

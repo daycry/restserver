@@ -9,7 +9,8 @@ use Daycry\RestServer\Traits\Schema;
 
 class KeyEntity extends Entity
 {
-    use EntityTrait, Schema;
+    use EntityTrait;
+    use Schema;
 
     protected $table      = 'ws_keys';
     protected $primaryKey = 'id';

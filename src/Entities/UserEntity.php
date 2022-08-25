@@ -7,9 +7,10 @@ use CodeIgniter\Entity\Entity;
 use Tatter\Relations\Traits\EntityTrait;
 use Daycry\RestServer\Traits\Schema;
 
-class UserEntity extends Entity 
+class UserEntity extends Entity
 {
-    use EntityTrait, Schema;
+    use EntityTrait;
+    use Schema;
 
     protected $table      = 'ws_users';
     protected $primaryKey = 'id';

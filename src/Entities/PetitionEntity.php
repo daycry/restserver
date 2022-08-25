@@ -7,9 +7,10 @@ use CodeIgniter\Entity\Entity;
 use Tatter\Relations\Traits\EntityTrait;
 use Daycry\RestServer\Traits\Schema;
 
-class PetitionEntity extends Entity 
+class PetitionEntity extends Entity
 {
-    use EntityTrait, Schema;
+    use EntityTrait;
+    use Schema;
 
     protected $table      = 'ws_request';
     protected $primaryKey = 'id';

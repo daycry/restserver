@@ -7,9 +7,10 @@ use CodeIgniter\Entity\Entity;
 use Tatter\Relations\Traits\EntityTrait;
 use Daycry\RestServer\Traits\Schema;
 
-class NamespaceEntity extends Entity 
+class NamespaceEntity extends Entity
 {
-    use EntityTrait, Schema;
+    use EntityTrait;
+    use Schema;
 
     protected $table      = 'ws_namespace';
     protected $primaryKey = 'id';
@@ -29,10 +30,9 @@ class NamespaceEntity extends Entity
 
     public function setController(string $controller)
     {
-        if(mb_substr($controller, 0, 1) !== '\\')
-        {
+        if (mb_substr($controller, 0, 1) !== '\\') {
             $this->attributes['controller'] = '\\' . $controller;
-        }else{
+        } else {
             $this->attributes['controller'] = $controller;
         }
 

@@ -55,10 +55,9 @@ abstract class BaseAuth
         if ($auth_source !== 'library' && $rest_auth === 'bearer') {
             $jwtLibrary = new \Daycry\JWT\JWT();
 
-            try{
+            try {
                 $claims = $jwtLibrary->decode($username);
-            }catch( \Exception $ex)
-            {
+            } catch (\Exception $ex) {
                 return false;
             }
 

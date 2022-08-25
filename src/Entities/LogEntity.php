@@ -9,7 +9,8 @@ use Daycry\RestServer\Traits\Schema;
 
 class LogEntity extends Entity
 {
-    use EntityTrait, Schema;
+    use EntityTrait;
+    use Schema;
 
     protected $table      = 'ws_logs';
     protected $primaryKey = 'id';

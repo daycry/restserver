@@ -458,8 +458,8 @@ class RestServer extends ResourceController
                             $attemptModel->save($attempt);
                         }
                     }
-                }else{
-                    if( $attempt ) {
+                } else {
+                    if ($attempt) {
                         $attemptModel->delete($attempt->id, true);
                     }
                 }

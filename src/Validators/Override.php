@@ -17,42 +17,35 @@ class Override
 
         $requests = ($namespace->{config('RestServer')->configRestPetitionsTable}) ? $namespace->{config('RestServer')->configRestPetitionsTable} : [];
 
-        if( !$requests )
-        {
+        if (!$requests) {
             return false;
         }
 
         $response = null;
-        
-        foreach( $requests as $r )
-        {
+
+        foreach ($requests as $r) {
             // @codeCoverageIgnoreStart
-            if( !$r instanceof PetitionEntity )
-            {
+            if (!$r instanceof PetitionEntity) {
                 $r = new \Daycry\RestServer\Entities\PetitionEntity((array)$r);
             }
             // @codeCoverageIgnoreEnd
-            
-            if( \strtolower($r->method) == \strtolower($router->methodName()) && \strtolower($r->http) == \strtolower($request->getMethod()))
-            {
+
+            if (\strtolower($r->method) == \strtolower($router->methodName()) && \strtolower($r->http) == \strtolower($request->getMethod())) {
                 $response = $r;
                 break;
             }
 
-            if( \strtolower($r->method) == \strtolower($router->methodName()) && $r->http == null)
-            {
+            if (\strtolower($r->method) == \strtolower($router->methodName()) && $r->http == null) {
                 $response = $r;
                 break;
             }
 
-            if( \strtolower($r->method) == null && \strtolower($r->http) == \strtolower($request->getMethod()))
-            {
+            if (\strtolower($r->method) == null && \strtolower($r->http) == \strtolower($request->getMethod())) {
                 $response = $r;
                 break;
             }
 
-            if( $r->method == null && $r->http == null)
-            {
+            if ($r->method == null && $r->http == null) {
                 $response = $r;
                 break;
             }

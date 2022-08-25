@@ -18,7 +18,7 @@ class Access
 
             $namespace = $namespaceModel->where('controller', $router->controllerName())->first();
 
-            if( !$namespace ){
+            if (!$namespace) {
                 return false;
             }
 
