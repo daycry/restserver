@@ -33,7 +33,7 @@ class DiscoverClasses extends BaseCommand
                 //remove "\" for search in class-finder
                 $namespace = (mb_substr($namespace, 0, 1) == '\\') ? mb_substr($namespace, 1) : $namespace;
 
-                $classes = (new \Daycry\ClassFinder\ClassFinder($finderConfig))->getClassesInNamespace($namespace);
+                $classes = (new \Daycry\ClassFinder\ClassFinder($finderConfig))->getClassesInNamespace($namespace, \Daycry\ClassFinder\ClassFinder::RECURSIVE_MODE | \Daycry\ClassFinder\ClassFinder::ALLOW_CLASSES);
                 if ($classes) {
                     foreach ($classes as $class) {
                         \array_push($this->allClasses, '\\' . $class);
