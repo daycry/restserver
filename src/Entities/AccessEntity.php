@@ -4,9 +4,12 @@ namespace Daycry\RestServer\Entities;
 
 use CodeIgniter\Entity\Entity;
 
+use Tatter\Relations\Traits\EntityTrait;
+use Daycry\RestServer\Traits\Schema;
+
 class AccessEntity extends Entity
 {
-    use \Tatter\Relations\Traits\EntityTrait;
+    use EntityTrait, Schema;
 
     protected $table      = 'ws_access';
     protected $primaryKey = 'id';
@@ -16,5 +19,7 @@ class AccessEntity extends Entity
         $this->table = config('RestServer')->restAccessTable;
 
         parent::__construct($data);
+
+        $this->schema = self::getSchema();
     }
 }

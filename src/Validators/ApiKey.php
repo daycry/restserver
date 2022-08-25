@@ -7,8 +7,6 @@ use Daycry\RestServer\Exceptions\UnauthorizedException;
 
 class ApiKey
 {
-    use \Daycry\RestServer\Traits\Schema;
-
     public static function check(RequestInterface $request, object $petition = null, array $args): ?object
     {
         $row = null;
@@ -24,7 +22,7 @@ class ApiKey
             if (($key = isset($args[ config('RestServer')->restKeyName ]) ? $args[ config('RestServer')->restKeyName ] : $request->getHeaderLine(\strtolower(config('RestServer')->restKeyName)))) {
                 $keyModel = new \Daycry\RestServer\Models\KeyModel();
 
-                if (!($row = $keyModel->setSchema(self::getSchema())->where(config('RestServer')->restKeyColumn, $key)->first())) {
+                if (!($row = $keyModel->where(config('RestServer')->restKeyColumn, $key)->first())) {
                     //$authorized = false;
                     return UnauthorizedException::forInvalidApiKey($key);
                 }

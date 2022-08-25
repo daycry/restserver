@@ -7,8 +7,6 @@ use CodeIgniter\Router\Router;
 
 class Access
 {
-    use \Daycry\RestServer\Traits\Schema;
-
     public static function check(RequestInterface $request, Router $router, ?object $apiUser): bool
     {
         $return = true;
@@ -18,13 +16,13 @@ class Access
             $accessModel = new \Daycry\RestServer\Models\AccessModel();
             $namespaceModel = new \Daycry\RestServer\Models\NamespaceModel();
 
-            $namespace = $namespaceModel->setSchema(self::getSchema())->where('controller', $router->controllerName())->first();
+            $namespace = $namespaceModel->where('controller', $router->controllerName())->first();
 
             if( !$namespace ){
                 return false;
             }
 
-            $results = $accessModel->setSchema(self::getSchema())->where('namespace_id', $namespace->id)->where('key_id', $apiUser->id)->findAll();
+            $results = $accessModel->where('namespace_id', $namespace->id)->where('key_id', $apiUser->id)->findAll();
 
             if (!empty($results)) {
                 foreach ($results as $result) {

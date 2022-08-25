@@ -5,15 +5,17 @@ namespace Daycry\RestServer\Validators;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\Router\Router;
 
+use Daycry\RestServer\Entities\PetitionEntity;
+
 class Override
 {
     public static function check(RequestInterface $request, Router $router)
     {
         $namespaceModel = new \Daycry\RestServer\Models\NamespaceModel();
 
-        $namespaces = $namespaceModel->where('controller', $router->controllerName())->first();
+        $namespace = $namespaceModel->where('controller', $router->controllerName())->first();
 
-        $requests = ($namespaces->{config('RestServer')->configRestPetitionsTable}) ? $namespaces->{config('RestServer')->configRestPetitionsTable} : [];
+        $requests = ($namespace->{config('RestServer')->configRestPetitionsTable}) ? $namespace->{config('RestServer')->configRestPetitionsTable} : [];
 
         if( !$requests )
         {
@@ -24,6 +26,13 @@ class Override
         
         foreach( $requests as $r )
         {
+            // @codeCoverageIgnoreStart
+            if( !$r instanceof PetitionEntity )
+            {
+                $r = new \Daycry\RestServer\Entities\PetitionEntity((array)$r);
+            }
+            // @codeCoverageIgnoreEnd
+            
             if( \strtolower($r->method) == \strtolower($router->methodName()) && \strtolower($r->http) == \strtolower($request->getMethod()))
             {
                 $response = $r;

@@ -4,18 +4,27 @@ namespace Daycry\RestServer\Entities;
 
 use CodeIgniter\Entity\Entity;
 
+use Tatter\Relations\Traits\EntityTrait;
+use Daycry\RestServer\Traits\Schema;
+
 class NamespaceEntity extends Entity 
 {
-    use \Tatter\Relations\Traits\EntityTrait;
+    use EntityTrait, Schema;
 
     protected $table      = 'ws_namespace';
     protected $primaryKey = 'id';
+
+    protected $casts = [
+        'methods' => 'json'
+    ];
 
     public function __construct(?array $data = null)
     {
         $this->table = config('RestServer')->restNamespaceTable;
 
         parent::__construct($data);
+
+        $this->schema = self::getSchema();
     }
 
     public function setController(string $controller)
@@ -30,10 +39,10 @@ class NamespaceEntity extends Entity
         return $this;
     }
 
-    public function setMethods(array $methods = [])
+    /*public function setMethods(array $methods = [])
     {
         $this->attributes['methods'] = \json_encode($methods);
 
         return $this;
-    }
+    }*/
 }

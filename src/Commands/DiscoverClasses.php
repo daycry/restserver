@@ -5,13 +5,10 @@ namespace Daycry\RestServer\Commands;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 use CodeIgniter\Config\BaseConfig;
-use \Daycry\RestServer\Traits\Schema;
 use DateTime;
 
 class DiscoverClasses extends BaseCommand
 {
-    use Schema;
-
     protected $group       = 'Rest Server';
     protected $name        = 'restserver:discover';
     protected $description = 'Discover classes from namespace to import in database.';
@@ -68,6 +65,13 @@ class DiscoverClasses extends BaseCommand
             $namespaces = ($api->{$this->config->restNamespaceTable}) ? $api->{$this->config->restNamespaceTable} : [];
             foreach( $namespaces as $n )
             {
+                // @codeCoverageIgnoreStart
+                if( !$n instanceof \Daycry\RestServer\Entities\NamespaceEntity )
+                {
+                    $n = new \Daycry\RestServer\Entities\NamespaceEntity((array)$n);
+                }
+                // @codeCoverageIgnoreEnd
+
                 if(!\in_array( $n->controller, $this->allClasses))
                 {
                     $requestModel = new \Daycry\RestServer\Models\PetitionModel();
@@ -88,7 +92,7 @@ class DiscoverClasses extends BaseCommand
     private function _checkApiModel() :?\Daycry\RestServer\Entities\ApiEntity
     {
         $apiModel = new \Daycry\RestServer\Models\ApiModel();
-        $api = $apiModel->setSchema(self::getSchema())->where('url', site_url())->first();
+        $api = $apiModel->where('url', site_url())->first();
 
         if( !$api )
         {
@@ -120,6 +124,13 @@ class DiscoverClasses extends BaseCommand
         {
             foreach( $namespaces as $namespace )
             {
+                // @codeCoverageIgnoreStart
+                if( !$namespace instanceof \Daycry\RestServer\Entities\NamespaceEntity )
+                {
+                    $namespace = new \Daycry\RestServer\Entities\NamespaceEntity((array)$namespace);
+                }
+                // @codeCoverageIgnoreEnd
+
                 $namespace->fill(array( 'checked_at' => (new DateTime('now'))->format('Y-m-d H:i:s') ));
                 $namespaceModel->save($namespace);
 
@@ -135,7 +146,8 @@ class DiscoverClasses extends BaseCommand
         if( !$found)
         {
             $namespace = new \Daycry\RestServer\Entities\NamespaceEntity();
-            $namespace = $namespace->setController($class)->setMethods($methods);
+            $namespace = $namespace->setController($class);//->setMethods($methods);
+            $namespace->methods = $methods;
             $namespace->api_id = $api->id;
             $namespaceModel->save($namespace);
         }else{
