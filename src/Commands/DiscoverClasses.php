@@ -41,7 +41,7 @@ class DiscoverClasses extends BaseCommand
                         $methods = $this->_getMethodsFromCLass($class);
 
                         foreach ($methods as $key => $value) {
-                            if ($value[0] == '_') {
+                            if ($value[0] == '_' || $value == 'initController') {
                                 unset($methods[$key]);
                             }
                         }
