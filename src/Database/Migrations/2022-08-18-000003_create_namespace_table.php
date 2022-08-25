@@ -16,14 +16,14 @@ class CreateNamespaceTable extends Migration
         $cache = \Config\Services::cache();
         $cache->delete('database-schema-' . config('RestServer')->restDatabaseGroup);
 
-        $allRquests = array();
+        $allRequests = array();
 
         $apiModel = new \Daycry\RestServer\Models\ApiModel();
-        $accessModel = new \Daycry\RestServer\Models\AccessModel();
+        $accessModel = (new \Daycry\RestServer\Models\AccessModel())->setAllowedFields( [ 'all_access', 'controller', 'api_key' ] );
         $keyModel = new \Daycry\RestServer\Models\KeyModel();
         $namespaceModel = new \Daycry\RestServer\Models\NamespaceModel();
         $requestModel = new \Daycry\RestServer\Models\PetitionModel();
-        $limitModel = new \Daycry\RestServer\Models\LimitModel();
+        $limitModel = (new \Daycry\RestServer\Models\LimitModel())->setAllowedFields( [ 'uri', 'count', 'hour_started', 'api_key' ] );
 
         /*
          * Namespace Table
@@ -77,7 +77,7 @@ class CreateNamespaceTable extends Migration
             $namespaceEntity->fill( array( 'api_id' => $apiId, 'controller' => $request->controller ) );
             $namespaceModel->save($namespaceEntity);
             $id = $namespaceModel->getInsertID();
-            $allRquests[$id] = $request->controller;
+            $allRequests[$id] = $request->controller;
             $request->controller = $id;
             $requestModel->save($request);
         }
@@ -112,21 +112,21 @@ class CreateNamespaceTable extends Migration
 
         foreach($access as $a)
         {
-            if( false !== $key = array_search($a->controller, $allRquests) )
+            if( false !== $key = array_search($a->controller, $allRequests) )
             {
                 $a->controller = $key;
             }else{
                 $namespaceEntity = new \Daycry\RestServer\Entities\NamespaceEntity();
-                $namespaceEntity->fill( array( 'api_id' => $apiId, 'controller' => $a->controller ) );
+                $namespaceEntity->fill( array( 'api_id' => $apiId, 'controller' => $a->controller, 'methods' => [] ) );
                 $namespaceModel->save($namespaceEntity);
                 $id = $namespaceModel->getInsertID();
-                $allRquests[$id] = $a->controller;
+                $allRequests[$id] = $a->controller;
                 $a->controller = $id;
             }
 
             $key = $keyModel->where('key', $a->api_key)->first();
-            $a->api_key = $key->id;
 
+            $a->api_key = $key->id;
             $accessModel->save($a);
         }
 
@@ -171,8 +171,11 @@ class CreateNamespaceTable extends Migration
         foreach($limits as $limit)
         {
             $key = $keyModel->where('key', $limit->api_key)->first();
-            $limit->api_key = $key->id;
-            $limitModel->save($limit);
+            if( $key )
+            {
+                $limit->api_key = $key->id;
+                $limitModel->save($limit);
+            }
         }
 
         $field = [

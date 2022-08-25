@@ -45,4 +45,17 @@ class AccessModel extends Model
 
         parent::__construct($db, $validation);
     }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function addFieldAllowedFields( string $field) :AccessModel
+    {
+        if( !in_array($field, $this->allowedFields) )
+        {
+            array_push( $this->allowedFields, $field );
+        }
+
+        return $this;
+    }
 }
