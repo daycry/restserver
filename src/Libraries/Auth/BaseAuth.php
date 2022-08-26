@@ -86,7 +86,6 @@ abstract class BaseAuth
 
         if ($valid_logins[ $username ] !== $password) {
             return false;
-            //throw \Daycry\RestServer\Exceptions\UnauthorizedException::forInvalidCredentials();
         }
 
         return $username;
@@ -135,23 +134,11 @@ abstract class BaseAuth
         }
         // @codeCoverageIgnoreEnd
 
-        //$authLibraryFunction = $this->restConfig->authLibraryFunction;
-
         $authLibraryClass = new $authLibraryClass[ $this->method ]();
 
         if (empty($authLibraryClass) || (!$authLibraryClass instanceof LibraryAuthInterface)) {
             throw ForbiddenException::forInvalidLibraryImplementation();
         }
-
-        // @codeCoverageIgnoreStart
-        /*if (empty($authLibraryFunction)) {
-            throw ForbiddenException::forInvalidLibraryImplementation();
-        }*/
-        // @codeCoverageIgnoreEnd
-
-        /*if (\is_callable([ $authLibraryClass, $authLibraryFunction ])) {
-            return $authLibraryClass->{$authLibraryFunction}($username, $password);
-        }*/
 
         if (\is_callable([ $authLibraryClass, 'validate' ])) {
             return $authLibraryClass->{'validate'}($username, $password);
