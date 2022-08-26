@@ -3,16 +3,28 @@
 namespace Daycry\RestServer\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
+use CodeIgniter\Database\Forge;
 
 class CreateRestServerTables extends Migration
 {
-    //protected $DBGroup = 'default';
+    protected $DBGroup = 'default';
+
+    /**
+     * Constructor.
+     *
+     * @param Forge $forge
+     */
+    public function __construct(?Forge $forge = null)
+    {
+        $config = $this->_getConfig();
+        $this->DBGroup = $config->restDatabaseGroup;
+
+        parent::__construct($forge);
+    }
 
     public function up()
     {
         $config = $this->_getConfig();
-
-        $this->DBGroup = $config->restDatabaseGroup;
 
         /*
          * Petitions
