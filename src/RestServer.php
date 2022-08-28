@@ -232,7 +232,7 @@ class RestServer extends ResourceController
             }
         }
 
-        return false;
+        return null;
     }
 
     protected function validation(String $rules, \Config\Validation $config = null, bool $getShared = true, bool $filter = false)
