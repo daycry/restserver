@@ -23,7 +23,7 @@ class LimitModel extends Model
 
     protected $useSoftDeletes = true;
 
-    protected $allowedFields = [ 'uri', 'count', 'hour_started', 'key_id' ];
+    protected $allowedFields = [ 'uri', 'count', 'hour_started', 'key_id', 'request_id' ];
 
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';

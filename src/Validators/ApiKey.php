@@ -23,7 +23,6 @@ class ApiKey
                 $keyModel = new \Daycry\RestServer\Models\KeyModel();
 
                 if (!($row = $keyModel->where(config('RestServer')->restKeyColumn, $key)->first())) {
-                    //$authorized = false;
                     return UnauthorizedException::forInvalidApiKey($key);
                 }
 

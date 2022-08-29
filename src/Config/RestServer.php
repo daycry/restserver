@@ -237,9 +237,12 @@ class RestServer extends BaseConfig
     /**
      * Class that associates keys to users, you can edit the class for whatever you want
      * The "$userKeyColumn" column is the foreign key of the keys table
+     * The "$userNameColumn" column is the name of user and is unique Ex: name, username
+     * This column is used in apikeyinfo command for extract the  info about api key
      */
     public $userModelClass = \Daycry\RestServer\Models\UserModel::class;
     public $userKeyColumn = 'key_id';
+    public $userNameColumn = 'name';
 
     /**
     *--------------------------------------------------------------------------
@@ -415,7 +418,7 @@ class RestServer extends BaseConfig
     | table name to match e.g. my_access
     |
     */
-    public $restAccessTable = 'ws_access';
+    public $restAccessTable = 'ws_accesses';
 
     /*
     |--------------------------------------------------------------------------

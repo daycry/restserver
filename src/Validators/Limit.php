@@ -61,6 +61,7 @@ class Limit
                 $limit->fill(
                     [
                         'uri'          => $limited_uri,
+                        'request_id'   => $petition->id,
                         'key_id'      => $api_key_id,
                         'count'        => 1,
                         'hour_started' => time()

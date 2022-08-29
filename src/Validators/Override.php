@@ -26,7 +26,7 @@ class Override
         foreach ($requests as $r) {
             // @codeCoverageIgnoreStart
             if (!$r instanceof PetitionEntity) {
-                $r = new \Daycry\RestServer\Entities\PetitionEntity((array)$r);
+                $r = new PetitionEntity((array)$r);
             }
             // @codeCoverageIgnoreEnd
 

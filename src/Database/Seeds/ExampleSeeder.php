@@ -317,6 +317,7 @@ class ExampleSeeder extends Seeder
 
         $limits = [
             [
+                'request_id'                 => '1',
                 'uri'  => 'api-key:wco8go0csckk8cckgw4kk40g4c4s0ckkcscggocg',
                 'count'                 => '10',
                 'hour_started'        => 1459537345,
