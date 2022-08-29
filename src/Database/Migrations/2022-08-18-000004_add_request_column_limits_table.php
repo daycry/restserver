@@ -35,7 +35,7 @@ class AddColumnRequestInLimitsTable extends Migration
                 'type'       => 'int',
                 'constraint' => 11,
                 'unsigned' => true,
-                'null'       => false,
+                'null'       => true,
                 'after'      => 'id'
             ],
         ]);
