@@ -154,19 +154,22 @@ class KeyInfo extends BaseCommand
                     // @codeCoverageIgnoreEnd
 
                     $r = $limit->{$this->config->configRestPetitionsTable};
-                    // @codeCoverageIgnoreStart
-                    if (!$r instanceof PetitionEntity) {
-                        $r = new PetitionEntity((array)$r);
-                    }
-                    // @codeCoverageIgnoreEnd
-
-                    $timeLimit = ( isset( $r->time ) ) ? $r->time : 3600;
-                    if( $limit->count >= $r->limit && $limit->hour_started > (time() - $timeLimit) )
+                    if($r)
                     {
-                        $timeLeft = $this->_getTimeLeft($limit->hour_started - (time() - $timeLimit));
+                        // @codeCoverageIgnoreStart
+                        if (!$r instanceof PetitionEntity) {
+                            $r = new PetitionEntity((array)$r);
+                        }
+                        // @codeCoverageIgnoreEnd
 
-                        $limit->hour_started = date('Y-m-d H:i:s', $limit->hour_started);
-                        array_push( $body, array( $timeLeft, $limit->id, $r->{$this->config->restNamespaceTable}->controller, $limit->uri, $limit->count, $limit->hour_started, $limit->created_at, $limit->updated_at, $limit->deleted_at ) );
+                        $timeLimit = ( isset( $r->time ) ) ? $r->time : 3600;
+                        if( $limit->count >= $r->limit && $limit->hour_started > (time() - $timeLimit) )
+                        {
+                            $timeLeft = $this->_getTimeLeft($limit->hour_started - (time() - $timeLimit));
+
+                            $limit->hour_started = date('Y-m-d H:i:s', $limit->hour_started);
+                            array_push( $body, array( $timeLeft, $limit->id, $r->{$this->config->restNamespaceTable}->controller, $limit->uri, $limit->count, $limit->hour_started, $limit->created_at, $limit->updated_at, $limit->deleted_at ) );
+                        }
                     }
                 }
 
