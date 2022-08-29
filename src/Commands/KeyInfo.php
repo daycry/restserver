@@ -109,25 +109,32 @@ class KeyInfo extends BaseCommand
         }
 
         $body = [];
-        foreach( $row->{$this->config->restAccessTable} as $access)
+        $accesses = $row->{$this->config->restAccessTable};
+
+        if( !$accesses )
         {
-            // @codeCoverageIgnoreStart
-            if (!$access instanceof AccessEntity) {
-                $access = new AccessEntity((array)$access);
+            $this->_printError(lang( 'RestCommand.apiKeyNoAccesses' ));
+        }else{
+            foreach( $row->{$this->config->restAccessTable} as $access)
+            {
+                // @codeCoverageIgnoreStart
+                if (!$access instanceof AccessEntity) {
+                    $access = new AccessEntity((array)$access);
+                }
+                // @codeCoverageIgnoreEnd
+
+                $access->namespace_id = $access->{$this->config->restNamespaceTable}->controller;
+
+                array_push($body, array($access->id, $access->all_access, $access->namespace_id, $access->method, $access->created_at, $access->updated_at, $access->deleted_at));
             }
-            // @codeCoverageIgnoreEnd
 
-            $access->namespace_id = $access->{$this->config->restNamespaceTable}->controller;
+            $columns = $this->_getTableColumns($this->config->restAccessTable);
+            $columns = \array_filter($columns, static function ($element) {
+                return $element !== "key_id";
+            });
 
-            array_push($body, array($access->id, $access->all_access, $access->namespace_id, $access->method, $access->created_at, $access->updated_at, $access->deleted_at));
+            $this->_printTable( $columns, $body);
         }
-
-        $columns = $this->_getTableColumns($this->config->restAccessTable);
-        $columns = \array_filter($columns, static function ($element) {
-            return $element !== "key_id";
-        });
-
-        $this->_printTable( $columns, $body);
     }
 
     private function _getKeyLocks( \Daycry\RestServer\Entities\KeyEntity $row )
@@ -173,13 +180,18 @@ class KeyInfo extends BaseCommand
                     }
                 }
 
-                $columns = $this->_getTableColumns($this->config->restLimitsTable);
-                $columns = \array_filter($columns, static function ($element) {
-                    return $element !== "key_id";
-                });
+                if( !$body )
+                {
+                    $this->_printError(lang( 'RestCommand.apiKeyNoLocks' ));
+                }else{
+                    $columns = $this->_getTableColumns($this->config->restLimitsTable);
+                    $columns = \array_filter($columns, static function ($element) {
+                        return $element !== "key_id";
+                    });
 
-                array_unshift($columns, 'Time Left');
-                $this->_printTable( $columns, $body);
+                    array_unshift($columns, 'Time Left');
+                    $this->_printTable( $columns, $body);
+                }
             }
         }
     }

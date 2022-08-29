@@ -9,6 +9,7 @@ return [
     'apiKeyNoUsers' => 'There are no assigned users',
     'apiKeyNoLocks' => 'There are no locks',
     'apiKeyAccess' => 'Api key access',
+    'apiKeyNoAccesses' => 'There are no accesses',
     'apiKeyDisabled' => 'Api Key control disabled, try to enable \'restEnableKeys\' in Restserver config',
     'apiKeyAccessDisabled' => 'Api Key access disabled, try to enable \'restEnableAccess\' in Restserver config'
 ];
