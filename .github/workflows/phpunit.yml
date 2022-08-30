@@ -38,6 +38,10 @@ jobs:
         php-versions: ['7.4', '8.0']
         db-platforms: ['MySQLi']
         mysql-versions: ['5.7']
+        include:
+          - php-versions: '7.4'
+            db-platforms: MySQLi
+            mysql-versions: '8.0'
 
     services:
       mysql:
