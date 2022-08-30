@@ -42,7 +42,7 @@ class KeyModel extends Model
         }
 
         $this->table = config('RestServer')->restKeysTable;
-        $this->allowedFields = [ config('RestServer')->restKeyColumn, 'level', 'ignore_limits', 'is_private_key' ];
+        $this->allowedFields = [ config('RestServer')->restKeyColumn, 'level', 'ignore_limits', 'is_private_key', 'ip_addresses' ];
 
         parent::__construct($db, $validation);
     }
