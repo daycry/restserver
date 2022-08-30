@@ -6,7 +6,7 @@ use Config\Autoload;
 use CodeIgniter\CLI\CLI;
 use CodeIgniter\CLI\BaseCommand;
 
-class Publish extends BaseCommand
+class RestServerPublish extends BaseCommand
 {
     protected $group       = 'Rest Server';
     protected $name        = 'restserver:publish';
