@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - development
+      - master
     paths:
       - 'src/**.php'
       - 'tests/**.php'
@@ -14,6 +15,7 @@ on:
   pull_request:
     branches:
       - development
+      - master
     paths:
       - 'src/**.php'
       - 'tests/**.php'
