@@ -126,7 +126,7 @@ class DiscoverClasses extends BaseCommand
                 // @codeCoverageIgnoreEnd
 
                 if ($namespace->controller == $class) {
-                    $namespace->fill(array( 'checked_at' => (new DateTime('now'))->format('Y-m-d H:i:s'), 'methods' => $methods) );
+                    $namespace->fill(array( 'checked_at' => (new DateTime('now'))->format('Y-m-d H:i:s'), 'methods' => $methods));
                     $namespaceModel->save($namespace);
                     $found = true;
                     break;

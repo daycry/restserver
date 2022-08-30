@@ -41,7 +41,7 @@ class AddColumnRequestInLimitsTable extends Migration
         ]);
 
         $this->db->query('ALTER TABLE `'.$this->config->restLimitsTable.'` ADD CONSTRAINT `'.$this->config->restLimitsTable.'_request_id_foreign` FOREIGN KEY (`request_id`) REFERENCES `'.$this->config->configRestPetitionsTable.'` (`id`) ON UPDATE RESTRICT ON DELETE CASCADE;');
-        
+
         $cache = \Config\Services::cache();
         $cache->delete('database-schema-' . config('RestServer')->restDatabaseGroup);
     }

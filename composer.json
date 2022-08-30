@@ -49,11 +49,10 @@
         }
     },
     "scripts": {
+        "cs-fixer": [ "vendor/bin/php-cs-fixer fix src", "vendor/bin/php-cs-fixer fix tests" ],
         "test": [
             "Composer\\Config::disableProcessTimeout",
             "vendor/bin/phpunit"
-        ],
-        "cs-fixer": "vendor/bin/php-cs-fixer fix src",
-        "cs-fixer-tests": "vendor/bin/php-cs-fixer fix tests"
+        ]
     }
 }
