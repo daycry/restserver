@@ -3,16 +3,28 @@
 namespace Daycry\RestServer\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
+use CodeIgniter\Database\Forge;
 
 class CreateRestServerTables extends Migration
 {
     protected $DBGroup = 'default';
 
+    /**
+     * Constructor.
+     *
+     * @param Forge $forge
+     */
+    public function __construct(?Forge $forge = null)
+    {
+        $config = $this->_getConfig();
+        $this->DBGroup = $config->restDatabaseGroup;
+
+        parent::__construct($forge);
+    }
+
     public function up()
     {
         $config = $this->_getConfig();
-
-        $this->DBGroup = $config->restDatabaseGroup;
 
         /*
          * Petitions
@@ -73,6 +85,7 @@ class CreateRestServerTables extends Migration
 
         $this->forge->addKey('id', true);
         $this->forge->addKey('deleted_at');
+        $this->forge->addKey($config->userKeyColumn);
         $this->forge->addUniqueKey('name');
         $this->forge->addForeignKey($config->userKeyColumn, $config->restKeysTable, 'id', '', 'CASCADE');
 
@@ -151,7 +164,7 @@ class CreateRestServerTables extends Migration
         // drop constraints first to prevent errors
         if ($this->db->DBDriver != 'SQLite3') { // @phpstan-ignore-line
             $this->forge->dropForeignKey($config->restUsersTable, $config->restUsersTable . '_key_id_foreign');
-            $this->forge->dropForeignKey($config->restAccessTable, $config->restAccessTable . '_api_key_foreign');
+            //$this->forge->dropForeignKey($config->restAccessTable, $config->restAccessTable . '_api_key_foreign');
         }
 
         $this->forge->dropTable($config->configRestPetitionsTable, true);

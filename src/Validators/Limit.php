@@ -17,6 +17,7 @@ class Limit
             }
 
             $api_key = isset($apiUser->key) ? $apiUser->key : null;
+            $api_key_id = isset($apiUser->id) ? $apiUser->id : null;
 
             switch (config('RestServer')->restLimitsMethod) {
                 case 'IP_ADDRESS':
@@ -29,7 +30,7 @@ class Limit
                     break;
 
                 case 'METHOD_NAME':
-                    $limited_uri = 'method-name:' . $petition->controller . '::' . $petition->method;
+                    $limited_uri = 'method-name:' . $petition->{config('RestServer')->restNamespaceTable}->controller . '::' . $petition->method;
                     break;
 
                 case 'ROUTED_URL':
@@ -52,18 +53,22 @@ class Limit
             //$limitModel->setTableName( $this->_restConfig->restLimitsTable );
 
             // Get data about a keys' usage and limit to one row
-            $result = $limitModel->where('uri', $limited_uri)->where('api_key', $api_key)->first();
+            $result = $limitModel->where('uri', $limited_uri)->where('key_id', $api_key_id)->first();
 
             // No calls have been made for this key
             if ($result === null) {
-                $data = [
-                    'uri'          => $limited_uri,
-                    'api_key'      => $api_key,
-                    'count'        => 1,
-                    'hour_started' => time(),
-                ];
+                $limit = new \Daycry\RestServer\Entities\LimitEntity();
+                $limit->fill(
+                    [
+                        'uri'          => $limited_uri,
+                        'request_id'   => $petition->id,
+                        'key_id'      => $api_key_id,
+                        'count'        => 1,
+                        'hour_started' => time()
+                    ]
+                );
 
-                $limitModel->save($data);
+                $limitModel->save($limit);
             }
 
             // Been a time limit (or by default an hour) since they called

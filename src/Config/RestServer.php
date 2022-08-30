@@ -56,14 +56,6 @@ class RestServer extends BaseConfig
     |
     | Note: If 'restAuth' is set to 'session' then change 'authSource' to the name of the session variable
     |
-    */
-    public $authSource = '';
-
-    /*
-    |--------------------------------------------------------------------------
-    | REST Login Class and Function
-    |--------------------------------------------------------------------------
-    |
     | If library authentication is used define the class and function name
     |
     | The function should accept two parameters: class->function($username, $password)
@@ -74,6 +66,7 @@ class RestServer extends BaseConfig
     | e.g: md5('admin:REST API:1234') = '1e957ebc35631ab22d5bd6526bd14ea2'
     |
     */
+    public $authSource = '';
 
     /*
     |--------------------------------------------------------------------------
@@ -108,30 +101,57 @@ class RestServer extends BaseConfig
     [
         'basic' => null, // \Daycry\RestServer\Libraries\AuthClass::class
         'digest' => null, // \Daycry\RestServer\Libraries\AuthClass::class
-        'bearer' => null // \Daycry\RestServer\Libraries\AuthClass::class
+        'bearer' => null, // \Daycry\RestServer\Libraries\AuthClass::class
+        'session' => null // \Daycry\RestServer\Libraries\Auth\SessionAuth::class
     ];
 
-    public $authLibraryFunction = 'validate';
+    /**
+    *--------------------------------------------------------------------------
+    * Enable block Invalid Attempts
+    *--------------------------------------------------------------------------
+    *
+    * IP blocking on consecutive failed attempts
+    *
+    */
+    public $restEnableInvalidAttempts = true;
+    public $restInvalidAttemptsTable = 'ws_attempts';
+    public $restMaxAttempts = 3;
+    public $restTimeBlocked = 3600;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Allow Authentication and API Keys
-    |--------------------------------------------------------------------------
-    |
-    | Where you wish to have Basic, Digest or Session login, but also want to use API Keys (for limiting
-    | requests etc), set to TRUE;
-    |
+    /**
+    *--------------------------------------------------------------------------
+    * REST AJAX Only
+    *--------------------------------------------------------------------------
+    *
+    * Set to TRUE to allow AJAX requests only. Set to FALSE to accept HTTP requests
+    *
+    * Note: If set to TRUE and the request is not AJAX, a 505 response with the
+    * error message 'Only AJAX requests are accepted.' will be returned.
+    *
+    * Hint: This is good for production environments
+    *
+    */
+    public $restAjaxOnly = false;
+
+    /**
+    *--------------------------------------------------------------------------
+    * Allow Authentication and API Keys
+    *--------------------------------------------------------------------------
+    *
+    * Where you wish to have Basic, Digest or Session login, but also want to use API Keys (for limiting
+    * requests etc), set to TRUE;
+    *
     */
     public $allowAuthAndKeys = true;
     public $strictApiAndAuth = true; // force the use of both api and auth before a valid api request is made
 
-    /*
-    |--------------------------------------------------------------------------
-    | REST Login Usernames
-    |--------------------------------------------------------------------------
-    |
-    | Array of usernames and passwords for login, if ldap is configured this is ignored
-    |
+    /**
+    *--------------------------------------------------------------------------
+    * REST Login Usernames
+    *--------------------------------------------------------------------------
+    *
+    * Array of usernames and passwords for login, if ldap is configured this is ignored
+    *
     */
     public $restValidLogins = [ 'admin' => '1234' ];
 
@@ -203,72 +223,72 @@ class RestServer extends BaseConfig
     */
     public $restDatabaseGroup = 'default';
 
-    /*
-    |--------------------------------------------------------------------------
-    | REST API Users Table Name
-    |--------------------------------------------------------------------------
-    |
-    | The table name in your database that stores API keys
-    |
+    /**
+    *--------------------------------------------------------------------------
+    * REST API Users Table Name
+    *--------------------------------------------------------------------------
+    *
+    * The table name in your database that stores API keys
+    *
     */
-    public $restUsersTable = 'ws_user';
+    public $restUsersTable = 'ws_users';
 
 
     /**
-     * If you want to link users with the keys you have to assign the user model
-     *
-     * Example:
-     *
-     * public $userModelClass = \Daycry\RestServer\Models\UserModel::class;
+     * Class that associates keys to users, you can edit the class for whatever you want
+     * The "$userKeyColumn" column is the foreign key of the keys table
+     * The "$userNameColumn" column is the name of user and is unique Ex: name, username
+     * This column is used in apikeyinfo command for extract the  info about api key
      */
     public $userModelClass = \Daycry\RestServer\Models\UserModel::class;
     public $userKeyColumn = 'key_id';
+    public $userNameColumn = 'name';
 
-    /*
-    |--------------------------------------------------------------------------
-    | REST API Keys Table Name
-    |--------------------------------------------------------------------------
-    |
-    | The table name in your database that stores API keys
-    |
+    /**
+    *--------------------------------------------------------------------------
+    * REST API Keys Table Name
+    *--------------------------------------------------------------------------
+    *
+    * The table name in your database that stores API keys
+    *
     */
-    public $restKeysTable = 'ws_key';
+    public $restKeysTable = 'ws_keys';
     public $restEnableKeys = false;
 
     /*
-    |--------------------------------------------------------------------------
-    | REST Table Key Column Name
-    |--------------------------------------------------------------------------
-    |
-    | If not using the default table schema in 'rest_enable_keys', specify the
-    | column name to match e.g. my_key
-    |
+    *--------------------------------------------------------------------------
+    * REST Table Key Column Name
+    *--------------------------------------------------------------------------
+    *
+    * If not using the default table schema in 'rest_enable_keys', specify the
+    * column name to match e.g. my_key
+    *
     */
     public $restKeyColumn = 'key';
 
     /*
-    |--------------------------------------------------------------------------
-    | REST Key Length
-    |--------------------------------------------------------------------------
-    |
-    | Length of the created keys. Check your default database schema on the
-    | maximum length allowed
-    |
-    | Note: The maximum length is 40
-    |
+    *--------------------------------------------------------------------------
+    * REST Key Length
+    *--------------------------------------------------------------------------
+    *
+    * Length of the created keys. Check your default database schema on the
+    * maximum length allowed
+    *
+    * Note: The maximum length is 40
+    *
     */
     public $restKeyLength = 40;
 
     /*
-    |--------------------------------------------------------------------------
-    | REST API Key Variable
-    |--------------------------------------------------------------------------
-    |
-    | Custom header to specify the API key
+    *--------------------------------------------------------------------------
+    * REST API Key Variable
+    *--------------------------------------------------------------------------
+    *
+    * Custom header to specify the API key
 
-    | Note: Custom headers with the X- prefix are deprecated as of
-    | 2012/06/12. See RFC 6648 specification for more details
-    |
+    * Note: Custom headers with the X- prefix are deprecated as of
+    * 2012/06/12. See RFC 6648 specification for more details
+    *
     */
     public $restKeyName = 'X-API-KEY';
 
@@ -292,7 +312,7 @@ class RestServer extends BaseConfig
     | table name to match e.g. my_operations
     |
     */
-    public $configRestPetitionsTable = 'ws_request';
+    public $configRestPetitionsTable = 'ws_requests';
 
     /*
     |--------------------------------------------------------------------------
@@ -315,7 +335,7 @@ class RestServer extends BaseConfig
     | table name to match e.g. my_logs
     |
     */
-    public $configRestLogsTable = 'ws_log';
+    public $configRestLogsTable = 'ws_logs';
 
     /*
     |--------------------------------------------------------------------------
@@ -359,7 +379,7 @@ class RestServer extends BaseConfig
     | table name to match e.g. my_limits
     |
     */
-    public $restLimitsTable = 'ws_limit';
+    public $restLimitsTable = 'ws_limits';
 
     /*
     |--------------------------------------------------------------------------
@@ -398,35 +418,7 @@ class RestServer extends BaseConfig
     | table name to match e.g. my_access
     |
     */
-    public $restAccessTable = 'ws_access';
-
-    /*
-    |--------------------------------------------------------------------------
-    | Enable block Invalid Attempts
-    |--------------------------------------------------------------------------
-    |
-    | IP blocking on consecutive failed attempts
-    |
-    */
-    public $restEnableInvalidAttempts = true;
-    public $restInvalidAttemptsTable = 'ws_attempt';
-    public $restMaxAttempts = 3;
-    public $restTimeBlocked = 3600;
-
-    /*
-    |--------------------------------------------------------------------------
-    | REST AJAX Only
-    |--------------------------------------------------------------------------
-    |
-    | Set to TRUE to allow AJAX requests only. Set to FALSE to accept HTTP requests
-    |
-    | Note: If set to TRUE and the request is not AJAX, a 505 response with the
-    | error message 'Only AJAX requests are accepted.' will be returned.
-    |
-    | Hint: This is good for production environments
-    |
-    */
-    public $restAjaxOnly = false;
+    public $restAccessTable = 'ws_accesses';
 
     /*
     |--------------------------------------------------------------------------
@@ -520,4 +512,20 @@ class RestServer extends BaseConfig
     |
     */
     public $forcedCorsHeaders = [ 'Access-Control-Allow-Credentials' => true ];
+
+    /**
+    *--------------------------------------------------------------------------
+    * Cronjob
+    *--------------------------------------------------------------------------
+    *
+    * Set to TRUE to enable Cronjob for fill the table petitions with your API classes
+    * $restNamespaceScope \Namespace\Class or \Namespace\Folder\Class or \Namespace example: \App\Controllers
+    *
+    * This feature use Daycry\CronJob vendor
+    * for more information: https://github.com/daycry/cronjob
+    *
+    */
+    public $restApiTable = 'ws_apis';
+    public $restNamespaceTable = 'ws_namespaces';
+    public $restNamespaceScope = ['\Daycry\JWT'];
 }

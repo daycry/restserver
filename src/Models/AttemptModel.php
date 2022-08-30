@@ -13,13 +13,13 @@ class AttemptModel extends Model
 
     protected $DBGroup = 'default';
 
-    protected $table      = 'attempts';
+    protected $table      = 'ws_attempts';
 
     protected $primaryKey = 'id';
 
     protected $useAutoIncrement = true;
 
-    protected $returnType     = 'object';
+    protected $returnType     = \Daycry\RestServer\Entities\AttemptEntity::class;
 
     protected $useSoftDeletes = true;
 

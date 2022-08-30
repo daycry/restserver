@@ -21,6 +21,8 @@ class BearerTest extends CIUnitTestCase
     protected $refresh     = true;
     protected $seedOnce = false;
     protected $seed = ExampleSeeder::class;
+    protected $basePath = HOMEPATH . 'src/Database';
+    protected $namespace = 'Daycry\RestServer';
 
     protected $config;
 
@@ -105,11 +107,11 @@ class BearerTest extends CIUnitTestCase
         $this->assertObjectHasAttribute("test", $content);
         $this->assertObjectHasAttribute("auth", $content);
         $this->assertObjectHasAttribute("key", $content);
-        $this->assertObjectHasAttribute("user", $content);
-        $this->assertIsArray($content->user);
-        $this->assertObjectHasAttribute('name', $content->user[0]);
+        $this->assertObjectHasAttribute("ws_users", $content);
+        $this->assertIsArray($content->ws_users);
+        $this->assertObjectHasAttribute('name', $content->ws_users[0]);
         $this->AssertSame("helloauthbearer", $content->test);
-        $this->AssertSame("userSample2", $content->user[0]->name);
+        $this->AssertSame("userSample2", $content->ws_users[0]->name);
         $this->AssertSame("admin", $content->auth);
         $this->AssertSame("1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123", $content->key);
     }
@@ -161,11 +163,11 @@ class BearerTest extends CIUnitTestCase
         $this->assertObjectHasAttribute("test", $content);
         $this->assertObjectHasAttribute("auth", $content);
         $this->assertObjectHasAttribute("key", $content);
-        $this->assertObjectHasAttribute("user", $content);
-        $this->assertIsArray($content->user);
-        $this->assertObjectHasAttribute('name', $content->user[0]);
+        $this->assertObjectHasAttribute("ws_users", $content);
+        $this->assertIsArray($content->ws_users);
+        $this->assertObjectHasAttribute('name', $content->ws_users[0]);
         $this->AssertSame("helloauthbearer", $content->test);
-        $this->AssertSame("userSample2", $content->user[0]->name);
+        $this->AssertSame("userSample2", $content->ws_users[0]->name);
         $this->AssertSame("admin", $content->auth);
         $this->AssertSame("1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123", $content->key);
     }
@@ -193,11 +195,11 @@ class BearerTest extends CIUnitTestCase
         $this->assertObjectHasAttribute("test", $content);
         $this->assertObjectHasAttribute("auth", $content);
         $this->assertObjectHasAttribute("key", $content);
-        $this->assertObjectHasAttribute("user", $content);
-        $this->assertIsArray($content->user);
-        $this->assertObjectHasAttribute('name', $content->user[0]);
+        $this->assertObjectHasAttribute("ws_users", $content);
+        $this->assertIsArray($content->ws_users);
+        $this->assertObjectHasAttribute('name', $content->ws_users[0]);
         $this->AssertSame("helloauthcustombearer", $content->test);
-        $this->AssertSame("userSample2", $content->user[0]->name);
+        $this->AssertSame("userSample2", $content->ws_users[0]->name);
         $this->AssertSame("admin", $content->auth->username);
         $this->AssertTrue($content->auth->split);
         $this->AssertSame("1238go0csckk8cckgw4kk40g4c4s0ckkcscgg123", $content->key);

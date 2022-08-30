@@ -13,17 +13,17 @@ class AccessModel extends Model
 
     protected $DBGroup = 'default';
 
-    protected $table      = 'access';
+    protected $table      = 'ws_access';
 
     protected $primaryKey = 'id';
 
     protected $useAutoIncrement = true;
 
-    protected $returnType     = 'object';
+    protected $returnType     = \Daycry\RestServer\Entities\AccessEntity::class;
 
     protected $useSoftDeletes = true;
 
-    protected $allowedFields = [ 'api_key', 'all_access', 'controller' ];
+    protected $allowedFields = [ 'key_id', 'all_access', 'controller' ];
 
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
@@ -44,5 +44,17 @@ class AccessModel extends Model
         $this->table = config('RestServer')->restAccessTable;
 
         parent::__construct($db, $validation);
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function addFieldAllowedFields(string $field): AccessModel
+    {
+        if (!in_array($field, $this->allowedFields)) {
+            array_push($this->allowedFields, $field);
+        }
+
+        return $this;
     }
 }

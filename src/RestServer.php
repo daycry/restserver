@@ -344,7 +344,7 @@ class RestServer extends ResourceController
                 throw $this->apiUser;
             }
 
-            if (!$override = $this->_authOverrideCheck()) {
+            if (!$this->_authOverrideCheck()) {
                 if (!$this->_restConfig->restEnableKeys || $this->_restConfig->allowAuthAndKeys) {
                     $this->user = $this->_getAuthMethod($this->_restConfig->restAuth);
                 }

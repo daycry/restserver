@@ -14,7 +14,15 @@ class Access
         if (config('RestServer')->restEnableAccess == true) {
             $return = false;
             $accessModel = new \Daycry\RestServer\Models\AccessModel();
-            $results = $accessModel->where('api_key', $apiUser->key)->where('controller', $router->controllerName())->findAll();
+            $namespaceModel = new \Daycry\RestServer\Models\NamespaceModel();
+
+            $namespace = $namespaceModel->where('controller', $router->controllerName())->first();
+
+            if (!$namespace) {
+                return false;
+            }
+
+            $results = $accessModel->where('namespace_id', $namespace->id)->where('key_id', $apiUser->id)->findAll();
 
             if (!empty($results)) {
                 foreach ($results as $result) {

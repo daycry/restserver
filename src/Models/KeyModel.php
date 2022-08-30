@@ -13,13 +13,13 @@ class KeyModel extends Model
 
     protected $DBGroup = 'default';
 
-    protected $table      = 'keys';
+    protected $table      = 'ws_keys';
 
     protected $primaryKey = 'id';
 
     protected $useAutoIncrement = true;
 
-    protected $returnType     = 'object';
+    protected $returnType     = \Daycry\RestServer\Entities\KeyEntity::class;
 
     protected $useSoftDeletes = true;
 

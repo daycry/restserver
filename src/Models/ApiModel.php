@@ -7,23 +7,23 @@ use CodeIgniter\Validation\ValidationInterface;
 use CodeIgniter\Database\ConnectionInterface;
 use Config\Database;
 
-class PetitionModel extends Model
+class ApiModel extends Model
 {
     use \Tatter\Relations\Traits\ModelTrait;
 
     protected $DBGroup = 'default';
 
-    protected $table      = 'ws_requests';
+    protected $table      = 'ws_apis';
 
     protected $primaryKey = 'id';
 
     protected $useAutoIncrement = true;
 
-    protected $returnType     = \Daycry\RestServer\Entities\PetitionEntity::class;
+    protected $returnType     = \Daycry\RestServer\Entities\ApiEntity::class;
 
     protected $useSoftDeletes = true;
 
-    protected $allowedFields = [ 'controller', 'checked_at', 'method', 'auth', 'http', 'log', 'limit', 'level' ];
+    protected $allowedFields = [ 'url', 'checked_at' ];
 
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
@@ -41,7 +41,7 @@ class PetitionModel extends Model
             $this->DBGroup = config('RestServer')->restDatabaseGroup;
         }
 
-        $this->table = config('RestServer')->configRestPetitionsTable;
+        $this->table = config('RestServer')->restApiTable;
 
         parent::__construct($db, $validation);
     }

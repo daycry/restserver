@@ -13,17 +13,17 @@ class LimitModel extends Model
 
     protected $DBGroup = 'default';
 
-    protected $table      = 'limits';
+    protected $table      = 'ws_limits';
 
     protected $primaryKey = 'id';
 
     protected $useAutoIncrement = true;
 
-    protected $returnType     = 'object';
+    protected $returnType     = \Daycry\RestServer\Entities\LimitEntity::class;
 
     protected $useSoftDeletes = true;
 
-    protected $allowedFields = [ 'uri', 'count', 'hour_started', 'api_key' ];
+    protected $allowedFields = [ 'uri', 'count', 'hour_started', 'key_id', 'request_id' ];
 
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';

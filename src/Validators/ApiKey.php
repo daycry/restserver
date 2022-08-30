@@ -7,8 +7,6 @@ use Daycry\RestServer\Exceptions\UnauthorizedException;
 
 class ApiKey
 {
-    use \Daycry\RestServer\Traits\Schema;
-
     public static function check(RequestInterface $request, object $petition = null, array $args): ?object
     {
         $row = null;
@@ -24,12 +22,11 @@ class ApiKey
             if (($key = isset($args[ config('RestServer')->restKeyName ]) ? $args[ config('RestServer')->restKeyName ] : $request->getHeaderLine(\strtolower(config('RestServer')->restKeyName)))) {
                 $keyModel = new \Daycry\RestServer\Models\KeyModel();
 
-                if (!($row = $keyModel->setSchema(self::getSchema())->with(config('RestServer')->restUsersTable)->where(config('RestServer')->restKeyColumn, $key)->first())) {
-                    //$authorized = false;
+                if (!($row = $keyModel->where(config('RestServer')->restKeyColumn, $key)->first())) {
                     return UnauthorizedException::forInvalidApiKey($key);
                 }
 
-                $row = \Daycry\RestServer\Libraries\Utils::modelAliases($row, config('RestServer')->restUsersTable, 'user');
+                $row->{config('RestServer')->restUsersTable} = $row->{config('RestServer')->restUsersTable};
 
                 /**
                  * If "is private key" is enabled, compare the ip address with the list
@@ -56,24 +53,17 @@ class ApiKey
                         }
 
                         if (!$found_address) {
-                            // @codeCoverageIgnoreStart
-                            //$authorized = false;
-                            // @codeCoverageIgnoreEnd
                             return UnauthorizedException::forIpDenied();
                         }
                     } else {
-                        // @codeCoverageIgnoreStart
-                        //$authorized = false;
-                        // @codeCoverageIgnoreEnd
                         return UnauthorizedException::forIpDenied();
                     }
                 }
             } else {
-                //$authorized = false;
                 return UnauthorizedException::forInvalidApiKey($key);
             }
         }
 
-        return $row;
+        return ($row) ? (object)$row->jsonSerialize() : null;
     }
 }
