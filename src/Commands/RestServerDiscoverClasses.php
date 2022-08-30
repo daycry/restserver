@@ -100,12 +100,11 @@ class RestServerDiscoverClasses extends BaseCommand
         $methods = array();
 
         foreach ($f->getMethods(ReflectionMethod::IS_PUBLIC) as $m) {
-
             if (strpos($m->name, '__') !== 0) {
                 $methods[] = $m->name;
             }
 
-           // if ($m->class == $namespace) {
+            // if ($m->class == $namespace) {
                 //$methods[] = $m->name;
             //}
         }
