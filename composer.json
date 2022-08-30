@@ -22,14 +22,15 @@
     },
     "require-dev":
     {
-        "phpunit/phpunit": "^9.1",
-        "codeigniter4/framework": "^4",
+        "codeigniter/coding-standard": "^1.1",
+        "fakerphp/faker": "^1.9",
         "friendsofphp/php-cs-fixer": "3.6.*",
         "mikey179/vfsstream": "^1.6",
         "nexusphp/cs-config": "^3.3",
         "nexusphp/tachycardia": "^1.0",
         "phpstan/phpstan": "^1.7.1",
-        "rector/rector": "0.13.9"
+        "phpunit/phpunit": "^9.1",
+        "rector/rector": "0.14.0"
     },
     "autoload":
     {
@@ -49,10 +50,20 @@
         }
     },
     "scripts": {
-        "cs-fixer": [ "vendor/bin/php-cs-fixer fix src", "vendor/bin/php-cs-fixer fix tests" ],
+        "cs-fixer": [ 
+            "php-cs-fixer fix --ansi --verbose src",
+            "php-cs-fixer fix --ansi --verbose tests"
+        ],
+        "cs": [
+            "vendor/bin/php-cs-fixer fix --verbose --ansi --dry-run --using-cache=no --diff src",
+            "vendor/bin/php-cs-fixer fix --verbose --ansi --dry-run --using-cache=no --diff tests"
+        ],
         "test": [
             "Composer\\Config::disableProcessTimeout",
             "vendor/bin/phpunit"
+        ],
+        "phpcpd": [
+            "php phpcpd.phar src/"
         ]
     }
 }
