@@ -6,8 +6,10 @@ use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 use CodeIgniter\Config\BaseConfig;
 use DateTime;
+use ReflectionClass;
+use ReflectionMethod;
 
-class DiscoverClasses extends BaseCommand
+class RestServerDiscoverClasses extends BaseCommand
 {
     protected $group       = 'Rest Server';
     protected $name        = 'restserver:discover';
@@ -39,12 +41,6 @@ class DiscoverClasses extends BaseCommand
                         \array_push($this->allClasses, '\\' . $class);
 
                         $methods = $this->_getMethodsFromCLass($class);
-
-                        foreach ($methods as $key => $value) {
-                            if ($value[0] == '_' || $value == 'initController') {
-                                unset($methods[$key]);
-                            }
-                        }
 
                         $class = (mb_substr($class, 0, 1) !== '\\') ? '\\' . $class : $class;
 
@@ -100,12 +96,17 @@ class DiscoverClasses extends BaseCommand
 
     private function _getMethodsFromCLass($namespace): array
     {
-        $f = new \ReflectionClass($namespace);
+        $f = new ReflectionClass($namespace);
         $methods = array();
-        foreach ($f->getMethods() as $m) {
-            if ($m->class == $namespace) {
+
+        foreach ($f->getMethods(ReflectionMethod::IS_PUBLIC) as $m) {
+            if (strpos($m->name, '__') !== 0) {
                 $methods[] = $m->name;
             }
+
+            // if ($m->class == $namespace) {
+                //$methods[] = $m->name;
+            //}
         }
 
         return $methods;
