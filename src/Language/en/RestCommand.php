@@ -2,6 +2,8 @@
 
 return [
     'insertApiKey' => 'Insert an api key',
+    'insertLevelApiKey' => 'Insert level of api key',
+    'insertIpAdressApiKey' => 'Insert IP Adress',
     'apiKeyInfo' => 'Api key info',
     'apiKeyUser' => 'Api key User',
     'apiKeyLocks' => 'Api key Locks',

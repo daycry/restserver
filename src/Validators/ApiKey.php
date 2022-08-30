@@ -42,13 +42,15 @@ class ApiKey
                         $list_ip_addresses = explode(',', $row->ip_addresses);
 
                         foreach ($list_ip_addresses as $list_ip) {
-                            if (strpos($list_ip, '/') !== false) {
-                                //check IP is in the range
-                                $found_address = \Daycry\RestServer\Libraries\CheckIp::ipv4_in_range(trim($list_ip), $row->ip_addresses);
-                            } elseif ($ip_address === trim($list_ip)) {
-                                // there is a match, set the the value to TRUE and break out of the loop
-                                $found_address = true;
-                                break;
+                            if ($list_ip) {
+                                if (strpos($list_ip, '/') !== false) {
+                                    //check IP is in the range
+                                    $found_address = \Daycry\RestServer\Libraries\CheckIp::ipv4_in_range(trim($list_ip), $row->ip_addresses);
+                                } elseif ($ip_address === trim($list_ip)) {
+                                    // there is a match, set the the value to TRUE and break out of the loop
+                                    $found_address = true;
+                                    break;
+                                }
                             }
                         }
 
