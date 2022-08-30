@@ -1,0 +1,40 @@
+# When a PR is opened or a push is made, check code
+# for duplication with PHP Copy/Paste Detector.
+name: PHPCPD
+
+on:
+  pull_request:
+    branches:
+      - 'development'
+      - '4.*'
+    paths:
+      - 'src/**.php'
+      - '.github/workflows/phpcpd.yml'
+
+  push:
+    branches:
+      - 'development'
+    paths:
+      - 'src/**.php'
+      - '.github/workflows/phpcpd.yml'
+      
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Duplicate Code Detection
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+          tools: phpcpd
+          extensions: dom, mbstring
+
+      - name: Detect code duplication
+        run: phpcpd src/
