@@ -51,7 +51,7 @@ jobs:
         run: composer update --ansi --no-interaction
 
       - name: Run lint on `src/`
-        run: vendor/bin/php-cs-fixer tests src --verbose --ansi --dry-run --using-cache=no --diff
+        run: vendor/bin/php-cs-fixer fix src --verbose --ansi --dry-run --using-cache=no --diff
         
       - name: Run lint on `tests/`
-        run: vendor/bin/php-cs-fixer tests tests --verbose --ansi --dry-run --using-cache=no --diff
+        run: vendor/bin/php-cs-fixer fix tests --verbose --ansi --dry-run --using-cache=no --diff
