@@ -5,28 +5,24 @@ namespace Daycry\RestServer\Commands;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 use CodeIgniter\Config\BaseConfig;
-use Daycry\RestServer\Exceptions\UnauthorizedException;
-use Daycry\RestServer\Entities\AccessEntity;
-use Daycry\RestServer\Entities\LimitEntity;
-use Daycry\RestServer\Entities\PetitionEntity;
-use DateTime;
 
-class RestServerApiKeyCreator extends BaseCommand
+use Daycry\RestServer\Models\KeyModel;
+use Daycry\RestServer\Entities\KeyEntity;
+use Exception;
+
+class RestServerApiKey extends BaseCommand
 {
     protected $group       = 'Rest Server';
-    protected $name        = 'restserver:apikeycreator';
-    protected $description = 'Cerate api key.';
-    protected $usage = 'restserver:apikeycreator [Options]';
+    protected $name        = 'restserver:apikey';
+    protected $description = 'Create an api key.';
+    protected $usage = 'restserver:apikey [Options]';
     protected $options = [ '-level' => 'Api Key Level','-ignoreLimits' => 'Ignore limits', '-noPrivate' => 'Private IP adresses', '-ip' => 'IP adresses' ];
 
     private BaseConfig $config;
-    private $parser;
 
     public function run(array $params)
     {
-        $this->parser = \Config\Services::parser();
         $this->config = config('RestServer');
-        $this->db = db_connect($this->config->restDatabaseGroup);
 
         helper('text');
 
@@ -36,8 +32,8 @@ class RestServerApiKeyCreator extends BaseCommand
                 exit;
             }
 
-            $keyModel = new \Daycry\RestServer\Models\KeyModel();
-            $key = new \Daycry\RestServer\Entities\KeyEntity();
+            $keyModel = new KeyModel();
+            $key = new KeyEntity();
 
             $level = $params[ 'level' ] ?? CLI::getOption('level');
             $ignoreLimits = $params[ 'ignoreLimits' ] ?? CLI::getOption('ignoreLimits');
@@ -59,7 +55,7 @@ class RestServerApiKeyCreator extends BaseCommand
             if ($keyModel->save($key)) {
                 CLI::write('**** CREATED. ****', 'white', 'green');
             }
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             CLI::newLine();
             CLI::error('**** ' . $ex->getMessage() . ' ****');
             CLI::newLine();
