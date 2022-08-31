@@ -11,12 +11,12 @@ use Daycry\RestServer\Entities\LimitEntity;
 use Daycry\RestServer\Entities\PetitionEntity;
 use DateTime;
 
-class RestServerKeyInfo extends BaseCommand
+class RestServerInfo extends BaseCommand
 {
     protected $group       = 'Rest Server';
-    protected $name        = 'restserver:apikeyinfo';
+    protected $name        = 'restserver:info';
     protected $description = 'Get information about api key.';
-    protected $usage = 'restserver:apikeyinfo [Options]';
+    protected $usage = 'restserver:info [Options]';
     protected $options = [ '-key' => 'Api Key' ];
 
     private $_key = null;
