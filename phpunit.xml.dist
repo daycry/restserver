@@ -62,11 +62,11 @@
 		<env name="database.default.DBPrefix" value="" force="true"/>
 
 		<env name="database.tests.strictOn" value="true"/>
-		<!--<env name="database.tests.database" value="web_service_tests" force="true"/>
+		<env name="database.tests.database" value="web_service_tests" force="true"/>
 		<env name="database.tests.username" value="root" force="true"/>
 		<env name="database.tests.password" value="" force="true"/>
 		<env name="database.tests.DBDriver" value="MySQLi"/>
-		<env name="database.tests.DBPrefix" value="" force="true"/>-->
+		<env name="database.tests.DBPrefix" value="" force="true"/>
 
 		<env name="curlrequest.shareOptions" value="false" force="true"/>
 		<env name="encryption.key" value="123456789" force="true"/>
