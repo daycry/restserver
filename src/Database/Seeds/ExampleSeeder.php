@@ -10,6 +10,15 @@ class ExampleSeeder extends Seeder
     {
         $config = $this->_getConfig();
 
+        $api = [
+            [
+                'url'=> 'https://vendor.local/'
+            ]
+        ];
+
+        // Using Query Builder
+        $this->db->table($config->restApiTable)->insertBatch($api);
+
         $namespace = [
             [
                 'controller'=> '\App\Controllers\Login',
