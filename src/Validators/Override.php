@@ -17,11 +17,10 @@ class Override
 
         $namespace = $namespaceModel->where('controller', $router->controllerName())->first();
 
-        if($namespace)
-        {
+        if ($namespace) {
             $requests = ($namespace->{config('RestServer')->configRestPetitionsTable}) ? $namespace->{config('RestServer')->configRestPetitionsTable} : [];
         }
-        
+
 
         if (!$requests) {
             return $response;
