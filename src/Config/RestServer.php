@@ -40,7 +40,8 @@ class RestServer extends BaseConfig
         'basic' => \Daycry\RestServer\Libraries\Auth\BasicAuth::class,
         'digest' => \Daycry\RestServer\Libraries\Auth\DigestAuth::class,
         'bearer' => \Daycry\RestServer\Libraries\Auth\BearerAuth::class,
-        'session' => \Daycry\RestServer\Libraries\Auth\SessionAuth::class
+        'session' => \Daycry\RestServer\Libraries\Auth\SessionAuth::class,
+        'whitelist' => \Daycry\RestServer\Libraries\Auth\WhiteListAuth::class
     ];
 
     /*
