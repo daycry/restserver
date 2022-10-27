@@ -11,17 +11,21 @@ class Override
 {
     public static function check(RequestInterface $request, Router $router)
     {
+        $response = $requests = null;
+
         $namespaceModel = new \Daycry\RestServer\Models\NamespaceModel();
 
         $namespace = $namespaceModel->where('controller', $router->controllerName())->first();
 
-        $requests = ($namespace->{config('RestServer')->configRestPetitionsTable}) ? $namespace->{config('RestServer')->configRestPetitionsTable} : [];
+        if($namespace)
+        {
+            $requests = ($namespace->{config('RestServer')->configRestPetitionsTable}) ? $namespace->{config('RestServer')->configRestPetitionsTable} : [];
+        }
+        
 
         if (!$requests) {
-            return null;
+            return $response;
         }
-
-        $response = null;
 
         foreach ($requests as $r) {
             // @codeCoverageIgnoreStart
