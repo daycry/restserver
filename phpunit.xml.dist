@@ -46,26 +46,25 @@
 	</logging>
 	<php>
 		<server name="app.baseURL" value="https://vendor.local/"/>
+		<env name="app.indexPage" value="" force="true"/>
 		<env name="app.appTimezone" value="Europe/Madrid" force="true"/>
+		
 		<!-- Directory containing phpunit.xml -->
 		<const name="HOMEPATH" value="./"/>
 		<!-- Directory containing the Paths config file -->
 		<const name="CONFIGPATH" value="./vendor/codeigniter4/framework/app/Config/"/>
 		<!-- Directory containing the front controller (index.php) -->
 		<const name="PUBLICPATH" value="./vendor/codeigniter4/framework/public/"/>
+		
 		<!-- Database configuration -->
-		<!-- <env name="database.tests.hostname" value="localhost" force="true"/> -->
-		<env name="database.default.database" value="web_service_tests" force="true"/>
-		<env name="database.default.username" value="root" force="true"/>
-		<env name="database.default.password" value="" force="true"/>
-		<env name="database.default.DBDriver" value="MySQLi"/>
-		<env name="database.default.DBPrefix" value="" force="true"/>
-
+		<env name="database.tests.strictOn" value="true"/>
+		<env name="database.tests.strictOn" value="true"/>
 		<env name="database.tests.database" value="web_service_tests" force="true"/>
 		<env name="database.tests.username" value="root" force="true"/>
 		<env name="database.tests.password" value="" force="true"/>
 		<env name="database.tests.DBDriver" value="MySQLi"/>
 		<env name="database.tests.DBPrefix" value="" force="true"/>
+
 
 		<env name="curlrequest.shareOptions" value="false" force="true"/>
 		<env name="encryption.key" value="123456789" force="true"/>

@@ -4,6 +4,7 @@ namespace Daycry\RestServer\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 use CodeIgniter\Database\Forge;
+use CodeIgniter\Database\RawSql;
 
 class CreateAttemptTable extends Migration
 {
@@ -34,8 +35,9 @@ class CreateAttemptTable extends Migration
             'ip_address'            => ['type' => 'varchar', 'constraint' => 45, 'null' => false],
             'attempts'                  => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'null' => false, 'default' => 0],
             'hour_started'             => ['type' => 'int', 'constraint' => 11, 'null' => false],
-            'created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
-            'updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+            'created_at'            => ['type' => 'datetime', 'null' => true, 'default' => new RawSql('CURRENT_TIMESTAMP')],
+            'updated_at'            => ['type' => 'datetime', 'null' => true, 'default' => null ],
+            //'updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
             'deleted_at'       => ['type' => 'datetime', 'null' => true, 'default' => null]
         ]);
 

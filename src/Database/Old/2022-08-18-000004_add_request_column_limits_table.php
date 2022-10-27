@@ -5,6 +5,7 @@ namespace Daycry\RestServer\Database\Migrations;
 use CodeIgniter\Database\Migration;
 use CodeIgniter\Database\Forge;
 use CodeIgniter\Config\BaseConfig;
+use CodeIgniter\Database\RawSql;
 
 class AddColumnRequestInLimitsTable extends Migration
 {

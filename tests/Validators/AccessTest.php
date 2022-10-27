@@ -17,9 +17,9 @@ class AccessTest extends CIUnitTestCase
     use FeatureTestTrait;
 
     protected $migrate     = true;
-    protected $migrateOnce = false;
+    //protected $migrateOnce = false;
     protected $refresh     = true;
-    protected $seedOnce = false;
+    //protected $seedOnce = false;
     protected $seed = ExampleSeeder::class;
     protected $basePath = HOMEPATH . 'src/Database';
     protected $namespace = 'Daycry\RestServer';

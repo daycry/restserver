@@ -4,6 +4,7 @@ namespace Daycry\RestServer\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 use CodeIgniter\Database\Forge;
+use CodeIgniter\Database\RawSql;
 
 class CreateNamespaceTable extends Migration
 {
@@ -40,14 +41,15 @@ class CreateNamespaceTable extends Migration
         $limitModel = (new \Daycry\RestServer\Models\LimitModel())->setAllowedFields([ 'uri', 'count', 'hour_started', 'api_key' ]);
 
         /*
-         * Namespace Table
+         * Api Table
          */
         $this->forge->addField([
             'id'                    => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
             'url'            => ['type' => 'varchar', 'constraint' => 255, 'null' => false],
             'checked_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
-            'created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
-            'updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+            'created_at'            => ['type' => 'datetime', 'null' => true, 'default' => new RawSql('CURRENT_TIMESTAMP')],
+            'updated_at'            => ['type' => 'datetime', 'null' => true, 'default' => null ],
+            //'updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
             'deleted_at'       => ['type' => 'datetime', 'null' => true, 'default' => null]
         ]);
 
@@ -70,8 +72,9 @@ class CreateNamespaceTable extends Migration
             'controller'            => ['type' => 'varchar', 'constraint' => 255, 'null' => false],
             'methods'                  => ['type' => 'text', 'null' => false],
             'checked_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
-            'created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
-            'updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+            'created_at'            => ['type' => 'datetime', 'null' => true, 'default' => new RawSql('CURRENT_TIMESTAMP')],
+            'updated_at'            => ['type' => 'datetime', 'null' => true, 'default' => null ],
+            //'updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
             'deleted_at'       => ['type' => 'datetime', 'null' => true, 'default' => null]
         ]);
 
@@ -110,14 +113,27 @@ class CreateNamespaceTable extends Migration
 
         $this->forge->modifyColumn($config->configRestPetitionsTable, $field);
 
-        $this->forge->addColumn($config->configRestPetitionsTable, 'checked_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER level;');
-        $this->db->query('ALTER TABLE `'.$config->configRestPetitionsTable.'` ADD INDEX `checked_at` (`checked_at`);');
-        $this->db->query('ALTER TABLE `'.$config->configRestPetitionsTable.'` ADD CONSTRAINT `'.$config->configRestPetitionsTable.'_namespace_id_foreign` FOREIGN KEY (`namespace_id`) REFERENCES `'.$config->restNamespaceTable.'` (`id`) ON UPDATE RESTRICT ON DELETE CASCADE;');
+        //$this->forge->addColumn($config->configRestPetitionsTable, 'checked_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER level;');
 
+        $this->forge->addColumn($config->configRestPetitionsTable, [
+            'checked_at' => [
+                'type'       => 'datetime',
+                'null'       => true,
+                'after'      => 'type',
+            ],
+        ]);
+
+        $this->forge->addKey('created_at');
+        //$this->db->query('ALTER TABLE `'.$config->configRestPetitionsTable.'` ADD INDEX `checked_at` (`checked_at`);');
+        $this->forge->addForeignKey('namespace_id', $config->restNamespaceTable, 'id', '', 'CASCADE');
+        //$this->db->query('ALTER TABLE `'.$config->configRestPetitionsTable.'` ADD CONSTRAINT `'.$config->configRestPetitionsTable.'_namespace_id_foreign` FOREIGN KEY (`namespace_id`) REFERENCES `'.$config->restNamespaceTable.'` (`id`) ON UPDATE RESTRICT ON DELETE CASCADE;');
+        $this->forge->createTable($config->configRestPetitionsTable, true);
         /*
          * Access Table
          */
-        $this->forge->dropForeignKey($config->restAccessTable, $config->restAccessTable . '_api_key_foreign');
+        if ($this->db->DBDriver != 'SQLite3') { // @phpstan-ignore-line
+            $this->forge->dropForeignKey($config->restAccessTable, $config->restAccessTable . '_api_key_foreign');
+        }
         $this->forge->dropKey($config->restAccessTable, 'api_key');
 
         //migration for new estructure
