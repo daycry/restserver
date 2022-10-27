@@ -39,11 +39,7 @@ jobs:
       matrix:
         php-versions: ['7.4', '8.0', '8.1']
         db-platforms: ['MySQLi']
-        mysql-versions: ['5.7']
-        include:
-          - php-versions: '7.4'
-            db-platforms: MySQLi
-            mysql-versions: '8.0'
+        mysql-versions: ['5.7', '8.0']
 
     services:
       mysql:
