@@ -30,17 +30,18 @@ class Override
             }
             // @codeCoverageIgnoreEnd
 
-            if (\strtolower($r->method) == \strtolower($router->methodName()) && \strtolower($r->http) == \strtolower($request->getMethod())) {
+
+            if ($r->method && \strtolower($r->method) == \strtolower($router->methodName()) && $r->http && \strtolower($r->http) == \strtolower($request->getMethod())) {
                 $response = $r;
                 break;
             }
 
-            if (\strtolower($r->method) == \strtolower($router->methodName()) && $r->http == null) {
+            if ($r->method && \strtolower($r->method) == \strtolower($router->methodName()) && $r->http == null) {
                 $response = $r;
                 break;
             }
 
-            if (\strtolower($r->method) == null && \strtolower($r->http) == \strtolower($request->getMethod())) {
+            if ($r->method && \strtolower($r->method) == null && $r->http && \strtolower($r->http) == \strtolower($request->getMethod())) {
                 $response = $r;
                 break;
             }
