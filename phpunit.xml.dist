@@ -26,6 +26,7 @@
 			<file>./src/Libraries/CheckIp.php</file>
 			<file>./src/Libraries/Utils.php</file>
 			<file>./src/Exceptions/UserException.php</file>
+			<file>./src/Language/en/RestCommand.php</file>
 		</exclude>
 		<report>
 			<clover outputFile="build/logs/clover.xml"/>

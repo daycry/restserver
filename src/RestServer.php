@@ -239,9 +239,11 @@ class RestServer extends ResourceController
     {
         $this->validator = \Config\Services::validation($config, $getShared);
 
-        if (!$this->validator->run((array)$this->content, $rules)) {
+        $content = json_decode(json_encode($this->content), true);
+        if (!$this->validator->run($content, $rules)) {
             throw ValidationException::validationError();
         }
+        unset($content);
 
         if ($filter) {
             if ($this->content) {

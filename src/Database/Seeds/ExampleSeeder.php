@@ -104,6 +104,11 @@ class ExampleSeeder extends Seeder
                 'controller'=> '\Tests\Support\Controllers\HelloAuthLibraryError',
                 'api_id'    => 1,
                 'methods'   => json_encode(array('index'))
+            ],
+            [
+                'controller'=> '\Tests\Support\Controllers\HelloAuthWhiteList',
+                'api_id'    => 1,
+                'methods'   => json_encode(array('index'))
             ]
         ];
 
@@ -290,6 +295,16 @@ class ExampleSeeder extends Seeder
                 'limit'     => null,
                 'time'      => 3600,
                 'level'     => 10
+            ],
+            [
+                'namespace_id'=> 18,
+                'method'    => 'index',
+                'http'      => 'GET',
+                'auth'      => 'whitelist',
+                'key'       => 1,
+                'limit'     => null,
+                'time'      => 3600,
+                'level'     => 10
             ]
         ];
 
@@ -456,6 +471,12 @@ class ExampleSeeder extends Seeder
                 'key_id'       => 2,
                 'all_access'    => 0,
                 'namespace_id'    => 17,
+                'method'        => 'index'
+            ],
+            [
+                'key_id'       => 2,
+                'all_access'    => 0,
+                'namespace_id'    => 18,
                 'method'        => 'index'
             ]
         ];
