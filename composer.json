@@ -23,15 +23,20 @@
     "require-dev":
     {
         "codeigniter4/framework": "4.*",
-        "codeigniter/coding-standard": "^1.1",
+        "kint-php/kint": "^5.0.3",
+        "codeigniter/coding-standard": "^1.5",
         "fakerphp/faker": "^1.9",
-        "friendsofphp/php-cs-fixer": "3.6.*",
+        "friendsofphp/php-cs-fixer": "3.13.0",
         "mikey179/vfsstream": "^1.6",
-        "nexusphp/cs-config": "^3.3",
+        "nexusphp/cs-config": "^3.6",
         "nexusphp/tachycardia": "^1.0",
+        "php-coveralls/php-coveralls": "^2.5",
         "phpstan/phpstan": "^1.7.1",
+        "phpunit/phpcov": "^8.2",
         "phpunit/phpunit": "^9.1",
-        "rector/rector": "0.14.0"
+        "predis/predis": "^1.1 || ^2.0",
+        "rector/rector": "0.15.12",
+        "vimeo/psalm": "^5.0"
     },
     "autoload":
     {
