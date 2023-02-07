@@ -22,8 +22,7 @@
     },
     "require-dev":
     {
-        "codeigniter4/framework": "4.*",
-        "kint-php/kint": "^5.0.3",
+        "codeigniter4/framework": "4.2.*",
         "codeigniter/coding-standard": "^1.5",
         "fakerphp/faker": "^1.9",
         "friendsofphp/php-cs-fixer": "3.13.0",
