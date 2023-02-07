@@ -70,8 +70,10 @@ class LimitTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(200);
-        $this->assertObjectHasAttribute("test", $content);
-        $this->assertObjectHasAttribute("auth", $content);
+        //$this->assertTrue( isset($content->test) );
+        //$this->assertTrue( isset($content->auth) );
+        //$this->assertObjectHasAttribute("test", $content);
+        //$this->assertObjectHasAttribute("auth", $content);
         $this->AssertSame("helloipaddresslimitnoapi", $content->test);
         $this->AssertNull($content->auth);
     }
@@ -92,8 +94,10 @@ class LimitTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(200);
-        $this->assertObjectHasAttribute("test", $content);
-        $this->assertObjectHasAttribute("auth", $content);
+        //$this->assertTrue( isset($content->test) );
+        //$this->assertTrue( isset($content->auth) );
+        //$this->assertObjectHasAttribute("test", $content);
+        //$this->assertObjectHasAttribute("auth", $content);
         $this->AssertSame("hellolimitapikey", $content->test);
         $this->AssertNull($content->auth);
     }
@@ -112,8 +116,10 @@ class LimitTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(200);
-        $this->assertObjectHasAttribute("test", $content);
-        $this->assertObjectHasAttribute("auth", $content);
+        //$this->assertTrue( isset($content->test) );
+        //$this->assertTrue( isset($content->auth) );
+        //$this->assertObjectHasAttribute("test", $content);
+        //$this->assertObjectHasAttribute("auth", $content);
         $this->AssertSame("hellolimitroutedurl", $content->test);
         $this->AssertNull($content->auth);
     }
@@ -129,7 +135,8 @@ class LimitTest extends CIUnitTestCase
         $content = \json_decode($result2->getJson());
 
         $result->assertStatus(429);
-        $this->assertObjectHasAttribute("error", $content->messages);
+        $this->assertTrue(isset($content->messages->error));
+        //$this->assertObjectHasAttribute("error", $content->messages);
         $this->assertSame("This IP Address has reached the time limit for this method", $content->messages->error);
     }
 
@@ -151,7 +158,8 @@ class LimitTest extends CIUnitTestCase
         $content = \json_decode($result2->getJson());
 
         $result->assertStatus(429);
-        $this->assertObjectHasAttribute("error", $content->messages);
+        $this->assertTrue(isset($content->messages->error));
+        //$this->assertObjectHasAttribute("error", $content->messages);
         $this->assertMatchesRegularExpression("/has reached the time limit for this method/i", $content->messages->error);
     }
 

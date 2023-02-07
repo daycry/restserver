@@ -56,7 +56,8 @@ class DigestTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(401);
-        $this->assertObjectHasAttribute("error", $content->messages);
+        $this->assertTrue(isset($content->messages->error));
+        //$this->assertObjectHasAttribute("error", $content->messages);
         $this->AssertSame("Invalid credentials", $content->messages->error);
     }
 
@@ -75,7 +76,8 @@ class DigestTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(400);
-        $this->assertObjectHasAttribute("error", $content->messages);
+        $this->assertTrue(isset($content->messages->error));
+        //$this->assertObjectHasAttribute("error", $content->messages);
     }
 
     public function testDigestSuccess()
@@ -94,12 +96,17 @@ class DigestTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(200);
-        $this->assertObjectHasAttribute("test", $content);
-        $this->assertObjectHasAttribute("auth", $content);
-        $this->assertObjectHasAttribute("key", $content);
-        $this->assertObjectHasAttribute("ws_users", $content);
+        $this->assertTrue(isset($content->test));
+        $this->assertTrue(isset($content->auth));
+        $this->assertTrue(isset($content->key));
+        $this->assertTrue(isset($content->ws_users));
+        //$this->assertObjectHasAttribute("test", $content);
+        //$this->assertObjectHasAttribute("auth", $content);
+        //$this->assertObjectHasAttribute("key", $content);
+        //$this->assertObjectHasAttribute("ws_users", $content);
         $this->assertIsArray($content->ws_users);
-        $this->assertObjectHasAttribute('name', $content->ws_users[0]);
+        $this->assertTrue(isset($content->ws_users[0]->name));
+        //$this->assertObjectHasAttribute('name', $content->ws_users[0]);
         $this->AssertSame("helloauthdigest", $content->test);
         $this->AssertSame("userSample2", $content->ws_users[0]->name);
         $this->AssertSame(md5("admin:" . $this->config->restRealm . ':1234'), $content->auth);
@@ -121,7 +128,8 @@ class DigestTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(400);
-        $this->assertObjectHasAttribute("error", $content->messages);
+        $this->assertTrue(isset($content->messages->error));
+        //$this->assertObjectHasAttribute("error", $content->messages);
     }
 
     protected function tearDown(): void

@@ -55,8 +55,10 @@ class WhiteListTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(200);
-        $this->assertObjectHasAttribute("test", $content);
-        $this->assertObjectHasAttribute("auth", $content);
+        $this->assertTrue(isset($content->test));
+        $this->assertTrue(isset($content->auth));
+        //$this->assertObjectHasAttribute("test", $content);
+        //$this->assertObjectHasAttribute("auth", $content);
         $this->AssertSame("helloauthwhitelist", $content->test);
         $this->AssertSame("0.0.0.0", $content->auth);
     }

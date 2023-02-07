@@ -184,7 +184,7 @@ class CreateRestServerTables extends Migration
         ]);
 
         $this->forge->addKey('id', true);
-        $this->forge->addKey('api_key');
+        $this->forge->addKey('key_id');
         $this->forge->addKey('deleted_at');
         $this->forge->addForeignKey('request_id', $this->config->configRestPetitionsTable, 'id', 'RESTRICT', 'CASCADE');
         $this->forge->addForeignKey('key_id', $this->config->restKeysTable, 'id', 'RESTRICT', 'CASCADE');
@@ -207,7 +207,7 @@ class CreateRestServerTables extends Migration
         ]);
 
         $this->forge->addKey('id', true);
-        $this->forge->addKey('api_key');
+        $this->forge->addKey('key_id');
         $this->forge->addKey('deleted_at');
         $this->forge->addForeignKey('key_id', $this->config->restKeysTable, 'id', 'RESTRICT', 'CASCADE');
         $this->forge->addForeignKey('namespace_id', $this->config->restNamespaceTable, 'id', 'RESTRICT', 'CASCADE');
