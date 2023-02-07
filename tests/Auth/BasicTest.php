@@ -59,7 +59,8 @@ class BasicTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(400);
-        $this->assertObjectHasAttribute("error", $content->messages);
+        $this->assertTrue( isset($content->messages->error) );
+        //$this->assertObjectHasAttribute("error", $content->messages);
         $this->assertStringStartsWith("Cannot modify header information", $content->messages->error);
     }
 
@@ -78,7 +79,8 @@ class BasicTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(400);
-        $this->assertObjectHasAttribute("error", $content->messages);
+        $this->assertTrue( isset($content->messages->error) );
+        //$this->assertObjectHasAttribute("error", $content->messages);
         $this->assertStringStartsWith("Cannot modify header", $content->messages->error);
     }
 
@@ -97,7 +99,8 @@ class BasicTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(400);
-        $this->assertObjectHasAttribute("error", $content->messages);
+        $this->assertTrue( isset($content->messages->error) );
+        //$this->assertObjectHasAttribute("error", $content->messages);
         $this->assertStringStartsWith("Cannot modify header", $content->messages->error);
     }
 
@@ -116,7 +119,8 @@ class BasicTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(400);
-        $this->assertObjectHasAttribute("error", $content->messages);
+        $this->assertTrue( isset($content->messages->error) );
+        //$this->assertObjectHasAttribute("error", $content->messages);
         $this->assertStringStartsWith("Cannot modify header", $content->messages->error);
     }
 
@@ -136,12 +140,17 @@ class BasicTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(200);
-        $this->assertObjectHasAttribute("test", $content);
-        $this->assertObjectHasAttribute("auth", $content);
-        $this->assertObjectHasAttribute("key", $content);
-        $this->assertObjectHasAttribute("ws_users", $content);
+        $this->assertTrue( isset($content->test) );
+        $this->assertTrue( isset($content->auth) );
+        $this->assertTrue( isset($content->key) );
+        $this->assertTrue( isset($content->ws_users) );
+        //$this->assertObjectHasAttribute("test", $content);
+        //$this->assertObjectHasAttribute("auth", $content);
+        //$this->assertObjectHasAttribute("key", $content);
+        //$this->assertObjectHasAttribute("ws_users", $content);
         $this->assertIsArray($content->ws_users);
-        $this->assertObjectHasAttribute('name', $content->ws_users[0]);
+        $this->assertTrue( isset($content->ws_users[0]->name) );
+        //$this->assertObjectHasAttribute('name', $content->ws_users[0]);
         $this->AssertSame("helloauthbasic", $content->test);
         $this->AssertSame("userSample2", $content->ws_users[0]->name);
         $this->AssertSame("admin", $content->auth);
@@ -163,14 +172,21 @@ class BasicTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(200);
-        $this->assertObjectHasAttribute("param", $content);
-        $this->assertObjectHasAttribute("method", $content);
-        $this->assertObjectHasAttribute("auth", $content);
-        $this->assertObjectHasAttribute("format", $content);
-        $this->assertObjectHasAttribute("key", $content);
-        $this->assertObjectHasAttribute("ws_users", $content);
+        $this->assertTrue( isset($content->param) );
+        $this->assertTrue( isset($content->method) );
+        $this->assertTrue( isset($content->auth) );
+        $this->assertTrue( isset($content->format) );
+        $this->assertTrue( isset($content->key) );
+        $this->assertTrue( isset($content->ws_users) );
+        //$this->assertObjectHasAttribute("param", $content);
+        //$this->assertObjectHasAttribute("method", $content);
+        //$this->assertObjectHasAttribute("auth", $content);
+        //$this->assertObjectHasAttribute("format", $content);
+        //$this->assertObjectHasAttribute("key", $content);
+        //$this->assertObjectHasAttribute("ws_users", $content);
         $this->assertIsArray($content->ws_users);
-        $this->assertObjectHasAttribute('name', $content->ws_users[0]);
+        $this->assertTrue( isset($content->ws_users[0]->name) );
+        //$this->assertObjectHasAttribute('name', $content->ws_users[0]);
         $this->AssertSame("helloauthbasic", $content->param);
         $this->AssertSame("method", $content->method);
         $this->AssertSame("userSample2", $content->ws_users[0]->name);
@@ -194,7 +210,8 @@ class BasicTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(403);
-        $this->assertObjectHasAttribute("error", $content->messages);
+        $this->assertTrue( isset($content->messages->error) );
+        //$this->assertObjectHasAttribute("error", $content->messages);
         $this->assertStringStartsWith("Invalid params for", $content->messages->error);
     }
 
@@ -213,7 +230,8 @@ class BasicTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(400);
-        $this->assertObjectHasAttribute("param", $content->messages);
+        $this->assertTrue( isset($content->messages->param) );
+        //$this->assertObjectHasAttribute("param", $content->messages);
         $this->assertStringStartsWith("The param field is required.", $content->messages->param);
     }
 
@@ -232,7 +250,8 @@ class BasicTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(403);
-        $this->assertObjectHasAttribute("error", $content->messages);
+        $this->assertTrue( isset($content->messages->error) );
+        //$this->assertObjectHasAttribute("error", $content->messages);
         $this->assertStringStartsWith("Invalid method:", $content->messages->error);
     }
 
@@ -251,7 +270,8 @@ class BasicTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(403);
-        $this->assertObjectHasAttribute("error", $content->messages);
+        $this->assertTrue( isset($content->messages->error) );
+        //$this->assertObjectHasAttribute("error", $content->messages);
         $this->AssertSame("Only AJAX requests are allowed", $content->messages->error);
     }
 
@@ -271,12 +291,17 @@ class BasicTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(200);
-        $this->assertObjectHasAttribute("test", $content);
-        $this->assertObjectHasAttribute("auth", $content);
-        $this->assertObjectHasAttribute("key", $content);
-        $this->assertObjectHasAttribute("ws_users", $content);
+        $this->assertTrue( isset($content->test) );
+        $this->assertTrue( isset($content->auth) );
+        $this->assertTrue( isset($content->key) );
+        $this->assertTrue( isset($content->ws_users) );
+        //$this->assertObjectHasAttribute("test", $content);
+        //$this->assertObjectHasAttribute("auth", $content);
+        //$this->assertObjectHasAttribute("key", $content);
+        //$this->assertObjectHasAttribute("ws_users", $content);
         $this->assertIsArray($content->ws_users);
-        $this->assertObjectHasAttribute('name', $content->ws_users[0]);
+        $this->assertTrue( isset($content->ws_users[0]->name) );
+        //$this->assertObjectHasAttribute('name', $content->ws_users[0]);
         $this->AssertSame("helloauthbasicajax", $content->test);
         $this->AssertSame("userSample2", $content->ws_users[0]->name);
         $this->AssertSame("admin", $content->auth);

@@ -51,7 +51,8 @@ class ApiKeyTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(401);
-        $this->assertObjectHasAttribute("error", $content->messages);
+        $this->assertTrue( isset($content->messages->error) );
+        //$this->assertObjectHasAttribute("error", $content->messages);
         $this->assertStringStartsWith("Invalid API key", $content->messages->error);
     }
 
@@ -70,7 +71,8 @@ class ApiKeyTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(401);
-        $this->assertObjectHasAttribute("error", $content->messages);
+        $this->assertTrue( isset($content->messages->error) );
+        //$this->assertObjectHasAttribute("error", $content->messages);
         $this->assertStringStartsWith("Invalid API key", $content->messages->error);
     }
 
@@ -89,7 +91,8 @@ class ApiKeyTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(401);
-        $this->assertObjectHasAttribute("error", $content->messages);
+        $this->assertTrue( isset($content->messages->error) );
+        //$this->assertObjectHasAttribute("error", $content->messages);
         $this->assertSame("This API key does not have enough permissions", $content->messages->error);
     }
 
