@@ -105,7 +105,7 @@ class RestServerDiscoverClasses extends BaseCommand
             }
 
             // if ($m->class == $namespace) {
-                //$methods[] = $m->name;
+            //$methods[] = $m->name;
             //}
         }
 

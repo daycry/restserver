@@ -55,7 +55,7 @@ class SessionTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(401);
-        $this->assertTrue( isset($content->messages->error) );
+        $this->assertTrue(isset($content->messages->error));
         //$this->assertObjectHasAttribute("error", $content->messages);
         $this->AssertSame("Invalid credentials", $content->messages->error);
     }
@@ -80,16 +80,16 @@ class SessionTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(200);
-        $this->assertTrue( isset($content->test) );
-        $this->assertTrue( isset($content->auth) );
-        $this->assertTrue( isset($content->key) );
-        $this->assertTrue( isset($content->ws_users) );
+        $this->assertTrue(isset($content->test));
+        $this->assertTrue(isset($content->auth));
+        $this->assertTrue(isset($content->key));
+        $this->assertTrue(isset($content->ws_users));
         //$this->assertObjectHasAttribute("test", $content);
         //$this->assertObjectHasAttribute("auth", $content);
         //$this->assertObjectHasAttribute("key", $content);
         //$this->assertObjectHasAttribute("ws_users", $content);
         $this->assertIsArray($content->ws_users);
-        $this->assertTrue( isset($content->ws_users[0]->name) );
+        $this->assertTrue(isset($content->ws_users[0]->name));
         //$this->assertObjectHasAttribute('name', $content->ws_users[0]);
         $this->AssertSame("helloauthsession", $content->test);
         $this->AssertSame("userSample2", $content->ws_users[0]->name);

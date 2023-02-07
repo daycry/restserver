@@ -135,7 +135,7 @@ class LimitTest extends CIUnitTestCase
         $content = \json_decode($result2->getJson());
 
         $result->assertStatus(429);
-        $this->assertTrue( isset($content->messages->error) );
+        $this->assertTrue(isset($content->messages->error));
         //$this->assertObjectHasAttribute("error", $content->messages);
         $this->assertSame("This IP Address has reached the time limit for this method", $content->messages->error);
     }
@@ -158,7 +158,7 @@ class LimitTest extends CIUnitTestCase
         $content = \json_decode($result2->getJson());
 
         $result->assertStatus(429);
-        $this->assertTrue( isset($content->messages->error) );
+        $this->assertTrue(isset($content->messages->error));
         //$this->assertObjectHasAttribute("error", $content->messages);
         $this->assertMatchesRegularExpression("/has reached the time limit for this method/i", $content->messages->error);
     }

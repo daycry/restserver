@@ -371,7 +371,6 @@ class RestServer extends ResourceController
 
             // Doing key related stuff? Can only do it if they have a key right?
             if ($this->_restConfig->restEnableKeys && empty($this->apiUser) === false) {
-
                 // Check the limit
                 if ($this->_restConfig->restEnableLimits && \Daycry\RestServer\Validators\Limit::check($this->request, $this->router, $this->apiUser, $this->_petition) === false) {
                     throw FailTooManyRequestsException::forApiKeyLimit($this->apiUser->key);

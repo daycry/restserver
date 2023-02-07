@@ -64,7 +64,7 @@ class AttempTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(401);
-        $this->assertTrue( isset($content->messages->error) );
+        $this->assertTrue(isset($content->messages->error));
         //$this->assertObjectHasAttribute("error", $content->messages);
         $this->assertMatchesRegularExpression("/Invalid API key/i", $content->messages->error);
     }
@@ -89,7 +89,7 @@ class AttempTest extends CIUnitTestCase
         $content = \json_decode($result->getJson());
 
         $result->assertStatus(429);
-        $this->assertTrue( isset($content->messages->error) );
+        $this->assertTrue(isset($content->messages->error));
         //$this->assertObjectHasAttribute("error", $content->messages);
         $this->assertMatchesRegularExpression("/has reached the maximum of invalid requests/i", $content->messages->error);
     }
