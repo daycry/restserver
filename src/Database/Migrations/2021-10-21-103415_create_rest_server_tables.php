@@ -66,6 +66,7 @@ class CreateRestServerTables extends Migration
         $this->forge->addKey('id', true);
         $this->forge->addKey('checked_at');
         $this->forge->addKey('deleted_at');
+        $this->forge->addKey('api_id');
         $this->forge->addKey('controller', false, true);
         $this->forge->addForeignKey('api_id', $this->config->restApiTable, 'id', 'RESTRICT', 'CASCADE');
         $this->forge->createTable($this->config->restNamespaceTable, true);
@@ -117,6 +118,7 @@ class CreateRestServerTables extends Migration
         ]);
 
         $this->forge->addKey('id', true);
+        $this->forge->addKey('deleted_at');
         $this->forge->addUniqueKey('key');
 
         $this->forge->createTable($this->config->restKeysTable, true);
