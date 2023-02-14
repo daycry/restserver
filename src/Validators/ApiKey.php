@@ -7,7 +7,7 @@ use Daycry\RestServer\Exceptions\UnauthorizedException;
 
 class ApiKey
 {
-    public static function check(RequestInterface $request, object $petition = null, array $args): ?object
+    public static function check(RequestInterface $request, array $args, object $petition = null, string &$key = null): ?object
     {
         $row = null;
         $usekey = config('RestServer')->restEnableKeys;
@@ -54,7 +54,7 @@ class ApiKey
                             }
                         }
 
-                        if (!$found_address) {
+                        if ($found_address !== true) {
                             return UnauthorizedException::forIpDenied();
                         }
                     } else {

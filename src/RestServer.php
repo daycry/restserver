@@ -115,6 +115,13 @@ class RestServer extends ResourceController
     protected ?object $apiUser = null;
 
     /**
+     * Information about the current API user.
+     *
+     * @var string
+     */
+    protected ?string $key = null;
+
+    /**
      * Information about the current AUTH user.
      *
      * @var object
@@ -275,7 +282,7 @@ class RestServer extends ResourceController
             'uri'        => $this->request->uri,
             'method'     => $this->request->getMethod(),
             'params'     => $params,
-            'api_key'    => isset($this->apiUser->key) ? $this->apiUser->key : '',
+            'api_key'    => isset($this->key) ? $this->key : '',
             'ip_address' => $this->request->getIPAddress(),
             'duration'   => $this->_benchmark->getElapsedTime('petition'),
             'response_code' => $this->response->getStatusCode(),
@@ -340,7 +347,7 @@ class RestServer extends ResourceController
                 }
             }
 
-            $this->apiUser = \Daycry\RestServer\Validators\ApiKey::check($this->request, $this->_petition, $this->args);
+            $this->apiUser = \Daycry\RestServer\Validators\ApiKey::check($this->request, $this->args, $this->_petition, $this->key);
 
             if ($this->_restConfig->strictApiAndAuth && $this->apiUser instanceof \Exception) {
                 throw $this->apiUser;
