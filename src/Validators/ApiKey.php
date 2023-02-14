@@ -49,6 +49,8 @@ class ApiKey
                                 } elseif ($ip_address === trim($list_ip)) {
                                     // there is a match, set the the value to TRUE and break out of the loop
                                     $found_address = true;
+                                }
+                                if ($found_address) {
                                     break;
                                 }
                             }
