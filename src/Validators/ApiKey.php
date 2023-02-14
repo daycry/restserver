@@ -7,7 +7,7 @@ use Daycry\RestServer\Exceptions\UnauthorizedException;
 
 class ApiKey
 {
-    public static function check(RequestInterface $request, object $petition = null, array $args): ?object
+    public static function check(RequestInterface $request, array $args, object $petition = null, string &$key = null): ?object
     {
         $row = null;
         $usekey = config('RestServer')->restEnableKeys;
@@ -45,16 +45,18 @@ class ApiKey
                             if ($list_ip) {
                                 if (strpos($list_ip, '/') !== false) {
                                     //check IP is in the range
-                                    $found_address = \Daycry\RestServer\Libraries\CheckIp::ipv4_in_range(trim($list_ip), $row->ip_addresses);
+                                    $found_address = \Daycry\RestServer\Libraries\CheckIp::ipv4_in_range(trim($ip_address), trim($list_ip));
                                 } elseif ($ip_address === trim($list_ip)) {
                                     // there is a match, set the the value to TRUE and break out of the loop
                                     $found_address = true;
+                                }
+                                if ($found_address) {
                                     break;
                                 }
                             }
                         }
 
-                        if (!$found_address) {
+                        if ($found_address !== true) {
                             return UnauthorizedException::forIpDenied();
                         }
                     } else {
